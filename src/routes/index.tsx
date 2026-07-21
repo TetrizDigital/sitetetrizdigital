@@ -477,9 +477,7 @@ function Index() {
           <div className="absolute inset-0 z-0">
             <video
               data-hero-img
-              autoPlay
               muted
-              loop
               playsInline
               preload="auto"
               poster={heroBlocks}
@@ -491,6 +489,7 @@ function Index() {
             >
               <source src={heroManifesto.url} type="video/mp4" />
             </video>
+
             {/* Grey gradient wash + vignette */}
             <div
               className="absolute inset-0"
