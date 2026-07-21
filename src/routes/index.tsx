@@ -303,12 +303,26 @@ function Index() {
         );
       });
 
-      // Hero parallax on the block image
-      gsap.to("[data-hero-img]", {
-        scale: reduce ? 1 : 1.12,
-        ease: "none",
-        scrollTrigger: { trigger: "[data-hero]", start: "top top", end: "bottom top", scrub: true },
-      });
+      // Scroll-scrubbed hero video: scroll forwards → play forward, backwards → rewind
+      const heroVideo = document.querySelector<HTMLVideoElement>("[data-hero-img]");
+      if (heroVideo) {
+        heroVideo.pause();
+        const setTime = (p: number) => {
+          const d = heroVideo.duration;
+          if (!d || isNaN(d)) return;
+          heroVideo.currentTime = Math.min(d - 0.05, Math.max(0, p * d));
+        };
+        const st = ScrollTrigger.create({
+          trigger: "[data-hero]",
+          start: "top top",
+          end: "bottom bottom",
+          scrub: true,
+          onUpdate: (self) => setTime(self.progress),
+        });
+        const onMeta = () => setTime(st.progress || 0);
+        if (heroVideo.readyState >= 1) onMeta();
+        else heroVideo.addEventListener("loadedmetadata", onMeta, { once: true });
+      }
 
       // Scroll-driven word rotation across the pinned hero
       ScrollTrigger.create({
@@ -323,6 +337,7 @@ function Index() {
           setHeroWordIdx((prev) => (prev === idx ? prev : idx));
         },
       });
+
 
       // Tetris board 3D tilt on scroll
       gsap.fromTo(
