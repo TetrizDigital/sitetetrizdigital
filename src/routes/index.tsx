@@ -303,12 +303,26 @@ function Index() {
         );
       });
 
-      // Hero parallax on the block image
-      gsap.to("[data-hero-img]", {
-        scale: reduce ? 1 : 1.12,
-        ease: "none",
-        scrollTrigger: { trigger: "[data-hero]", start: "top top", end: "bottom top", scrub: true },
-      });
+      // Scroll-scrubbed hero video: scroll forwards → play forward, backwards → rewind
+      const heroVideo = document.querySelector<HTMLVideoElement>("[data-hero-img]");
+      if (heroVideo) {
+        heroVideo.pause();
+        const setTime = (p: number) => {
+          const d = heroVideo.duration;
+          if (!d || isNaN(d)) return;
+          heroVideo.currentTime = Math.min(d - 0.05, Math.max(0, p * d));
+        };
+        const st = ScrollTrigger.create({
+          trigger: "[data-hero]",
+          start: "top top",
+          end: "bottom bottom",
+          scrub: true,
+          onUpdate: (self) => setTime(self.progress),
+        });
+        const onMeta = () => setTime(st.progress || 0);
+        if (heroVideo.readyState >= 1) onMeta();
+        else heroVideo.addEventListener("loadedmetadata", onMeta, { once: true });
+      }
 
       // Scroll-driven word rotation across the pinned hero
       ScrollTrigger.create({
@@ -323,6 +337,7 @@ function Index() {
           setHeroWordIdx((prev) => (prev === idx ? prev : idx));
         },
       });
+
 
       // Tetris board 3D tilt on scroll
       gsap.fromTo(
@@ -462,9 +477,7 @@ function Index() {
           <div className="absolute inset-0 z-0">
             <video
               data-hero-img
-              autoPlay
               muted
-              loop
               playsInline
               preload="auto"
               poster={heroBlocks}
@@ -476,6 +489,7 @@ function Index() {
             >
               <source src={heroManifesto.url} type="video/mp4" />
             </video>
+
             {/* Grey gradient wash + vignette */}
             <div
               className="absolute inset-0"
@@ -494,7 +508,7 @@ function Index() {
           </div>
 
           {/* Foreground content — rotating words in front, driven by scroll */}
-          <div className="relative z-10 mx-auto flex h-screen max-w-7xl flex-col justify-center px-6 md:px-16">
+          <div className="relative z-10 mx-auto flex h-screen max-w-7xl flex-col justify-end px-6 pb-24 md:px-16 md:pb-32">
             <div className="mb-8 flex items-center gap-3" style={{ color: "var(--mustard)", fontSize: 13, letterSpacing: ".3em" }}>
               <span style={{ width: 40, height: 1, background: "var(--mustard)" }} />
               TETRIZ DIGITAL
