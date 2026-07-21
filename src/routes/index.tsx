@@ -5,8 +5,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 
 import heroBlocks from "@/assets/hero-blocks.jpg";
-import heroVideo1 from "@/assets/hero-bg-1.mp4.asset.json";
-import heroVideo2 from "@/assets/hero-bg-2.mp4.asset.json";
+import heroManifesto from "@/assets/tetriz-manifesto.mp4.asset.json";
 import tetrisField from "@/assets/tetris-field.jpg";
 import methodFalling from "@/assets/method-falling.jpg";
 import serviceCampaign from "@/assets/service-campaign.jpg";
@@ -269,13 +268,7 @@ function Index() {
   const [openMethod, setOpenMethod] = useState<(typeof METHOD)[number] | null>(null);
   const [heroWordIdx, setHeroWordIdx] = useState(0);
 
-  // Rotate hero words
-  useEffect(() => {
-    const t = setInterval(() => {
-      setHeroWordIdx((i) => (i + 1) % HERO_WORDS.length);
-    }, 1800);
-    return () => clearInterval(t);
-  }, []);
+  // Hero words are driven by scroll (see ScrollTrigger below)
 
   // Lenis + GSAP
   useEffect(() => {
