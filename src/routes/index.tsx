@@ -450,9 +450,56 @@ function Index() {
       </nav>
 
       {/* HERO */}
-      <section data-hero className="relative grid min-h-screen grid-cols-1 md:grid-cols-2">
-        {/* LEFT — rotating words */}
-        <div className="relative z-10 flex flex-col justify-center px-6 py-32 md:px-16">
+      <section data-hero className="relative min-h-screen overflow-hidden" style={{ background: "#000" }}>
+        {/* Background videos — desaturated black/grey cinematic */}
+        <div className="absolute inset-0 z-0">
+          <video
+            data-hero-img
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            poster={heroBlocks}
+            className="absolute inset-0 h-full w-full object-cover"
+            style={{
+              filter: "grayscale(1) contrast(1.15) brightness(.45)",
+              willChange: "transform",
+            }}
+          >
+            <source src={heroVideo1.url} type="video/mp4" />
+          </video>
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            className="absolute inset-0 h-full w-full object-cover mix-blend-screen opacity-40"
+            style={{ filter: "grayscale(1) contrast(1.2) brightness(.35)" }}
+          >
+            <source src={heroVideo2.url} type="video/mp4" />
+          </video>
+          {/* Grey gradient wash + vignette */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(ellipse at 30% 50%, rgba(0,0,0,.2) 0%, rgba(0,0,0,.75) 70%, rgba(0,0,0,.95) 100%), linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(20,20,20,.4) 50%, rgba(0,0,0,.85) 100%)",
+            }}
+          />
+          {/* Subtle scan lines / film grain feel */}
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[.08] mix-blend-overlay"
+            style={{
+              backgroundImage:
+                "repeating-linear-gradient(0deg, rgba(255,255,255,.6) 0px, rgba(255,255,255,.6) 1px, transparent 1px, transparent 3px)",
+            }}
+          />
+        </div>
+
+        {/* Foreground content — rotating words in front */}
+        <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col justify-center px-6 py-32 md:px-16">
           <div className="mb-8 flex items-center gap-3" style={{ color: "var(--mustard)", fontSize: 13, letterSpacing: ".3em" }}>
             <span style={{ width: 40, height: 1, background: "var(--mustard)" }} />
             TETRIZ DIGITAL
@@ -461,17 +508,18 @@ function Index() {
             key={heroWordIdx}
             style={{
               fontWeight: 700,
-              fontSize: "clamp(3rem, 8vw, 7rem)",
+              fontSize: "clamp(3.5rem, 11vw, 9rem)",
               lineHeight: 0.95,
               color: wordColor,
               transition: "opacity .5s ease, transform .5s ease",
               animation: "fadeIn .6s ease",
               letterSpacing: "-.03em",
+              textShadow: "0 8px 40px rgba(0,0,0,.6)",
             }}
           >
             {currentWord}
           </h1>
-          <p className="mt-8 max-w-md" style={{ color: "#a8a8a8", fontSize: 17, lineHeight: 1.6 }}>
+          <p className="mt-8 max-w-xl" style={{ color: "#c9c9c9", fontSize: 17, lineHeight: 1.6 }}>
             Marketing, Branding e Performance. Cada peça no lugar certo, cada movimento a serviço do próximo.
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
@@ -485,26 +533,14 @@ function Index() {
             <a
               href="#jogo"
               className="whatsapp-cta inline-flex items-center gap-2 rounded-full border px-8 py-4 font-semibold"
-              style={{ borderColor: "#333", color: "#fff", fontSize: 14, letterSpacing: ".1em" }}
+              style={{ borderColor: "rgba(255,255,255,.35)", color: "#fff", fontSize: 14, letterSpacing: ".1em", backdropFilter: "blur(4px)" }}
             >
               CONHECER O JOGO
             </a>
           </div>
         </div>
-        {/* RIGHT — cinematic image (video placeholder) */}
-        <div className="relative overflow-hidden" style={{ background: "#000" }}>
-          <img
-            data-hero-img
-            src={heroBlocks}
-            alt="Peças de Tetris em preto e amarelo mostarda"
-            width={1920}
-            height={1088}
-            className="absolute inset-0 h-full w-full object-cover"
-            style={{ willChange: "transform" }}
-          />
-          <div className="absolute inset-0" style={{ background: "linear-gradient(90deg, #000 0%, transparent 40%, transparent 60%, #000 100%)", opacity: .4 }} />
-        </div>
       </section>
+
 
       {/* FASE 01 — O JOGO */}
       <section id="jogo" className="relative px-6 py-32 md:px-16 md:py-40" style={{ background: "#fff", color: "#000" }}>
