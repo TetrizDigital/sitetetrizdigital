@@ -443,93 +443,87 @@ function Index() {
       </nav>
 
       {/* HERO */}
-      <section data-hero className="relative min-h-screen overflow-hidden" style={{ background: "#000" }}>
-        {/* Background videos — desaturated black/grey cinematic */}
-        <div className="absolute inset-0 z-0">
-          <video
-            data-hero-img
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            poster={heroBlocks}
-            className="absolute inset-0 h-full w-full object-cover"
-            style={{
-              filter: "grayscale(1) contrast(1.15) brightness(.45)",
-              willChange: "transform",
-            }}
-          >
-            <source src={heroVideo1.url} type="video/mp4" />
-          </video>
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            className="absolute inset-0 h-full w-full object-cover mix-blend-screen opacity-40"
-            style={{ filter: "grayscale(1) contrast(1.2) brightness(.35)" }}
-          >
-            <source src={heroVideo2.url} type="video/mp4" />
-          </video>
-          {/* Grey gradient wash + vignette */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(ellipse at 30% 50%, rgba(0,0,0,.2) 0%, rgba(0,0,0,.75) 70%, rgba(0,0,0,.95) 100%), linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(20,20,20,.4) 50%, rgba(0,0,0,.85) 100%)",
-            }}
-          />
-          {/* Subtle scan lines / film grain feel */}
-          <div
-            className="pointer-events-none absolute inset-0 opacity-[.08] mix-blend-overlay"
-            style={{
-              backgroundImage:
-                "repeating-linear-gradient(0deg, rgba(255,255,255,.6) 0px, rgba(255,255,255,.6) 1px, transparent 1px, transparent 3px)",
-            }}
-          />
-        </div>
-
-        {/* Foreground content — rotating words in front */}
-        <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col justify-center px-6 py-32 md:px-16">
-          <div className="mb-8 flex items-center gap-3" style={{ color: "var(--mustard)", fontSize: 13, letterSpacing: ".3em" }}>
-            <span style={{ width: 40, height: 1, background: "var(--mustard)" }} />
-            TETRIZ DIGITAL
+      <section data-hero className="relative overflow-hidden" style={{ background: "#000", height: `${HERO_WORDS.length * 60}vh` }}>
+        <div className="sticky top-0 h-screen w-full overflow-hidden">
+          {/* Background video — cinematic manifesto */}
+          <div className="absolute inset-0 z-0">
+            <video
+              data-hero-img
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+              poster={heroBlocks}
+              className="absolute inset-0 h-full w-full object-cover"
+              style={{
+                filter: "grayscale(1) contrast(1.15) brightness(.55)",
+                willChange: "transform",
+              }}
+            >
+              <source src={heroManifesto.url} type="video/mp4" />
+            </video>
+            {/* Grey gradient wash + vignette */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "radial-gradient(ellipse at 30% 50%, rgba(0,0,0,.15) 0%, rgba(0,0,0,.65) 70%, rgba(0,0,0,.9) 100%), linear-gradient(180deg, rgba(0,0,0,.45) 0%, rgba(20,20,20,.35) 50%, rgba(0,0,0,.8) 100%)",
+              }}
+            />
+            <div
+              className="pointer-events-none absolute inset-0 opacity-[.08] mix-blend-overlay"
+              style={{
+                backgroundImage:
+                  "repeating-linear-gradient(0deg, rgba(255,255,255,.6) 0px, rgba(255,255,255,.6) 1px, transparent 1px, transparent 3px)",
+              }}
+            />
           </div>
-          <h1
-            key={heroWordIdx}
-            style={{
-              fontWeight: 700,
-              fontSize: "clamp(3.5rem, 11vw, 9rem)",
-              lineHeight: 0.95,
-              color: wordColor,
-              transition: "opacity .5s ease, transform .5s ease",
-              animation: "fadeIn .6s ease",
-              letterSpacing: "-.03em",
-              textShadow: "0 8px 40px rgba(0,0,0,.6)",
-            }}
-          >
-            {currentWord}
-          </h1>
-          <p className="mt-8 max-w-xl" style={{ color: "#c9c9c9", fontSize: 17, lineHeight: 1.6 }}>
-            Marketing, Branding e Performance. Cada peça no lugar certo, cada movimento a serviço do próximo.
-          </p>
-          <div className="mt-10 flex flex-wrap gap-3">
-            <a
-              href="#agendar"
-              className="whatsapp-cta inline-flex items-center gap-2 rounded-full px-8 py-4 font-semibold"
-              style={{ background: "var(--mustard)", color: "#000", fontSize: 14, letterSpacing: ".1em" }}
+
+          {/* Foreground content — rotating words in front, driven by scroll */}
+          <div className="relative z-10 mx-auto flex h-screen max-w-7xl flex-col justify-center px-6 md:px-16">
+            <div className="mb-8 flex items-center gap-3" style={{ color: "var(--mustard)", fontSize: 13, letterSpacing: ".3em" }}>
+              <span style={{ width: 40, height: 1, background: "var(--mustard)" }} />
+              TETRIZ DIGITAL
+            </div>
+            <h1
+              key={heroWordIdx}
+              style={{
+                fontWeight: 700,
+                fontSize: "clamp(3.5rem, 11vw, 9rem)",
+                lineHeight: 0.95,
+                color: wordColor,
+                animation: "fadeIn .6s ease",
+                letterSpacing: "-.03em",
+                textShadow: "0 8px 40px rgba(0,0,0,.6)",
+              }}
             >
-              AGENDAR CONVERSA →
-            </a>
-            <a
-              href="#jogo"
-              className="whatsapp-cta inline-flex items-center gap-2 rounded-full border px-8 py-4 font-semibold"
-              style={{ borderColor: "rgba(255,255,255,.35)", color: "#fff", fontSize: 14, letterSpacing: ".1em", backdropFilter: "blur(4px)" }}
-            >
-              CONHECER O JOGO
-            </a>
+              {currentWord}
+            </h1>
+            <p className="mt-8 max-w-xl" style={{ color: "#c9c9c9", fontSize: 17, lineHeight: 1.6 }}>
+              Marketing, Branding e Performance. Cada peça no lugar certo, cada movimento a serviço do próximo.
+            </p>
+            <div className="mt-10 flex flex-wrap gap-3">
+              <a
+                href="#agendar"
+                className="whatsapp-cta inline-flex items-center gap-2 rounded-full px-8 py-4 font-semibold"
+                style={{ background: "var(--mustard)", color: "#000", fontSize: 14, letterSpacing: ".1em" }}
+              >
+                AGENDAR CONVERSA →
+              </a>
+              <a
+                href="#jogo"
+                className="whatsapp-cta inline-flex items-center gap-2 rounded-full border px-8 py-4 font-semibold"
+                style={{ borderColor: "rgba(255,255,255,.35)", color: "#fff", fontSize: 14, letterSpacing: ".1em", backdropFilter: "blur(4px)" }}
+              >
+                CONHECER O JOGO
+              </a>
+            </div>
+            {/* Scroll indicator */}
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2" style={{ color: "rgba(255,255,255,.5)", fontSize: 11, letterSpacing: ".3em" }}>
+              ROLE
+              <span style={{ width: 1, height: 32, background: "linear-gradient(180deg, rgba(255,187,0,.8), transparent)" }} />
+            </div>
           </div>
         </div>
       </section>
