@@ -305,10 +305,23 @@ function Index() {
 
       // Hero parallax on the block image
       gsap.to("[data-hero-img]", {
-        yPercent: reduce ? 0 : 20,
-        scale: reduce ? 1 : 1.08,
+        scale: reduce ? 1 : 1.12,
         ease: "none",
         scrollTrigger: { trigger: "[data-hero]", start: "top top", end: "bottom top", scrub: true },
+      });
+
+      // Scroll-driven word rotation across the pinned hero
+      ScrollTrigger.create({
+        trigger: "[data-hero]",
+        start: "top top",
+        end: "bottom bottom",
+        onUpdate: (self) => {
+          const idx = Math.min(
+            HERO_WORDS.length - 1,
+            Math.floor(self.progress * HERO_WORDS.length),
+          );
+          setHeroWordIdx((prev) => (prev === idx ? prev : idx));
+        },
       });
 
       // Tetris board 3D tilt on scroll
