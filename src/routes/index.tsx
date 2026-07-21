@@ -508,7 +508,7 @@ function Index() {
           </div>
 
           {/* Foreground content — rotating words in front, driven by scroll */}
-          <div className="relative z-10 mx-auto flex h-screen max-w-7xl flex-col justify-center px-6 md:px-16">
+          <div className="relative z-10 mx-auto flex h-screen max-w-7xl flex-col justify-end px-6 pb-24 md:px-16 md:pb-32">
             <div className="mb-8 flex items-center gap-3" style={{ color: "var(--mustard)", fontSize: 13, letterSpacing: ".3em" }}>
               <span style={{ width: 40, height: 1, background: "var(--mustard)" }} />
               TETRIZ DIGITAL
