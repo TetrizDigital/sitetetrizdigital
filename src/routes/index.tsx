@@ -5,7 +5,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 
 import heroBlocks from "@/assets/hero-blocks.jpg";
-import heroManifesto from "@/assets/tetriz-manifesto.mp4.asset.json";
+import heroManifesto from "@/assets/tetriz-manifesto-v2.mp4.asset.json";
 import tetrisField from "@/assets/tetris-field.jpg";
 import methodFalling from "@/assets/method-falling.jpg";
 import serviceCampaign from "@/assets/service-campaign.jpg";
@@ -277,6 +277,7 @@ function Index() {
 
     let lenis: Lenis | null = null;
     let rafId = 0;
+    let rafVideoId = 0;
     if (!reduce) {
       lenis = new Lenis({ lerp: 0.09, wheelMultiplier: 1, smoothWheel: true });
       lenis.on("scroll", ScrollTrigger.update);
@@ -307,16 +308,35 @@ function Index() {
       const heroVideo = document.querySelector<HTMLVideoElement>("[data-hero-img]");
       if (heroVideo) {
         heroVideo.pause();
+        heroVideo.muted = true;
+        heroVideo.playsInline = true;
+        heroVideo.preload = "auto";
+
+        let targetTime = 0;
+        const smoothTime = () => {
+          if (!heroVideo || !heroVideo.duration) {
+            rafVideoId = requestAnimationFrame(smoothTime);
+            return;
+          }
+          const diff = targetTime - heroVideo.currentTime;
+          if (Math.abs(diff) > 0.001) {
+            heroVideo.currentTime = heroVideo.currentTime + diff * 0.18;
+          }
+          rafVideoId = requestAnimationFrame(smoothTime);
+        };
+        rafVideoId = requestAnimationFrame(smoothTime);
+
         const setTime = (p: number) => {
           const d = heroVideo.duration;
           if (!d || isNaN(d)) return;
-          heroVideo.currentTime = Math.min(d - 0.05, Math.max(0, p * d));
+          // Stop at 85% so the hero never lands on the final black fade-out frame
+          targetTime = Math.min(d * 0.85, Math.max(0, p * d));
         };
         const st = ScrollTrigger.create({
           trigger: "[data-hero]",
           start: "top top",
           end: "bottom bottom",
-          scrub: true,
+          scrub: 0.6,
           onUpdate: (self) => setTime(self.progress),
         });
         const onMeta = () => setTime(st.progress || 0);
@@ -337,6 +357,25 @@ function Index() {
           setHeroWordIdx((prev) => (prev === idx ? prev : idx));
         },
       });
+
+      // Technical disassembly overlay pieces drift apart as user scrolls
+      gsap.fromTo(
+        "[data-tech-piece]",
+        { x: 0, y: 0, rotate: 0, opacity: 0.35 },
+        {
+          x: (i) => (i % 2 === 0 ? 60 : -60),
+          y: (i) => (i % 3 === 0 ? -40 : 40),
+          rotate: (i) => (i % 2 === 0 ? 8 : -8),
+          opacity: 0,
+          ease: "none",
+          scrollTrigger: {
+            trigger: "[data-hero]",
+            start: "top top",
+            end: "bottom bottom",
+            scrub: 0.8,
+          },
+        },
+      );
 
 
       // Tetris board 3D tilt on scroll
@@ -403,6 +442,7 @@ function Index() {
     return () => {
       ctx.revert();
       if (rafId) cancelAnimationFrame(rafId);
+      if (rafVideoId) cancelAnimationFrame(rafVideoId);
       lenis?.destroy();
     };
   }, []);
@@ -470,8 +510,8 @@ function Index() {
         </a>
       </nav>
 
-      {/* HERO */}
-      <section data-hero className="relative overflow-hidden" style={{ background: "#000", height: `${HERO_WORDS.length * 60}vh` }}>
+      {/* HERO — cinematic scroll-scrubbed manifesto with technical disassembly overlays */}
+      <section data-hero className="relative overflow-hidden" style={{ background: "#000", height: `${HERO_WORDS.length * 55}vh` }}>
         <div className="sticky top-0 h-screen w-full overflow-hidden">
           {/* Background video — cinematic manifesto */}
           <div className="absolute inset-0 z-0">
@@ -483,73 +523,100 @@ function Index() {
               poster={heroBlocks}
               className="absolute inset-0 h-full w-full object-cover"
               style={{
-                filter: "grayscale(1) contrast(1.15) brightness(.55)",
+                filter: "grayscale(1) contrast(1.2) brightness(.6)",
                 willChange: "transform",
               }}
             >
               <source src={heroManifesto.url} type="video/mp4" />
             </video>
 
-            {/* Grey gradient wash + vignette */}
+            {/* Cinematic grey wash + vignette */}
             <div
               className="absolute inset-0"
               style={{
                 background:
-                  "radial-gradient(ellipse at 30% 50%, rgba(0,0,0,.15) 0%, rgba(0,0,0,.65) 70%, rgba(0,0,0,.9) 100%), linear-gradient(180deg, rgba(0,0,0,.45) 0%, rgba(20,20,20,.35) 50%, rgba(0,0,0,.8) 100%)",
+                  "radial-gradient(ellipse at 50% 45%, rgba(0,0,0,.2) 0%, rgba(0,0,0,.55) 60%, rgba(0,0,0,.85) 100%), linear-gradient(180deg, rgba(0,0,0,.5) 0%, rgba(15,15,15,.2) 40%, rgba(0,0,0,.7) 100%)",
               }}
             />
+
+            {/* Technical grid — construction lines */}
             <div
-              className="pointer-events-none absolute inset-0 opacity-[.08] mix-blend-overlay"
+              className="pointer-events-none absolute inset-0 opacity-[.12]"
               style={{
                 backgroundImage:
-                  "repeating-linear-gradient(0deg, rgba(255,255,255,.6) 0px, rgba(255,255,255,.6) 1px, transparent 1px, transparent 3px)",
+                  "linear-gradient(90deg, rgba(255,255,255,.25) 1px, transparent 1px), linear-gradient(0deg, rgba(255,255,255,.25) 1px, transparent 1px)",
+                backgroundSize: "80px 80px",
               }}
             />
+
+            {/* Scanlines */}
+            <div
+              className="pointer-events-none absolute inset-0 opacity-[.06] mix-blend-overlay"
+              style={{
+                backgroundImage:
+                  "repeating-linear-gradient(0deg, rgba(255,255,255,.5) 0px, rgba(255,255,255,.5) 1px, transparent 1px, transparent 3px)",
+              }}
+            />
+
+            {/* Floating technical pieces — drift apart on scroll */}
+            <div data-tech-piece className="pointer-events-none absolute left-[8%] top-[18%] h-16 w-16 border border-[rgba(255,187,0,.45)]" style={{ transform: "rotate(12deg)" }} />
+            <div data-tech-piece className="pointer-events-none absolute right-[12%] top-[22%] h-24 w-24 border border-[rgba(255,255,255,.25)]" style={{ transform: "rotate(-8deg)" }} />
+            <div data-tech-piece className="pointer-events-none absolute left-[15%] bottom-[28%] h-10 w-32 border-t border-b border-[rgba(255,187,0,.35)]" />
+            <div data-tech-piece className="pointer-events-none absolute right-[18%] bottom-[22%] h-20 w-20 rounded-full border border-[rgba(255,255,255,.2)]" />
+            <div data-tech-piece className="pointer-events-none absolute left-1/2 top-[12%] h-px w-32 -translate-x-1/2 bg-[rgba(255,187,0,.5)]" />
+            <div data-tech-piece className="pointer-events-none absolute left-1/2 bottom-[18%] h-px w-48 -translate-x-1/2 bg-[rgba(255,255,255,.25)]" />
+
+            {/* Corner brackets */}
+            <div className="pointer-events-none absolute left-6 top-24 h-12 w-12 border-l border-t border-[rgba(255,187,0,.35)]" />
+            <div className="pointer-events-none absolute right-6 top-24 h-12 w-12 border-r border-t border-[rgba(255,187,0,.35)]" />
+            <div className="pointer-events-none absolute bottom-6 left-6 h-12 w-12 border-b border-l border-[rgba(255,255,255,.2)]" />
+            <div className="pointer-events-none absolute bottom-6 right-6 h-12 w-12 border-b border-r border-[rgba(255,255,255,.2)]" />
           </div>
 
           {/* Foreground content — rotating words in front, driven by scroll */}
-          <div className="relative z-10 mx-auto flex h-screen max-w-7xl flex-col justify-end px-6 pb-24 md:px-16 md:pb-32">
-            <div className="mb-8 flex items-center gap-3" style={{ color: "var(--mustard)", fontSize: 13, letterSpacing: ".3em" }}>
+          <div className="relative z-10 mx-auto flex h-screen max-w-7xl flex-col justify-end px-6 pb-20 md:px-16 md:pb-28">
+            <div className="mb-6 flex items-center gap-3" style={{ color: "var(--mustard)", fontSize: 12, letterSpacing: ".3em" }}>
               <span style={{ width: 40, height: 1, background: "var(--mustard)" }} />
               TETRIZ DIGITAL
             </div>
             <h1
               key={heroWordIdx}
+              className="max-w-4xl"
               style={{
                 fontWeight: 700,
-                fontSize: "clamp(3.5rem, 11vw, 9rem)",
+                fontSize: "clamp(3rem, 10vw, 8rem)",
                 lineHeight: 0.95,
                 color: wordColor,
-                animation: "fadeIn .6s ease",
+                animation: "fadeIn .5s ease",
                 letterSpacing: "-.03em",
-                textShadow: "0 8px 40px rgba(0,0,0,.6)",
+                textShadow: "0 8px 40px rgba(0,0,0,.7)",
               }}
             >
               {currentWord}
             </h1>
-            <p className="mt-8 max-w-xl" style={{ color: "#c9c9c9", fontSize: 17, lineHeight: 1.6 }}>
+            <p className="mt-6 max-w-lg" style={{ color: "#c9c9c9", fontSize: 16, lineHeight: 1.6, fontWeight: 300 }}>
               Marketing, Branding e Performance. Cada peça no lugar certo, cada movimento a serviço do próximo.
             </p>
-            <div className="mt-10 flex flex-wrap gap-3">
+            <div className="mt-8 flex flex-wrap gap-3">
               <a
                 href="#agendar"
-                className="whatsapp-cta inline-flex items-center gap-2 rounded-full px-8 py-4 font-semibold"
-                style={{ background: "var(--mustard)", color: "#000", fontSize: 14, letterSpacing: ".1em" }}
+                className="whatsapp-cta inline-flex items-center gap-2 rounded-full px-7 py-3.5 font-semibold"
+                style={{ background: "var(--mustard)", color: "#000", fontSize: 13, letterSpacing: ".1em" }}
               >
                 AGENDAR CONVERSA →
               </a>
               <a
                 href="#jogo"
-                className="whatsapp-cta inline-flex items-center gap-2 rounded-full border px-8 py-4 font-semibold"
-                style={{ borderColor: "rgba(255,255,255,.35)", color: "#fff", fontSize: 14, letterSpacing: ".1em", backdropFilter: "blur(4px)" }}
+                className="whatsapp-cta inline-flex items-center gap-2 rounded-full border px-7 py-3.5 font-semibold"
+                style={{ borderColor: "rgba(255,255,255,.35)", color: "#fff", fontSize: 13, letterSpacing: ".1em", backdropFilter: "blur(4px)" }}
               >
                 CONHECER O JOGO
               </a>
             </div>
             {/* Scroll indicator */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2" style={{ color: "rgba(255,255,255,.5)", fontSize: 11, letterSpacing: ".3em" }}>
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2" style={{ color: "rgba(255,255,255,.5)", fontSize: 10, letterSpacing: ".3em" }}>
               ROLE
-              <span style={{ width: 1, height: 32, background: "linear-gradient(180deg, rgba(255,187,0,.8), transparent)" }} />
+              <span style={{ width: 1, height: 28, background: "linear-gradient(180deg, rgba(255,187,0,.8), transparent)" }} />
             </div>
           </div>
         </div>
