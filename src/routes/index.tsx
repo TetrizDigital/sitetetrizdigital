@@ -268,7 +268,15 @@ function Index() {
   const [openMethod, setOpenMethod] = useState<(typeof METHOD)[number] | null>(null);
   const [heroWordIdx, setHeroWordIdx] = useState(0);
 
-  // Hero words are driven by scroll (see ScrollTrigger below)
+  // Hero words auto-rotate every 1.8s
+  useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+    const interval = window.setInterval(() => {
+      setHeroWordIdx((prev) => (prev + 1) % HERO_WORDS.length);
+    }, 1800);
+    return () => window.clearInterval(interval);
+  }, []);
 
   // Lenis + GSAP
   useEffect(() => {
@@ -312,24 +320,29 @@ function Index() {
         heroVideo.loop = true;
         heroVideo.autoplay = true;
         heroVideo.preload = "auto";
-        const tryPlay = () => heroVideo.play().catch(() => {});
-        if (heroVideo.readyState >= 2) tryPlay();
-        else heroVideo.addEventListener("loadeddata", tryPlay, { once: true });
-      }
 
-      // Scroll-driven word rotation across the pinned hero
-      ScrollTrigger.create({
-        trigger: "[data-hero]",
-        start: "top top",
-        end: "bottom bottom",
-        onUpdate: (self) => {
-          const idx = Math.min(
-            HERO_WORDS.length - 1,
-            Math.floor(self.progress * HERO_WORDS.length),
-          );
-          setHeroWordIdx((prev) => (prev === idx ? prev : idx));
-        },
-      });
+        const tryPlay = () => {
+          if (heroVideo.paused) {
+            heroVideo.play().catch(() => {});
+          }
+        };
+
+        // Attempt immediate play and retry until started
+        tryPlay();
+        const playInterval = window.setInterval(tryPlay, 500);
+        const clearPlayInterval = () => window.clearInterval(playInterval);
+        heroVideo.addEventListener("playing", clearPlayInterval, { once: true });
+        heroVideo.addEventListener("loadeddata", tryPlay, { once: true });
+
+        // Fallback: start on first user interaction if autoplay is blocked
+        const interactionStart = () => {
+          tryPlay();
+          window.removeEventListener("pointerdown", interactionStart);
+          window.removeEventListener("keydown", interactionStart);
+        };
+        window.addEventListener("pointerdown", interactionStart, { passive: true });
+        window.addEventListener("keydown", interactionStart, { passive: true });
+      }
 
       // Technical disassembly overlay pieces drift apart as user scrolls
       gsap.fromTo(
@@ -593,20 +606,31 @@ function Index() {
         </a>
       </nav>
 
-      {/* HERO — cinematic scroll-scrubbed manifesto with technical disassembly overlays */}
-      <section data-hero className="relative overflow-hidden" style={{ background: "#000", height: `${HERO_WORDS.length * 55}vh` }}>
+      {/* HERO — cinematic manifesto */}
+      <section data-hero className="relative overflow-hidden" style={{ background: "#000", height: "100vh" }}>
         <div className="sticky top-0 h-screen w-full overflow-hidden">
           {/* Background video — cinematic manifesto */}
           <div className="absolute inset-0 z-0">
+            {/* Fallback image: always visible behind the video */}
+            <img
+              src={heroBlocks}
+              alt=""
+              aria-hidden
+              className="absolute inset-0 h-full w-full object-cover"
+              style={{ filter: "grayscale(1) contrast(1.15) brightness(.55)" }}
+            />
+
             <video
               data-hero-img
               muted
               playsInline
               preload="auto"
+              loop
+              autoPlay
               poster={heroBlocks}
               className="absolute inset-0 h-full w-full object-cover"
               style={{
-                filter: "grayscale(1) contrast(1.2) brightness(.6)",
+                filter: "grayscale(1) contrast(1.15) brightness(.65)",
                 willChange: "transform",
               }}
             >
@@ -618,7 +642,7 @@ function Index() {
               className="absolute inset-0"
               style={{
                 background:
-                  "radial-gradient(ellipse at 50% 45%, rgba(0,0,0,.2) 0%, rgba(0,0,0,.55) 60%, rgba(0,0,0,.85) 100%), linear-gradient(180deg, rgba(0,0,0,.5) 0%, rgba(15,15,15,.2) 40%, rgba(0,0,0,.7) 100%)",
+                  "radial-gradient(ellipse at 50% 45%, rgba(0,0,0,.15) 0%, rgba(0,0,0,.45) 60%, rgba(0,0,0,.75) 100%), linear-gradient(180deg, rgba(0,0,0,.4) 0%, rgba(15,15,15,.15) 40%, rgba(0,0,0,.55) 100%)",
               }}
             />
 
@@ -634,7 +658,7 @@ function Index() {
 
             {/* Scanlines */}
             <div
-              className="pointer-events-none absolute inset-0 opacity-[.06] mix-blend-overlay"
+              className="pointer-events-none absolute inset-0 opacity-[.05] mix-blend-overlay"
               style={{
                 backgroundImage:
                   "repeating-linear-gradient(0deg, rgba(255,255,255,.5) 0px, rgba(255,255,255,.5) 1px, transparent 1px, transparent 3px)",
@@ -657,7 +681,7 @@ function Index() {
           </div>
 
           {/* Foreground content — rotating words in front, driven by scroll */}
-          <div className="relative z-10 mx-auto flex h-screen max-w-7xl flex-col justify-end px-6 pb-20 md:px-16 md:pb-28">
+          <div className="relative z-10 mx-auto flex h-screen max-w-7xl flex-col justify-center px-6 md:px-16">
             <div className="mb-6 flex items-center gap-3" style={{ color: "var(--mustard)", fontSize: 12, letterSpacing: ".3em" }}>
               <span style={{ width: 40, height: 1, background: "var(--mustard)" }} />
               TETRIZ DIGITAL
@@ -695,11 +719,6 @@ function Index() {
               >
                 CONHECER O JOGO
               </a>
-            </div>
-            {/* Scroll indicator */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2" style={{ color: "rgba(255,255,255,.5)", fontSize: 10, letterSpacing: ".3em" }}>
-              ROLE
-              <span style={{ width: 1, height: 28, background: "linear-gradient(180deg, rgba(255,187,0,.8), transparent)" }} />
             </div>
           </div>
         </div>
