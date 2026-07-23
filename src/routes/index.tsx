@@ -410,6 +410,106 @@ function Index() {
           scrollTrigger: { trigger: "[data-band-yellow]", start: "top 80%" },
         },
       );
+
+      if (!reduce) {
+        // ─── SITE-WIDE INTERACTIVE SCROLL ────────────────────────────────
+
+        // 1) Scroll progress bar (yellow line, top of viewport)
+        gsap.to("[data-scroll-progress]", {
+          scaleX: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: document.body,
+            start: "top top",
+            end: "bottom bottom",
+            scrub: 0.2,
+          },
+        });
+
+        // 2) Parallax on any image/video marked [data-parallax]
+        gsap.utils.toArray<HTMLElement>("[data-parallax]").forEach((el) => {
+          const depth = Number(el.dataset.parallax) || 0.25;
+          gsap.fromTo(
+            el,
+            { yPercent: -depth * 50 },
+            {
+              yPercent: depth * 50,
+              ease: "none",
+              scrollTrigger: {
+                trigger: el.closest("section") || el,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: true,
+              },
+            },
+          );
+        });
+
+        // 3) Auto-reveal every section heading + paragraph with stagger
+        gsap.utils.toArray<HTMLElement>("section").forEach((sec) => {
+          if (sec.hasAttribute("data-hero")) return;
+          const targets = sec.querySelectorAll<HTMLElement>(
+            "h1:not([data-no-reveal]), h2:not([data-no-reveal]), h3:not([data-no-reveal]), p:not([data-no-reveal]), [data-reveal-child]",
+          );
+          if (!targets.length) return;
+          gsap.fromTo(
+            targets,
+            { y: 40, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.9,
+              ease: "power3.out",
+              stagger: 0.08,
+              scrollTrigger: { trigger: sec, start: "top 78%" },
+            },
+          );
+        });
+
+        // 4) Scale-in for cards / images tagged [data-scale-in]
+        gsap.utils.toArray<HTMLElement>("[data-scale-in]").forEach((el) => {
+          gsap.fromTo(
+            el,
+            { scale: 0.88, opacity: 0, y: 30 },
+            {
+              scale: 1,
+              opacity: 1,
+              y: 0,
+              duration: 1,
+              ease: "power3.out",
+              scrollTrigger: { trigger: el, start: "top 85%" },
+            },
+          );
+        });
+
+        // 5) Section pin-fade — each section subtly scales as it leaves viewport
+        gsap.utils.toArray<HTMLElement>("section").forEach((sec) => {
+          if (sec.hasAttribute("data-hero")) return;
+          gsap.fromTo(
+            sec,
+            { scale: 1, filter: "brightness(1)" },
+            {
+              scale: 0.97,
+              filter: "brightness(0.75)",
+              ease: "none",
+              scrollTrigger: {
+                trigger: sec,
+                start: "bottom 90%",
+                end: "bottom top",
+                scrub: true,
+              },
+            },
+          );
+        });
+
+        // 6) Nav shrinks after scrolling past hero
+        ScrollTrigger.create({
+          trigger: "[data-hero]",
+          start: "bottom top+=80",
+          onEnter: () => document.querySelector(".nav")?.classList.add("nav-scrolled"),
+          onLeaveBack: () => document.querySelector(".nav")?.classList.remove("nav-scrolled"),
+        });
+      }
     });
 
     return () => {
