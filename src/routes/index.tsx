@@ -268,7 +268,15 @@ function Index() {
   const [openMethod, setOpenMethod] = useState<(typeof METHOD)[number] | null>(null);
   const [heroWordIdx, setHeroWordIdx] = useState(0);
 
-  // Hero words are driven by scroll (see ScrollTrigger below)
+  // Hero words auto-rotate every 1.8s
+  useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+    const interval = window.setInterval(() => {
+      setHeroWordIdx((prev) => (prev + 1) % HERO_WORDS.length);
+    }, 1800);
+    return () => window.clearInterval(interval);
+  }, []);
 
   // Lenis + GSAP
   useEffect(() => {
