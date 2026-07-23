@@ -344,20 +344,6 @@ function Index() {
         window.addEventListener("keydown", interactionStart, { passive: true });
       }
 
-      // Scroll-driven word rotation across the pinned hero
-      ScrollTrigger.create({
-        trigger: "[data-hero]",
-        start: "top top",
-        end: "bottom bottom",
-        onUpdate: (self) => {
-          const idx = Math.min(
-            HERO_WORDS.length - 1,
-            Math.floor(self.progress * HERO_WORDS.length),
-          );
-          setHeroWordIdx((prev) => (prev === idx ? prev : idx));
-        },
-      });
-
       // Technical disassembly overlay pieces drift apart as user scrolls
       gsap.fromTo(
         "[data-tech-piece]",
