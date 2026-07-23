@@ -312,9 +312,28 @@ function Index() {
         heroVideo.loop = true;
         heroVideo.autoplay = true;
         heroVideo.preload = "auto";
-        const tryPlay = () => heroVideo.play().catch(() => {});
-        if (heroVideo.readyState >= 2) tryPlay();
-        else heroVideo.addEventListener("loadeddata", tryPlay, { once: true });
+
+        const tryPlay = () => {
+          if (heroVideo.paused) {
+            heroVideo.play().catch(() => {});
+          }
+        };
+
+        // Attempt immediate play and retry until started
+        tryPlay();
+        const playInterval = window.setInterval(tryPlay, 500);
+        const clearPlayInterval = () => window.clearInterval(playInterval);
+        heroVideo.addEventListener("playing", clearPlayInterval, { once: true });
+        heroVideo.addEventListener("loadeddata", tryPlay, { once: true });
+
+        // Fallback: start on first user interaction if autoplay is blocked
+        const interactionStart = () => {
+          tryPlay();
+          window.removeEventListener("pointerdown", interactionStart);
+          window.removeEventListener("keydown", interactionStart);
+        };
+        window.addEventListener("pointerdown", interactionStart, { passive: true });
+        window.addEventListener("keydown", interactionStart, { passive: true });
       }
 
       // Scroll-driven word rotation across the pinned hero
