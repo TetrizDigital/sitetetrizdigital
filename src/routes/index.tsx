@@ -5,7 +5,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 
 import heroBlocks from "@/assets/hero-blocks.jpg";
-import heroManifesto from "@/assets/tetriz-manifesto-v2.mp4.asset.json";
+import heroManifesto from "@/assets/tetriz-hero-manifesto.mp4.asset.json";
 import tetrisField from "@/assets/tetris-field.jpg";
 import methodFalling from "@/assets/method-falling.jpg";
 import serviceCampaign from "@/assets/service-campaign.jpg";
@@ -304,44 +304,17 @@ function Index() {
         );
       });
 
-      // Scroll-scrubbed hero video: scroll forwards → play forward, backwards → rewind
+      // Hero video: autoplay muted loop, fast start with poster fallback
       const heroVideo = document.querySelector<HTMLVideoElement>("[data-hero-img]");
       if (heroVideo) {
-        heroVideo.pause();
         heroVideo.muted = true;
         heroVideo.playsInline = true;
+        heroVideo.loop = true;
+        heroVideo.autoplay = true;
         heroVideo.preload = "auto";
-
-        let targetTime = 0;
-        const smoothTime = () => {
-          if (!heroVideo || !heroVideo.duration) {
-            rafVideoId = requestAnimationFrame(smoothTime);
-            return;
-          }
-          const diff = targetTime - heroVideo.currentTime;
-          if (Math.abs(diff) > 0.001) {
-            heroVideo.currentTime = heroVideo.currentTime + diff * 0.18;
-          }
-          rafVideoId = requestAnimationFrame(smoothTime);
-        };
-        rafVideoId = requestAnimationFrame(smoothTime);
-
-        const setTime = (p: number) => {
-          const d = heroVideo.duration;
-          if (!d || isNaN(d)) return;
-          // Stop at 85% so the hero never lands on the final black fade-out frame
-          targetTime = Math.min(d * 0.85, Math.max(0, p * d));
-        };
-        const st = ScrollTrigger.create({
-          trigger: "[data-hero]",
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 0.6,
-          onUpdate: (self) => setTime(self.progress),
-        });
-        const onMeta = () => setTime(st.progress || 0);
-        if (heroVideo.readyState >= 1) onMeta();
-        else heroVideo.addEventListener("loadedmetadata", onMeta, { once: true });
+        const tryPlay = () => heroVideo.play().catch(() => {});
+        if (heroVideo.readyState >= 2) tryPlay();
+        else heroVideo.addEventListener("loadeddata", tryPlay, { once: true });
       }
 
       // Scroll-driven word rotation across the pinned hero
