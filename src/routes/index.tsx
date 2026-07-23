@@ -668,7 +668,7 @@ function Index() {
           </div>
 
           {/* Foreground content — rotating words in front, driven by scroll */}
-          <div className="relative z-10 mx-auto flex h-screen max-w-7xl flex-col justify-end px-6 pb-20 md:px-16 md:pb-28">
+          <div className="relative z-10 mx-auto flex h-screen max-w-7xl flex-col justify-center px-6 md:px-16">
             <div className="mb-6 flex items-center gap-3" style={{ color: "var(--mustard)", fontSize: 12, letterSpacing: ".3em" }}>
               <span style={{ width: 40, height: 1, background: "var(--mustard)" }} />
               TETRIZ DIGITAL
@@ -706,11 +706,6 @@ function Index() {
               >
                 CONHECER O JOGO
               </a>
-            </div>
-            {/* Scroll indicator */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2" style={{ color: "rgba(255,255,255,.5)", fontSize: 10, letterSpacing: ".3em" }}>
-              ROLE
-              <span style={{ width: 1, height: 28, background: "linear-gradient(180deg, rgba(255,187,0,.8), transparent)" }} />
             </div>
           </div>
         </div>
