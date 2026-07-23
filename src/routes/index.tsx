@@ -557,7 +557,17 @@ function Index() {
         @media (prefers-reduced-motion: reduce) {
           .piece-tile, .service-card, .method-letter { transition: none; }
         }
+        .nav { transition: padding .35s ease, background .35s ease; }
+        .nav-scrolled { padding-top: 10px !important; padding-bottom: 10px !important; background: rgba(0,0,0,.82) !important; }
+        [data-scroll-progress] { transform-origin: 0 50%; transform: scaleX(0); }
       `}</style>
+
+      {/* Scroll progress indicator */}
+      <div
+        data-scroll-progress
+        className="fixed left-0 top-0 z-[60] h-[3px] w-full"
+        style={{ background: "var(--mustard)", pointerEvents: "none" }}
+      />
 
       {/* NAV */}
       <nav className="nav fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-6 py-5 md:px-12"
