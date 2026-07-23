@@ -5,7 +5,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 
 import heroBlocks from "@/assets/hero-blocks.jpg";
-import heroManifesto from "@/assets/tetriz-manifesto-v2.mp4.asset.json";
+import heroManifesto from "@/assets/tetriz-hero-manifesto.mp4.asset.json";
 import tetrisField from "@/assets/tetris-field.jpg";
 import methodFalling from "@/assets/method-falling.jpg";
 import serviceCampaign from "@/assets/service-campaign.jpg";
