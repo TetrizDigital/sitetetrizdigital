@@ -593,20 +593,31 @@ function Index() {
         </a>
       </nav>
 
-      {/* HERO — cinematic scroll-scrubbed manifesto with technical disassembly overlays */}
-      <section data-hero className="relative overflow-hidden" style={{ background: "#000", height: `${HERO_WORDS.length * 55}vh` }}>
+      {/* HERO — cinematic manifesto */}
+      <section data-hero className="relative overflow-hidden" style={{ background: "#000", height: "150vh" }}>
         <div className="sticky top-0 h-screen w-full overflow-hidden">
           {/* Background video — cinematic manifesto */}
           <div className="absolute inset-0 z-0">
+            {/* Fallback image: always visible behind the video */}
+            <img
+              src={heroBlocks}
+              alt=""
+              aria-hidden
+              className="absolute inset-0 h-full w-full object-cover"
+              style={{ filter: "grayscale(1) contrast(1.15) brightness(.55)" }}
+            />
+
             <video
               data-hero-img
               muted
               playsInline
               preload="auto"
+              loop
+              autoPlay
               poster={heroBlocks}
               className="absolute inset-0 h-full w-full object-cover"
               style={{
-                filter: "grayscale(1) contrast(1.2) brightness(.6)",
+                filter: "grayscale(1) contrast(1.15) brightness(.65)",
                 willChange: "transform",
               }}
             >
@@ -618,7 +629,7 @@ function Index() {
               className="absolute inset-0"
               style={{
                 background:
-                  "radial-gradient(ellipse at 50% 45%, rgba(0,0,0,.2) 0%, rgba(0,0,0,.55) 60%, rgba(0,0,0,.85) 100%), linear-gradient(180deg, rgba(0,0,0,.5) 0%, rgba(15,15,15,.2) 40%, rgba(0,0,0,.7) 100%)",
+                  "radial-gradient(ellipse at 50% 45%, rgba(0,0,0,.15) 0%, rgba(0,0,0,.45) 60%, rgba(0,0,0,.75) 100%), linear-gradient(180deg, rgba(0,0,0,.4) 0%, rgba(15,15,15,.15) 40%, rgba(0,0,0,.55) 100%)",
               }}
             />
 
@@ -634,7 +645,7 @@ function Index() {
 
             {/* Scanlines */}
             <div
-              className="pointer-events-none absolute inset-0 opacity-[.06] mix-blend-overlay"
+              className="pointer-events-none absolute inset-0 opacity-[.05] mix-blend-overlay"
               style={{
                 backgroundImage:
                   "repeating-linear-gradient(0deg, rgba(255,255,255,.5) 0px, rgba(255,255,255,.5) 1px, transparent 1px, transparent 3px)",
