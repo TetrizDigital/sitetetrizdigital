@@ -966,6 +966,144 @@ function Index() {
           onEnter: () => document.querySelector(".nav")?.classList.add("nav-scrolled"),
           onLeaveBack: () => document.querySelector(".nav")?.classList.remove("nav-scrolled"),
         });
+
+        // 6) Word-split reveal — h2 with [data-word-split]
+        gsap.utils.toArray<HTMLElement>("[data-word-split]").forEach((el) => {
+          if (el.dataset.split === "1") return;
+          el.dataset.split = "1";
+          const walk = (node: Node) => {
+            const children = Array.from(node.childNodes);
+            children.forEach((child) => {
+              if (child.nodeType === Node.TEXT_NODE && child.textContent) {
+                const frag = document.createDocumentFragment();
+                const parts = child.textContent.split(/(\s+)/);
+                parts.forEach((part) => {
+                  if (/^\s+$/.test(part)) {
+                    frag.appendChild(document.createTextNode(part));
+                  } else if (part.length) {
+                    const span = document.createElement("span");
+                    span.className = "ws-word";
+                    span.style.display = "inline-block";
+                    span.style.willChange = "transform, opacity, filter";
+                    span.textContent = part;
+                    frag.appendChild(span);
+                  }
+                });
+                child.parentNode?.replaceChild(frag, child);
+              } else if (child.nodeType === Node.ELEMENT_NODE) {
+                walk(child);
+              }
+            });
+          };
+          walk(el);
+          const words = el.querySelectorAll<HTMLElement>(".ws-word");
+          gsap.fromTo(
+            words,
+            { yPercent: 110, opacity: 0, filter: "blur(10px)" },
+            {
+              yPercent: 0,
+              opacity: 1,
+              filter: "blur(0px)",
+              duration: 1,
+              ease: "power3.out",
+              stagger: 0.06,
+              scrollTrigger: { trigger: el, start: "top 82%" },
+            },
+          );
+        });
+
+        // 7) Clip-reveal wipe for [data-clip-reveal]
+        gsap.utils.toArray<HTMLElement>("[data-clip-reveal]").forEach((el) => {
+          gsap.fromTo(
+            el,
+            { clipPath: "inset(0 100% 0 0)", opacity: 0 },
+            {
+              clipPath: "inset(0 0% 0 0)",
+              opacity: 1,
+              duration: 1.1,
+              ease: "power4.out",
+              scrollTrigger: { trigger: el, start: "top 82%" },
+            },
+          );
+        });
+
+        // 8) Cascade — grid children reveal in waves
+        const cascadeSelectors = [".trophy-card", ".player-card", ".arena-cell", ".logo-cell"];
+        cascadeSelectors.forEach((sel) => {
+          const nodes = gsap.utils.toArray<HTMLElement>(sel);
+          if (!nodes.length) return;
+          gsap.fromTo(
+            nodes,
+            { y: 60, opacity: 0, scale: 0.96 },
+            {
+              y: 0,
+              opacity: 1,
+              scale: 1,
+              duration: 0.9,
+              ease: "power3.out",
+              stagger: { each: 0.07, from: "start" },
+              scrollTrigger: {
+                trigger: nodes[0].parentElement || nodes[0],
+                start: "top 82%",
+              },
+            },
+          );
+        });
+
+        // 9) 3D tilt on cards with [data-tilt]
+        gsap.utils.toArray<HTMLElement>("[data-tilt]").forEach((el) => {
+          el.style.transformStyle = "preserve-3d";
+          el.style.perspective = "1000px";
+          const qX = gsap.quickTo(el, "rotationX", { duration: 0.5, ease: "power3.out" });
+          const qY = gsap.quickTo(el, "rotationY", { duration: 0.5, ease: "power3.out" });
+          const onMove = (e: MouseEvent) => {
+            const r = el.getBoundingClientRect();
+            const px = (e.clientX - r.left) / r.width - 0.5;
+            const py = (e.clientY - r.top) / r.height - 0.5;
+            qY(px * 6);
+            qX(-py * 6);
+          };
+          const onLeave = () => {
+            qX(0);
+            qY(0);
+          };
+          el.addEventListener("mousemove", onMove);
+          el.addEventListener("mouseleave", onLeave);
+        });
+
+        // 10) Count-up on [data-count-up]
+        gsap.utils.toArray<HTMLElement>("[data-count-up]").forEach((el) => {
+          const target = Number(el.dataset.value || "0");
+          const suffix = el.dataset.suffix || "";
+          const prefix = el.dataset.prefix || "";
+          const counter = { v: 0 };
+          gsap.to(counter, {
+            v: target,
+            duration: 2,
+            ease: "power2.out",
+            scrollTrigger: { trigger: el, start: "top 85%" },
+            onUpdate: () => {
+              el.textContent = `${prefix}${Math.round(counter.v)}${suffix}`;
+            },
+          });
+        });
+
+        // 11) Section divider — thin mustard sweep between sections
+        gsap.utils.toArray<HTMLElement>("section").forEach((sec, i) => {
+          if (i === 0 || sec.hasAttribute("data-hero")) return;
+          const line = document.createElement("div");
+          line.setAttribute("aria-hidden", "true");
+          line.style.cssText =
+            "position:absolute;top:0;left:0;height:1px;width:0;background:var(--mustard);pointer-events:none;opacity:.7;z-index:5;";
+          if (getComputedStyle(sec).position === "static") sec.style.position = "relative";
+          sec.appendChild(line);
+          gsap.to(line, {
+            width: "100%",
+            duration: 1.2,
+            ease: "power3.out",
+            scrollTrigger: { trigger: sec, start: "top 88%" },
+          });
+        });
       }
     });
 
@@ -1171,6 +1309,7 @@ function Index() {
           </div>
           <h2
             data-reveal
+            data-word-split
             className="mx-auto flex w-full flex-wrap items-center justify-center gap-x-4 gap-y-3 text-center md:gap-x-6"
             style={{
               fontWeight: 700,
@@ -1311,7 +1450,7 @@ function Index() {
 
         <div className="grid gap-6 md:grid-cols-2">
           {SERVICES.map((s, idx) => (
-            <article key={s.id} className="service-card grain relative overflow-hidden" style={{ background: "#000", color: "#fff", minHeight: 520 }} data-reveal>
+            <article key={s.id} className="service-card grain relative overflow-hidden" style={{ background: "#000", color: "#fff", minHeight: 520 }} data-reveal data-tilt>
               <div data-service-card className="relative h-64 w-full overflow-hidden">
                 {/* Frame stack: primary + 3 tinted duplicates to simulate cinematic sequence */}
                 <img data-svc-frame src={s.image} alt={s.title} width={1600} height={1008} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
@@ -1362,8 +1501,8 @@ function Index() {
             className="mx-auto max-w-6xl"
             style={{ fontWeight: 700, fontSize: "clamp(2.5rem, 6vw, 5.5rem)", lineHeight: .95, letterSpacing: "-.03em" }}
           >
-            <span style={{ color: "#fff", display: "block" }}>Não chamamos de cases.</span>
-            <span style={{ color: "var(--mustard)", display: "block" }}>Chamamos de troféus.</span>
+            <span data-word-split style={{ color: "#fff", display: "block" }}>Não chamamos de cases.</span>
+            <span data-clip-reveal style={{ color: "var(--mustard)", display: "block" }}>Chamamos de troféus.</span>
           </h2>
           <p
             data-reveal
@@ -1384,6 +1523,7 @@ function Index() {
               key={t.id}
               type="button"
               onClick={() => setOpenTrophyId(t.id)}
+              data-tilt
               className="trophy-card group relative block w-full overflow-hidden text-left"
               style={{
                 aspectRatio: "4 / 5",
@@ -1906,10 +2046,10 @@ function Index() {
           style={{ background: "#0a0a0a" }}
         >
           {[
-            { value: "+000%", label: "CRESCIMENTO MÉDIO" },
-            { value: "00M", label: "ALCANCE GERADO" },
-            { value: "00+", label: "TIMES NO JOGO" },
-            { value: "0 anos", label: "NO TABULEIRO" },
+            { value: 300, prefix: "+", suffix: "%", label: "CRESCIMENTO MÉDIO" },
+            { value: 50, prefix: "", suffix: "M", label: "ALCANCE GERADO" },
+            { value: 40, prefix: "", suffix: "+", label: "TIMES NO JOGO" },
+            { value: 8, prefix: "", suffix: " anos", label: "NO TABULEIRO" },
           ].map((s, i, arr) => (
             <div
               key={s.label}
@@ -1920,6 +2060,10 @@ function Index() {
               data-reveal
             >
               <div
+                data-count-up
+                data-value={s.value}
+                data-prefix={s.prefix}
+                data-suffix={s.suffix}
                 style={{
                   fontWeight: 800,
                   fontSize: "clamp(2.6rem, 5vw, 4.2rem)",
@@ -1928,7 +2072,7 @@ function Index() {
                   letterSpacing: "-.02em",
                 }}
               >
-                {s.value}
+                {`${s.prefix}0${s.suffix}`}
               </div>
               <div
                 className="mt-4"
