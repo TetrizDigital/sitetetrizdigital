@@ -1015,10 +1015,10 @@ function Index() {
 
       {/* MANIFESTO — tagline strip */}
       <section
-        className="relative flex min-h-screen items-center justify-center px-6 py-24 text-center"
+        className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-24 text-center"
         style={{ background: "#000", color: "#fff" }}
       >
-        <div className="mx-auto max-w-5xl">
+        <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-center">
           <div
             data-reveal
             className="mb-6 inline-flex items-center gap-3"
@@ -1030,18 +1030,20 @@ function Index() {
           </div>
           <h2
             data-reveal
+            className="mx-auto flex w-full flex-wrap items-center justify-center gap-x-4 gap-y-3 text-center md:gap-x-6"
             style={{
               fontWeight: 700,
-              fontSize: "clamp(2.25rem, 6vw, 5.25rem)",
-              lineHeight: 1,
-              letterSpacing: "-.03em",
+              fontSize: "clamp(2.35rem, 4.2vw, 4.65rem)",
+              lineHeight: 0.95,
+              letterSpacing: "0",
+              maxWidth: "calc(100vw - 48px)",
             }}
           >
-            MARKETING
-            <span style={{ color: "var(--mustard)", margin: "0 .35em" }}>·</span>
-            BRANDING
-            <span style={{ color: "var(--mustard)", margin: "0 .35em" }}>·</span>
-            PERFORMANCE
+            <span style={{ whiteSpace: "nowrap" }}>MARKETING</span>
+            <span style={{ color: "var(--mustard)", lineHeight: 1 }}>·</span>
+            <span style={{ whiteSpace: "nowrap" }}>BRANDING</span>
+            <span style={{ color: "var(--mustard)", lineHeight: 1 }}>·</span>
+            <span style={{ whiteSpace: "nowrap" }}>PERFORMANCE</span>
           </h2>
           <p
             data-reveal
