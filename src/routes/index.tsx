@@ -715,6 +715,22 @@ function Index() {
   
   const [openMethod, setOpenMethod] = useState<(typeof METHOD)[number] | null>(null);
   const [heroWordIdx, setHeroWordIdx] = useState(0);
+  const [openTrophyId, setOpenTrophyId] = useState<string | null>(null);
+
+  // Trophy modal: ESC to close + lock body scroll
+  useEffect(() => {
+    if (!openTrophyId) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpenTrophyId(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [openTrophyId]);
 
   // Hero words auto-rotate every 1.8s
   useEffect(() => {
