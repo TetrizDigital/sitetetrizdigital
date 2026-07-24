@@ -1562,7 +1562,9 @@ function Index() {
         </div>
 
         {/* Tetris Board — edge-to-edge, real piece layout, fluid scroll popup */}
-        <TetrisBoard pieces={PIECES} />
+        <div data-dolly style={{ transformOrigin: "50% 50%", willChange: "transform, filter" }}>
+          <TetrisBoard pieces={PIECES} />
+        </div>
 
       </section>
 
