@@ -463,7 +463,7 @@ function Modal({ open, onClose, children, className = "", bodyClassName = "", zI
       return () => cancelAnimationFrame(raf);
     }
     setVisible(false);
-    const timer = window.setTimeout(() => setMounted(false), 350);
+    const timer = window.setTimeout(() => setMounted(false), 750);
     return () => window.clearTimeout(timer);
   }, [open]);
 
@@ -473,12 +473,35 @@ function Modal({ open, onClose, children, className = "", bodyClassName = "", zI
     <div
       role="dialog"
       aria-modal="true"
-      className={`fixed inset-0 flex items-center justify-center transition-opacity duration-300 ease-out ${visible ? "opacity-100" : "opacity-0"} ${className}`}
-      style={{ zIndex, background: "rgba(0,0,0,.85)", backdropFilter: "blur(8px)" }}
+      className={`fixed inset-0 flex items-center justify-center ${className}`}
+      style={{
+        zIndex,
+        background: "rgba(0,0,0,.88)",
+        backdropFilter: "blur(10px)",
+        opacity: visible ? 1 : 0,
+        transition: "opacity 420ms cubic-bezier(.2,.9,.25,1)",
+        clipPath: visible
+          ? "circle(150% at 50% 50%)"
+          : "circle(0% at 50% 50%)",
+        WebkitClipPath: visible
+          ? "circle(150% at 50% 50%)"
+          : "circle(0% at 50% 50%)",
+        transitionProperty: "opacity, clip-path, -webkit-clip-path",
+        transitionDuration: "700ms",
+        transitionTimingFunction: "cubic-bezier(.77,0,.18,1)",
+      }}
       onClick={onClose}
     >
       <div
-        className={`relative transition-all duration-300 ease-[cubic-bezier(.2,.9,.25,1)] ${visible ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-5"} ${bodyClassName}`}
+        className={`relative ${bodyClassName}`}
+        style={{
+          opacity: visible ? 1 : 0,
+          transform: visible
+            ? "scale(1) translateY(0)"
+            : "scale(.96) translateY(14px)",
+          transition:
+            "opacity 420ms cubic-bezier(.2,.9,.25,1) 180ms, transform 520ms cubic-bezier(.2,.9,.25,1) 180ms",
+        }}
         onClick={(e) => e.stopPropagation()}
       >
         {children}
@@ -1236,6 +1259,45 @@ function Index() {
             },
           );
         });
+
+        // 12) Dolly-in scrub — Fase 01 tabuleiro (zoom cinematográfico atrelado ao scroll)
+        gsap.utils.toArray<HTMLElement>("[data-dolly]").forEach((el) => {
+          gsap.fromTo(
+            el,
+            { scale: 0.86, filter: "blur(6px) brightness(.75)" },
+            {
+              scale: 1.04,
+              filter: "blur(0px) brightness(1)",
+              ease: "none",
+              scrollTrigger: {
+                trigger: el,
+                start: "top 85%",
+                end: "bottom 15%",
+                scrub: 1.2,
+              },
+            },
+          );
+        });
+
+        // 13) Duotone → cor real — Jogadores (revela colaboradores conforme scroll)
+        gsap.utils.toArray<HTMLElement>("[data-duotone]").forEach((el) => {
+          const state = { g: 1 };
+          gsap.to(state, {
+            g: 0,
+            ease: "none",
+            scrollTrigger: {
+              trigger: el,
+              start: "top 75%",
+              end: "bottom 25%",
+              scrub: 1.4,
+              onUpdate: (self) => {
+                const g = 1 - self.progress;
+                el.style.filter = `grayscale(${g}) contrast(${1 + 0.12 * g}) sepia(${0.22 * g}) hue-rotate(${-8 * g}deg)`;
+                el.style.setProperty("--rgb-split", `${self.progress * 3}px`);
+              },
+            },
+          });
+        });
       }
     });
 
@@ -1500,7 +1562,9 @@ function Index() {
         </div>
 
         {/* Tetris Board — edge-to-edge, real piece layout, fluid scroll popup */}
-        <TetrisBoard pieces={PIECES} />
+        <div data-dolly style={{ transformOrigin: "50% 50%", willChange: "transform, filter" }}>
+          <TetrisBoard pieces={PIECES} />
+        </div>
 
       </section>
 
@@ -1866,7 +1930,7 @@ function Index() {
       </Modal>
 
       {/* 04 — JOGADORES */}
-      <section id="jogadores" className="relative" style={{ background: "#fff", color: "#000" }}>
+      <section id="jogadores" data-duotone className="relative" style={{ background: "#fff", color: "#000", filter: "grayscale(1) contrast(1.12) sepia(.22) hue-rotate(-8deg)", willChange: "filter" }}>
         <div className="px-6 py-24 md:px-16 md:py-32 text-center">
           <div
             data-reveal
