@@ -1358,25 +1358,271 @@ function Index() {
         </div>
       </section>
 
-      {/* TROFEUS / JOGADORES / TIMES — content anchors (real content only) */}
-      <section id="trofeus" className="relative px-6 py-24 md:px-16" style={{ background: "#0a0a0a" }}>
-        <div className="mx-auto max-w-5xl">
-          <div className="mb-6 flex items-center gap-3" style={{ fontSize: 12, letterSpacing: ".4em", color: "var(--mustard)" }} data-reveal>
+      {/* 03 — TROFÉUS */}
+      <section id="trofeus" className="relative overflow-hidden" style={{ background: "#0a0a0a", color: "#fff" }}>
+        <div className="px-6 pt-28 pb-16 md:px-16 md:pt-40 md:pb-24 text-center">
+          <div
+            data-reveal
+            className="mb-8 inline-flex items-center gap-3"
+            style={{ color: "var(--mustard)", fontSize: 12, letterSpacing: ".4em" }}
+          >
             <span style={{ width: 40, height: 1, background: "var(--mustard)" }} />
-            TROFÉUS · JOGADORES · TIMES
+            03 — TROFÉUS
+            <span style={{ width: 40, height: 1, background: "var(--mustard)" }} />
           </div>
-          <h2 data-reveal style={{ fontWeight: 700, fontSize: "clamp(2rem, 4.5vw, 4rem)", lineHeight: 1, letterSpacing: "-.03em" }}>
-            Marcas em movimento, times em jogo.
+          <h2
+            data-reveal
+            className="mx-auto max-w-6xl"
+            style={{ fontWeight: 700, fontSize: "clamp(2.5rem, 6vw, 5.5rem)", lineHeight: .95, letterSpacing: "-.03em" }}
+          >
+            <span style={{ color: "#fff", display: "block" }}>Não chamamos de cases.</span>
+            <span style={{ color: "var(--mustard)", display: "block" }}>Chamamos de troféus.</span>
           </h2>
-          <p data-reveal className="mt-6 max-w-2xl" style={{ color: "#8a8a8a", fontSize: 17, lineHeight: 1.6, fontWeight: 300 }}>
-            Cada projeto é uma partida. Cada partida, uma marca que sai mais forte do que entrou. Os troféus, os jogadores e os times da Tetriz aparecem aqui à medida que cada nova temporada acontece.
+          <p
+            data-reveal
+            className="mx-auto mt-8 max-w-xl"
+            style={{ color: "#8a8a8a", fontSize: 17, lineHeight: 1.6, fontWeight: 300 }}
+          >
+            Porque ganhamos o jogo. Passe o mouse e clique para ver a vitória.
           </p>
-          <a href="#agendar" id="jogadores" className="mt-10 inline-flex items-center gap-2 text-white" style={{ fontSize: 13, letterSpacing: ".2em", fontWeight: 600, borderBottom: "1px solid var(--mustard)", paddingBottom: 4 }}>
-            FALE COM O TIME →
-          </a>
-          <span id="times" />
         </div>
+
+        {/* Grid 2 x 4 (desktop) / 2 col (tablet) / 1 col (mobile) */}
+        <div
+          className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+          style={{ gap: 1, background: "#1a1a1a" }}
+        >
+          {TROPHIES.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setOpenTrophyId(t.id)}
+              className="trophy-card group relative block w-full overflow-hidden text-left"
+              style={{
+                aspectRatio: "4 / 5",
+                background: "#0a0a0a",
+                cursor: "pointer",
+                border: "none",
+                padding: 0,
+              }}
+              aria-label={`Ver troféu ${t.name}`}
+            >
+              <img
+                src={t.image}
+                alt=""
+                aria-hidden
+                loading="lazy"
+                draggable={false}
+                className="absolute inset-0 h-full w-full object-cover"
+                style={{
+                  opacity: 0.32,
+                  filter: "grayscale(20%) contrast(1.05)",
+                  transition: "opacity .5s ease, transform .8s cubic-bezier(.22,.9,.28,1), filter .5s ease",
+                }}
+              />
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(180deg, rgba(10,10,10,.15) 0%, rgba(10,10,10,.55) 55%, rgba(10,10,10,.92) 100%)",
+                  transition: "opacity .5s ease",
+                }}
+              />
+              {/* Bottom content */}
+              <div className="absolute inset-x-0 bottom-0 flex flex-col gap-4 p-6 md:p-8">
+                <span
+                  className="trophy-name"
+                  style={{
+                    fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                    fontWeight: 700,
+                    fontSize: "clamp(18px, 1.6vw, 24px)",
+                    letterSpacing: ".02em",
+                    color: "#fff",
+                    opacity: 0.85,
+                    transition: "opacity .4s ease, transform .5s cubic-bezier(.22,.9,.28,1)",
+                  }}
+                >
+                  {t.name}
+                </span>
+                <span
+                  className="trophy-cta inline-flex w-fit items-center gap-2"
+                  style={{
+                    background: "var(--mustard)",
+                    color: "#000",
+                    fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                    fontWeight: 700,
+                    fontSize: 12,
+                    letterSpacing: ".18em",
+                    padding: "10px 16px",
+                    opacity: 0,
+                    transform: "translateY(8px)",
+                    transition: "opacity .4s ease, transform .5s cubic-bezier(.22,.9,.28,1)",
+                  }}
+                >
+                  VER TROFÉU →
+                </span>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        {/* Preserve legacy anchors for the nav */}
+        <span id="jogadores" />
+        <span id="times" />
+
+        <style>{`
+          .trophy-card:hover img,
+          .trophy-card:focus-visible img { opacity: .75 !important; transform: scale(1.04); }
+          .trophy-card:hover .trophy-name,
+          .trophy-card:focus-visible .trophy-name { opacity: 1; transform: translateY(-2px); }
+          .trophy-card:hover .trophy-cta,
+          .trophy-card:focus-visible .trophy-cta { opacity: 1; transform: translateY(0); }
+          .trophy-card:focus-visible { outline: 2px solid var(--mustard); outline-offset: -2px; }
+        `}</style>
       </section>
+
+      {/* Trophy modal */}
+      {openTrophyId ? (() => {
+        const trophy = TROPHIES.find((t) => t.id === openTrophyId);
+        if (!trophy) return null;
+        return (
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Troféu ${trophy.name}`}
+            className="fixed inset-0 z-[100] flex items-center justify-center px-4 py-8"
+            style={{
+              background: "rgba(0,0,0,.92)",
+              backdropFilter: "blur(6px)",
+              animation: "trophyFade .25s ease",
+            }}
+            onClick={() => setOpenTrophyId(null)}
+          >
+            <div
+              className="relative grid w-full max-w-5xl grid-cols-1 overflow-hidden md:grid-cols-2"
+              style={{
+                background: "#0a0a0a",
+                boxShadow: "0 40px 100px rgba(0,0,0,.6)",
+                maxHeight: "88vh",
+                animation: "trophyPop .3s cubic-bezier(.22,.9,.28,1)",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="relative min-h-[240px] md:min-h-full" style={{ background: "#000" }}>
+                <img
+                  src={trophy.image}
+                  alt={trophy.name}
+                  className="h-full w-full object-cover"
+                  style={{ opacity: 0.85 }}
+                />
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      "linear-gradient(180deg, rgba(0,0,0,.1) 0%, rgba(0,0,0,.35) 100%)",
+                  }}
+                />
+              </div>
+              <div className="flex flex-col gap-6 overflow-y-auto p-8 md:p-12">
+                <div
+                  className="inline-flex items-center gap-2"
+                  style={{ color: "var(--mustard)", fontSize: 11, letterSpacing: ".35em", fontWeight: 600 }}
+                >
+                  <span style={{ width: 24, height: 1, background: "var(--mustard)" }} />
+                  {trophy.category.toUpperCase()}
+                </div>
+                <h3
+                  style={{
+                    fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                    fontWeight: 700,
+                    fontSize: "clamp(1.8rem, 3.2vw, 2.8rem)",
+                    lineHeight: 1,
+                    letterSpacing: "-.02em",
+                    color: "#fff",
+                  }}
+                >
+                  {trophy.name}
+                </h3>
+                <p style={{ color: "#8a8a8a", fontSize: 14, letterSpacing: ".05em", fontWeight: 400 }}>
+                  {trophy.client}
+                </p>
+                <p style={{ color: "#c5c5c5", fontSize: 16, lineHeight: 1.65, fontWeight: 300 }}>
+                  {trophy.summary}
+                </p>
+                <ul className="flex flex-col gap-3">
+                  {trophy.results.map((r, i) => (
+                    <li
+                      key={i}
+                      className="flex items-start gap-3"
+                      style={{ color: "#fff", fontSize: 15, lineHeight: 1.5, fontWeight: 500 }}
+                    >
+                      <span
+                        aria-hidden
+                        style={{
+                          marginTop: 8,
+                          width: 8,
+                          height: 8,
+                          background: "var(--mustard)",
+                          flexShrink: 0,
+                        }}
+                      />
+                      {r}
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-4 flex flex-wrap items-center gap-3">
+                  <a
+                    href="#agendar"
+                    onClick={() => setOpenTrophyId(null)}
+                    className="whatsapp-cta inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold"
+                    style={{
+                      background: "var(--mustard)",
+                      color: "#000",
+                      fontSize: 12,
+                      letterSpacing: ".15em",
+                    }}
+                  >
+                    FALAR SOBRE ESTE JOGO →
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => setOpenTrophyId(null)}
+                    className="inline-flex items-center gap-2 rounded-full border px-6 py-3 font-semibold"
+                    style={{
+                      borderColor: "rgba(255,255,255,.25)",
+                      color: "#fff",
+                      fontSize: 12,
+                      letterSpacing: ".15em",
+                      background: "transparent",
+                    }}
+                  >
+                    FECHAR
+                  </button>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOpenTrophyId(null)}
+                aria-label="Fechar"
+                className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full"
+                style={{
+                  background: "rgba(0,0,0,.6)",
+                  color: "#fff",
+                  fontSize: 20,
+                  lineHeight: 1,
+                  border: "1px solid rgba(255,255,255,.15)",
+                }}
+              >
+                ×
+              </button>
+            </div>
+            <style>{`
+              @keyframes trophyFade { from { opacity: 0 } to { opacity: 1 } }
+              @keyframes trophyPop { from { opacity: 0; transform: scale(.98) } to { opacity: 1; transform: scale(1) } }
+            `}</style>
+          </div>
+        );
+      })() : null}
 
       {/* WHITE BAND — Quer jogar */}
       <section className="relative px-6 py-32 md:px-16 md:py-40" style={{ background: "#fff", color: "#000" }}>
