@@ -469,8 +469,10 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
                       color: labelColor,
                       fontFamily: "'Space Grotesk', system-ui, sans-serif",
                       fontWeight: 700,
-                      fontSize: "clamp(14px, 1.5vw, 26px)",
-                      letterSpacing: ".22em",
+                      fontSize: "clamp(20px, 2.2vw, 40px)",
+                      letterSpacing: ".18em",
+                      textTransform: "uppercase",
+                      textAlign: "center",
                       opacity: activeId && activeId !== p.id ? 0.35 : 1,
                       transition: "opacity .5s ease",
                     }}
