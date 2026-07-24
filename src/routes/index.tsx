@@ -340,11 +340,11 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
       const t = targetRef.current[id] ?? 0;
       const delta = e.deltaY * STEP;
       const nt = Math.max(0, Math.min(1, t + delta));
-      // Only intercept scroll while expanding or contracting mid-range
-      if ((delta > 0 && t < 1) || (delta < 0 && t > 0)) {
-        e.preventDefault();
-        targetRef.current = { ...targetRef.current, [id]: nt };
-      }
+      e.preventDefault();
+      targetRef.current = {
+        ...Object.fromEntries(Object.keys(targetRef.current).map((k) => [k, 0])),
+        [id]: nt,
+      };
     };
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
