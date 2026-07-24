@@ -2131,6 +2131,7 @@ function Index() {
           {Array.from({ length: 10 }).map((_, i) => (
             <div
               key={i}
+              data-tilt
               className="logo-cell relative flex items-center justify-center"
               style={{
                 aspectRatio: "16 / 10",
