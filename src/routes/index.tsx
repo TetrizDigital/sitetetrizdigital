@@ -1694,7 +1694,7 @@ function Index() {
             ONDE ENTRAMOS NO SEU JOGO
           </div>
           <h2 data-reveal style={{ fontWeight: 700, fontSize: "clamp(2.5rem, 6vw, 5rem)", lineHeight: 1.05, letterSpacing: "-.03em" }}>
-            Quatro formas de <span style={{ background: "var(--mustard)", padding: ".08em .22em", boxDecorationBreak: "clone", WebkitBoxDecorationBreak: "clone" }}>mover as peças</span>.
+            Quatro formas de <span style={{ background: "var(--mustard)", padding: ".02em .22em", boxDecorationBreak: "clone", WebkitBoxDecorationBreak: "clone" }}>mover as peças</span>.
           </h2>
         </div>
 
