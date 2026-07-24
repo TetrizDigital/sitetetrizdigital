@@ -17,6 +17,7 @@ import serviceConsulting from "@/assets/service-consulting.jpg";
 import serviceOperation from "@/assets/service-operation.jpg";
 import ctaFinal from "@/assets/cta-final.jpg";
 import tetrizBoardImg from "@/assets/tetriz-board-clean.webp";
+import tetrizLogo from "@/assets/tetriz-logo.png.asset.json";
 
 const SITE_URL = "https://sitetetrizdigital.lovable.app";
 
