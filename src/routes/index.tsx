@@ -3,6 +3,9 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
+import CinematicShell from "@/components/CinematicShell";
+import Preloader from "@/components/Preloader";
+
 
 import heroBlocks from "@/assets/hero-blocks.jpg";
 import heroManifesto from "@/assets/hero-video-final.mp4.asset.json";
@@ -1249,6 +1252,9 @@ function Index() {
 
   return (
     <div className="tetriz-root">
+      <Preloader />
+      <CinematicShell />
+
       <style>{`
         :root { --mustard: #FFBB00; }
         .tetriz-root { font-family: 'Space Grotesk', system-ui, sans-serif; background: #000; color: #fff; overflow-x: hidden; }
