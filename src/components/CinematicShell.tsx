@@ -64,7 +64,7 @@ export default function CinematicShell() {
         }}
       />
 
-      {enabled ? <div className="cinematic-grain absolute inset-0" /> : null}
+      {/* film grain removed per user request */}
 
       <div className="absolute inset-x-0 top-0 h-[14px] bg-black" />
       <div className="absolute inset-x-0 bottom-0 h-[14px] bg-black" />
