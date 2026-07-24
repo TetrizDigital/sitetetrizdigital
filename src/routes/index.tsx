@@ -1611,6 +1611,135 @@ function Index() {
         );
       })() : null}
 
+      {/* 04 — JOGADORES */}
+      <section id="jogadores" className="relative" style={{ background: "#fff", color: "#000" }}>
+        <div className="px-6 py-24 md:px-16 md:py-32 text-center">
+          <div
+            data-reveal
+            style={{ fontSize: 12, letterSpacing: ".4em", color: "#8a8a8a", fontWeight: 500 }}
+          >
+            04 — JOGADORES
+          </div>
+          <h2
+            data-reveal
+            className="mx-auto mt-6"
+            style={{
+              fontWeight: 700,
+              fontSize: "clamp(2.4rem, 6vw, 5rem)",
+              lineHeight: 1,
+              letterSpacing: "-.035em",
+              maxWidth: "18ch",
+            }}
+          >
+            Esquece equipe.<br />
+            Todo mundo é <span style={{ color: "var(--mustard)" }}>jogador.</span>
+          </h2>
+          <p
+            data-reveal
+            className="mx-auto mt-6"
+            style={{
+              color: "#6a6a6a",
+              fontSize: 17,
+              lineHeight: 1.5,
+              fontWeight: 400,
+              maxWidth: "34ch",
+            }}
+          >
+            Mas existe uma formação. Cada um com uma função.
+          </p>
+        </div>
+
+        <div
+          className="grid grid-cols-2 md:grid-cols-4"
+          style={{ background: "#0f0f0f" }}
+        >
+          {[
+            { name: "CAPITÃO", role: "Lidera o jogo" },
+            { name: "ESTRATÉGIA", role: "Planeja as jogadas" },
+            { name: "CRIATIVOS", role: "Imaginam as peças" },
+            { name: "PERFORMANCE", role: "Aceleram o placar" },
+            { name: "RELACIONAMENTO", role: "Mantém o time unido" },
+            { name: "TECNOLOGIA", role: "Constroem o tabuleiro" },
+            { name: "PRODUÇÃO", role: "Colocam em campo" },
+            { name: "VOCÊ", role: "Entra para o time" },
+          ].map((p, i, arr) => (
+            <div
+              key={p.name}
+              className="player-card group relative flex flex-col justify-end overflow-hidden"
+              style={{
+                aspectRatio: "3 / 4",
+                background: "#0f0f0f",
+                borderRight: i % 4 !== 3 ? "1px solid rgba(255,255,255,.06)" : "none",
+                borderBottom: i < arr.length - 4 ? "1px solid rgba(255,255,255,.06)" : "none",
+              }}
+            >
+              {/* Photo placeholder */}
+              <div
+                className="absolute inset-0 flex items-center justify-center"
+                style={{
+                  background:
+                    "linear-gradient(180deg, #171717 0%, #0d0d0d 100%)",
+                }}
+              >
+                <div
+                  className="flex flex-col items-center gap-2"
+                  style={{ color: "rgba(255,255,255,.12)" }}
+                >
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
+                    <rect x="3" y="3" width="18" height="18" rx="1" />
+                    <circle cx="8.5" cy="8.5" r="1.5" />
+                    <path d="M21 15l-5-5L5 21" />
+                  </svg>
+                  <span style={{ fontSize: 10, letterSpacing: ".2em" }}>
+                    {p.name.charAt(0) + p.name.slice(1).toLowerCase()}
+                  </span>
+                </div>
+              </div>
+
+              {/* Yellow reveal on hover */}
+              <div
+                className="player-hover pointer-events-none absolute inset-x-0 bottom-0 opacity-0 transition-opacity duration-500"
+                style={{
+                  height: "40%",
+                  background:
+                    "linear-gradient(180deg, transparent 0%, rgba(255,187,0,.15) 100%)",
+                }}
+              />
+
+              {/* Label */}
+              <div className="relative z-10 p-5 md:p-6" style={{ color: "#fff" }}>
+                <div
+                  style={{
+                    fontWeight: 800,
+                    fontSize: "clamp(15px, 1.2vw, 20px)",
+                    letterSpacing: ".02em",
+                  }}
+                >
+                  {p.name}
+                </div>
+                <div
+                  className="mt-1"
+                  style={{
+                    color: "#8a8a8a",
+                    fontSize: 12,
+                    letterSpacing: ".05em",
+                    fontWeight: 400,
+                  }}
+                >
+                  {p.role}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <style>{`
+          .player-card:hover .player-hover { opacity: 1; }
+        `}</style>
+      </section>
+
+
+
       {/* WHITE BAND — Quer jogar */}
       <section className="relative px-6 py-32 md:px-16 md:py-40" style={{ background: "#fff", color: "#000" }}>
         <div className="mx-auto max-w-5xl">
