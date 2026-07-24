@@ -465,14 +465,14 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
                   />
                 ))}
                 {/* Label rendered with site font (Space Grotesk) */}
-                {mainZone ? (
+                {labelZone ? (
                   <div
                     className="pointer-events-none absolute flex items-center justify-center"
                     style={{
-                      left: `${mainZone.left}%`,
-                      top: `${mainZone.top}%`,
-                      width: `${mainZone.width}%`,
-                      height: `${mainZone.height}%`,
+                      left: `${labelZone.left}%`,
+                      top: `${labelZone.top}%`,
+                      width: `${labelZone.width}%`,
+                      height: `${labelZone.height}%`,
                       color: labelColor,
                       fontFamily: "'Space Grotesk', system-ui, sans-serif",
                       fontWeight: 700,
