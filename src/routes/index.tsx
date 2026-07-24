@@ -1625,7 +1625,7 @@ function Index() {
 
       {/* YELLOW BAND */}
       <section data-band-yellow className="relative overflow-hidden px-6 py-32 md:px-16 md:py-40" style={{ background: "var(--mustard)", color: "#000" }}>
-        <h2 style={{ fontWeight: 700, fontSize: "clamp(2rem, 6vw, 5.5rem)", lineHeight: .95, letterSpacing: "-.03em", maxWidth: 1200 }} className="mx-auto">
+        <h2 style={{ fontWeight: 700, fontSize: "clamp(2rem, 6vw, 5.5rem)", lineHeight: 1.05, letterSpacing: "-.03em", maxWidth: 1200 }} className="mx-auto">
           <span className="word inline-block">SOZINHAS,</span>{" "}
           <span className="word inline-block" style={{ color: "#fff" }}>ELAS</span>{" "}
           <span className="word inline-block">TÊM</span>{" "}
@@ -1634,7 +1634,7 @@ function Index() {
           <span className="word inline-block" style={{ color: "#000" }}>JUNTAS,</span>{" "}
           <span className="word inline-block" style={{ color: "#fff", textShadow: "0 0 40px rgba(255,255,255,.4)" }}>ELAS</span>{" "}
           <span className="word inline-block">CRIAM</span>{" "}
-          <span className="word inline-block" style={{ background: "#000", color: "var(--mustard)", padding: "0 .3em" }}>CRESCIMENTO.</span>
+          <span className="word inline-block" style={{ background: "#000", color: "var(--mustard)", padding: ".08em .22em", boxDecorationBreak: "clone", WebkitBoxDecorationBreak: "clone" }}>CRESCIMENTO.</span>
         </h2>
       </section>
 
@@ -1693,8 +1693,8 @@ function Index() {
             <span style={{ width: 40, height: 1, background: "#000" }} />
             ONDE ENTRAMOS NO SEU JOGO
           </div>
-          <h2 data-reveal style={{ fontWeight: 700, fontSize: "clamp(2.5rem, 6vw, 5rem)", lineHeight: .95, letterSpacing: "-.03em" }}>
-            Quatro formas de <span style={{ background: "var(--mustard)", padding: "0 .2em" }}>mover as peças</span>.
+          <h2 data-reveal style={{ fontWeight: 700, fontSize: "clamp(2.5rem, 6vw, 5rem)", lineHeight: 1.05, letterSpacing: "-.03em" }}>
+            Quatro formas de <span style={{ background: "var(--mustard)", padding: ".08em .22em", boxDecorationBreak: "clone", WebkitBoxDecorationBreak: "clone" }}>mover as peças</span>.
           </h2>
         </div>
 
