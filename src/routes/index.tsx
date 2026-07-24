@@ -1053,7 +1053,7 @@ function Index() {
         // 9) 3D tilt on cards with [data-tilt]
         gsap.utils.toArray<HTMLElement>("[data-tilt]").forEach((el) => {
           el.style.transformStyle = "preserve-3d";
-          el.style.transformPerspective = "1000px";
+          el.style.perspective = "1000px";
           const qX = gsap.quickTo(el, "rotationX", { duration: 0.5, ease: "power3.out" });
           const qY = gsap.quickTo(el, "rotationY", { duration: 0.5, ease: "power3.out" });
           const onMove = (e: MouseEvent) => {
