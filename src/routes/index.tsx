@@ -1508,7 +1508,7 @@ function Index() {
       </nav>
 
       {/* HERO — cinematic manifesto */}
-      <section data-hero className="relative overflow-hidden" style={{ background: "#000", height: "100vh" }}>
+      <section data-hero className="cam-hero-enter relative overflow-hidden" style={{ background: "#000", height: "100vh" }}>
         <div className="sticky top-0 h-screen w-full overflow-hidden">
           {/* Background video — cinematic manifesto */}
           <div className="absolute inset-0 z-0">
