@@ -506,8 +506,8 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
               <div
                 style={{
                   background: "rgba(5,5,5,.94)",
-                  border: "1px solid rgba(255,187,0,.7)",
-                  boxShadow: "0 30px 90px -25px rgba(0,0,0,.9), 0 0 0 1px rgba(255,255,255,.08) inset",
+                  border: "none",
+                  boxShadow: "0 30px 90px -25px rgba(0,0,0,.9)",
                   color: "#fff",
                   padding: "clamp(20px, 3vw, 34px)",
                   fontFamily: "'Space Grotesk', system-ui, sans-serif",
