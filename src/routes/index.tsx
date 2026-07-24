@@ -1259,6 +1259,45 @@ function Index() {
             },
           );
         });
+
+        // 12) Dolly-in scrub — Fase 01 tabuleiro (zoom cinematográfico atrelado ao scroll)
+        gsap.utils.toArray<HTMLElement>("[data-dolly]").forEach((el) => {
+          gsap.fromTo(
+            el,
+            { scale: 0.86, filter: "blur(6px) brightness(.75)" },
+            {
+              scale: 1.04,
+              filter: "blur(0px) brightness(1)",
+              ease: "none",
+              scrollTrigger: {
+                trigger: el,
+                start: "top 85%",
+                end: "bottom 15%",
+                scrub: 1.2,
+              },
+            },
+          );
+        });
+
+        // 13) Duotone → cor real — Jogadores (revela colaboradores conforme scroll)
+        gsap.utils.toArray<HTMLElement>("[data-duotone]").forEach((el) => {
+          const state = { g: 1 };
+          gsap.to(state, {
+            g: 0,
+            ease: "none",
+            scrollTrigger: {
+              trigger: el,
+              start: "top 75%",
+              end: "bottom 25%",
+              scrub: 1.4,
+              onUpdate: (self) => {
+                const g = 1 - self.progress;
+                el.style.filter = `grayscale(${g}) contrast(${1 + 0.12 * g}) sepia(${0.22 * g}) hue-rotate(${-8 * g}deg)`;
+                el.style.setProperty("--rgb-split", `${self.progress * 3}px`);
+              },
+            },
+          });
+        });
       }
     });
 
