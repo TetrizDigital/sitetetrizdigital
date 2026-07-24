@@ -75,8 +75,9 @@ type Piece = {
   sub: string;
   popup: string;
   color: "black" | "yellow" | "light";
-  // grid area: colStart / rowStart / colEnd / rowEnd  (12-col x 4-row board)
-  area: string;
+  path: string;
+  labelX: number;
+  labelY: number;
 };
 
 const PIECES: Piece[] = [
@@ -87,7 +88,9 @@ const PIECES: Piece[] = [
     popup:
       "Antes de comunicar, entendemos o que a empresa vende, como entrega e quais diferenciais sustentam essa promessa. O produto é a peça de partida: sem clareza sobre ele, nenhuma estratégia se encaixa por completo.",
     color: "black",
-    area: "1 / 1 / 3 / 4",
+    path: "M4 4 H128 V120 H4 Z",
+    labelX: 66,
+    labelY: 62,
   },
   {
     id: "marca",
@@ -96,7 +99,9 @@ const PIECES: Piece[] = [
     popup:
       "Marca não é só aparência. É a forma como a empresa é lembrada, reconhecida e desejada. Por isso, trabalhamos posicionamento, linguagem e presença para construir uma percepção forte, coerente e memorável.",
     color: "yellow",
-    area: "1 / 4 / 3 / 8",
+    path: "M130 4 H358 V66 H282 V124 H206 V66 H130 Z",
+    labelX: 244,
+    labelY: 40,
   },
   {
     id: "pessoas",
@@ -105,7 +110,9 @@ const PIECES: Piece[] = [
     popup:
       "Toda marca é feita por pessoas e para pessoas. Entendemos o time, o cliente, o público e a cultura por trás de cada negócio para criar uma comunicação mais humana, verdadeira e conectada.",
     color: "light",
-    area: "1 / 8 / 3 / 13",
+    path: "M360 4 H488 V108 H390 V106 H360 Z",
+    labelX: 424,
+    labelY: 58,
   },
   {
     id: "marketing",
@@ -114,7 +121,9 @@ const PIECES: Piece[] = [
     popup:
       "Marketing é a peça que coloca a estratégia em movimento. Conectamos canais, campanhas, conteúdos e ações para transformar presença em relacionamento, relacionamento em confiança e confiança em resultado.",
     color: "light",
-    area: "3 / 1 / 5 / 5",
+    path: "M4 120 H130 V66 H206 V124 H168 V192 H4 Z",
+    labelX: 86,
+    labelY: 156,
   },
   {
     id: "tecnologia",
@@ -123,7 +132,9 @@ const PIECES: Piece[] = [
     popup:
       "A tecnologia amplia possibilidades, acelera processos e abre novos caminhos para marcas que querem evoluir. Na Tetriz, usamos ferramentas, dados e inovação para criar soluções mais inteligentes e eficientes.",
     color: "black",
-    area: "3 / 5 / 5 / 11",
+    path: "M168 124 H334 V108 H390 V192 H168 Z",
+    labelX: 278,
+    labelY: 158,
   },
   {
     id: "dados",
@@ -132,7 +143,9 @@ const PIECES: Piece[] = [
     popup:
       "Dados mostram o que está funcionando, o que precisa mudar e qual deve ser o próximo movimento. Eles nos ajudam a tomar decisões com mais clareza, menos achismo e mais estratégia.",
     color: "yellow",
-    area: "3 / 11 / 5 / 13",
+    path: "M390 108 H488 V192 H390 Z",
+    labelX: 439,
+    labelY: 150,
   },
 ];
 
@@ -349,38 +362,48 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
 
   const activeId = Object.entries(progress).sort((a, b) => b[1] - a[1])[0]?.[0];
   const activeProgress = activeId ? progress[activeId] ?? 0 : 0;
+  const activePiece = pieces.find((piece) => piece.id === activeId);
+  const orderedPieces = [...pieces].sort((a, b) => {
+    if (a.id === activeId) return 1;
+    if (b.id === activeId) return -1;
+    return 0;
+  });
 
   return (
-    <div className="mx-auto" style={{ maxWidth: 1200 }} data-reveal>
+    <div className="mx-auto" style={{ maxWidth: 1180 }} data-reveal>
       <div
         ref={boardRef}
-        className="relative grid"
+        className="relative"
         style={{
-          gridTemplateColumns: "repeat(12, 1fr)",
-          gridTemplateRows: "repeat(4, minmax(110px, 1fr))",
-          gap: 6,
+          perspective: 1200,
         }}
         onMouseLeave={() => setHover(null)}
       >
-        {pieces.map((p) => {
-          const c = pieceColors(p.color);
-          const prog = progress[p.id] ?? 0;
-          const isActive = activeId === p.id && activeProgress > 0.02;
-          const dim = activeId && activeId !== p.id && activeProgress > 0.15;
-          const scale = 1 + prog * 0.06;
-          const lift = prog * 14;
-          return (
-            <div
-              key={p.id}
-              className="relative"
-              style={{ gridArea: p.area, zIndex: isActive ? 40 : 1 }}
-            >
-              <button
-                type="button"
+        <svg
+          viewBox="0 0 492 196"
+          role="img"
+          aria-label="Peças estratégicas da Tetriz em formato de jogo Tetris"
+          className="block w-full"
+          style={{ aspectRatio: "492 / 196", overflow: "visible" }}
+        >
+          <rect x="0" y="0" width="492" height="196" rx="5" fill="#050505" />
+          {orderedPieces.map((p) => {
+            const c = pieceColors(p.color);
+            const prog = progress[p.id] ?? 0;
+            const isActive = activeId === p.id && activeProgress > 0.02;
+            const dim = activeId && activeId !== p.id && activeProgress > 0.15;
+            const scale = 1 + prog * 0.18;
+            const lift = prog * 18;
+            const labelColor = p.color === "yellow" || p.color === "light" ? "#0a0a0a" : "#ffffff";
+            return (
+              <g
+                key={p.id}
+                role="button"
+                tabIndex={0}
+                aria-label={`Ver peça ${p.title}`}
                 onMouseEnter={() => setHover(p.id)}
                 onFocus={() => setHover(p.id)}
                 onClick={() => {
-                  // Mobile/click fallback: toggle expansion
                   const cur = targetRef.current[p.id] ?? 0;
                   targetRef.current = {
                     ...Object.fromEntries(Object.keys(targetRef.current).map((k) => [k, 0])),
@@ -388,100 +411,100 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
                   };
                   hoverIdRef.current = p.id;
                 }}
-                className="group absolute inset-0 flex flex-col justify-between p-6 text-left transition-shadow"
+                onKeyDown={(event) => {
+                  if (event.key !== "Enter" && event.key !== " ") return;
+                  event.preventDefault();
+                  const cur = targetRef.current[p.id] ?? 0;
+                  targetRef.current = {
+                    ...Object.fromEntries(Object.keys(targetRef.current).map((k) => [k, 0])),
+                    [p.id]: cur > 0.5 ? 0 : 1,
+                  };
+                  hoverIdRef.current = p.id;
+                }}
                 style={{
-                  background: c.bg,
-                  color: c.fg,
-                  border: `1px solid ${c.border}`,
-                  transform: `translateY(-${lift}px) scale(${scale})`,
-                  transformOrigin: "center center",
-                  transition: "opacity .35s ease, filter .35s ease, box-shadow .35s ease",
-                  opacity: dim ? 0.28 : 1,
-                  filter: dim ? "blur(1px)" : "none",
-                  boxShadow: isActive
-                    ? "0 30px 80px -20px rgba(0,0,0,.55), 0 0 0 1px rgba(255,187,0,.35)"
-                    : "none",
                   cursor: "pointer",
+                  opacity: dim ? 0.34 : 1,
+                  filter: isActive
+                    ? "drop-shadow(0 26px 22px rgba(0,0,0,.42)) drop-shadow(0 0 14px rgba(255,187,0,.45))"
+                    : dim
+                      ? "blur(.6px)"
+                      : "none",
+                  transform: `translateY(-${lift}px) scale(${scale})`,
+                  transformOrigin: "center",
+                  transition: "opacity .35s ease, filter .35s ease",
                   willChange: "transform",
                 }}
               >
-                <div>
-                  <div
-                    style={{
-                      fontWeight: 700,
-                      fontSize: "clamp(1.4rem, 2.4vw, 2.1rem)",
-                      lineHeight: 1,
-                      letterSpacing: "-.02em",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    {p.title}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: 13,
-                      marginTop: 8,
-                      opacity: 0.75,
-                      fontWeight: 400,
-                    }}
-                  >
-                    {p.sub}
-                  </div>
-                </div>
-
-                {/* Reveal panel — grows in as prog increases */}
-                <div
+                <path
+                  d={p.path}
+                  fill={c.bg}
+                  stroke="#050505"
+                  strokeWidth="4"
+                  strokeLinejoin="round"
+                  vectorEffect="non-scaling-stroke"
+                />
+                <text
+                  x={p.labelX}
+                  y={p.labelY}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fill={labelColor}
+                  pointerEvents="none"
                   style={{
-                    marginTop: 12,
-                    maxHeight: `${prog * 320}px`,
-                    opacity: prog,
-                    overflow: "hidden",
-                    transition: "max-height .05s linear",
+                    fontFamily: "Space Grotesk, sans-serif",
+                    fontSize: 16,
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    letterSpacing: 0,
                   }}
                 >
-                  <div
-                    style={{
-                      height: 1,
-                      background: c.accent,
-                      opacity: 0.35,
-                      marginBottom: 12,
-                    }}
-                  />
-                  <p
-                    style={{
-                      fontSize: "clamp(13px, 1.05vw, 15px)",
-                      lineHeight: 1.55,
-                      fontWeight: 400,
-                      opacity: 0.92,
-                    }}
-                  >
-                    {p.popup}
-                  </p>
-                </div>
+                  {p.title.toUpperCase()}
+                </text>
+              </g>
+            );
+          })}
+        </svg>
 
-                <div
-                  className="mt-4 inline-flex items-center gap-2"
-                  style={{
-                    fontSize: 11,
-                    letterSpacing: ".22em",
-                    fontWeight: 600,
-                    opacity: prog > 0.5 ? 0 : 0.85,
-                    transition: "opacity .25s ease",
-                    color: c.accent,
-                  }}
-                >
-                  VER PEÇA <span>→</span>
-                </div>
-              </button>
+        {activePiece && activeProgress > 0.08 ? (
+          <div
+            className="pointer-events-none absolute left-1/2 top-1/2 w-[min(92%,560px)]"
+            style={{
+              transform: `translate(-50%, calc(-50% - ${activeProgress * 44}px)) scale(${0.94 + activeProgress * 0.06})`,
+              opacity: Math.min(1, activeProgress * 1.35),
+              zIndex: 80,
+              transition: "opacity .12s linear",
+            }}
+          >
+            <div
+              style={{
+                background: "rgba(5,5,5,.94)",
+                border: "1px solid rgba(255,187,0,.7)",
+                boxShadow: "0 30px 90px -25px rgba(0,0,0,.9), 0 0 0 1px rgba(255,255,255,.08) inset",
+                color: "#fff",
+                padding: "clamp(18px, 3vw, 32px)",
+              }}
+            >
+              <div style={{ color: "var(--mustard)", fontSize: 11, fontWeight: 700, letterSpacing: ".28em" }}>
+                VER PEÇA
+              </div>
+              <h3 className="mt-3" style={{ fontSize: "clamp(1.8rem, 4vw, 3.2rem)", fontWeight: 700, lineHeight: .95 }}>
+                {activePiece.title}
+              </h3>
+              <p className="mt-3" style={{ color: "var(--mustard)", fontSize: "clamp(1rem, 1.5vw, 1.2rem)", fontWeight: 500 }}>
+                {activePiece.sub}
+              </p>
+              <p className="mt-5" style={{ color: "#d7d7d7", fontSize: "clamp(14px, 1.25vw, 17px)", lineHeight: 1.65 }}>
+                {activePiece.popup}
+              </p>
             </div>
-          );
-        })}
+          </div>
+        ) : null}
       </div>
       <p
         className="mt-6 text-center"
         style={{ fontSize: 12, letterSpacing: ".3em", color: "#888", fontWeight: 500 }}
       >
-        PASSE O MOUSE E ROLE PARA EXPANDIR A PEÇA
+        PASSE O MOUSE NA PEÇA E ROLE PARA ABRIR O POP-UP
       </p>
     </div>
   );
