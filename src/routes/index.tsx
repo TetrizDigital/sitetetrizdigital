@@ -1073,10 +1073,11 @@ function Index() {
 
       {/* FASE 01 — O JOGO */}
       <section id="jogo" className="relative py-32 md:py-40" style={{ background: "#fff", color: "#000" }}>
-        <div className="mb-20 max-w-6xl px-6 md:px-16">
-          <div className="mb-6 flex items-center gap-3" style={{ fontSize: 12, letterSpacing: ".4em", color: "#FFBB00" }} data-reveal>
+        <div className="mb-20 mx-auto max-w-6xl px-6 md:px-16 text-center">
+          <div className="mb-6 flex items-center justify-center gap-3" style={{ fontSize: 12, letterSpacing: ".4em", color: "#FFBB00" }} data-reveal>
             <span style={{ width: 40, height: 1, background: "#FFBB00" }} />
             FASE 01 — O JOGO
+            <span style={{ width: 40, height: 1, background: "#FFBB00" }} />
           </div>
           <h2 data-reveal style={{ fontWeight: 700, fontSize: "clamp(2.5rem, 6vw, 5.5rem)", lineHeight: .95, letterSpacing: "-.03em" }}>
             Toda empresa possui peças.
