@@ -211,12 +211,4 @@
   animation: cinematicGrainShift 1.4s steps(6) infinite;
 }
 .cinematic-rec { animation: cinematicRec 1.8s ease-in-out infinite; }
-html.cinematic-cursor,
-html.cinematic-cursor body,
-html.cinematic-cursor * { cursor: none !important; }
-@media (max-width: 1023px) {
-  html.cinematic-cursor,
-  html.cinematic-cursor body,
-  html.cinematic-cursor * { cursor: auto !important; }
-}
 
