@@ -1249,19 +1249,6 @@ function Index() {
         </h2>
       </section>
 
-      {/* BLACK BAND — ARQUITETOS */}
-      <section className="relative px-6 py-32 md:px-16 md:py-40" style={{ background: "#000" }}>
-        <div className="mx-auto max-w-5xl">
-          <h2 data-reveal style={{ fontWeight: 700, fontSize: "clamp(2.5rem, 7vw, 6.5rem)", lineHeight: .95, letterSpacing: "-.03em" }}>
-            <span style={{ color: "#fff" }}>Não somos uma agência.</span>
-            <br />
-            <span style={{ color: "var(--mustard)" }}>Somos arquitetos de crescimento.</span>
-          </h2>
-          <p data-reveal className="mt-10 max-w-3xl" style={{ fontSize: 20, lineHeight: 1.5, color: "#8a8a8a", fontWeight: 300 }}>
-            Enquanto outras empresas executam campanhas isoladas, nós projetamos sistemas onde cada ação fortalece a próxima.
-          </p>
-        </div>
-      </section>
 
       {/* FASE 02 — MÉTODO */}
       <section id="metodo" data-method className="relative overflow-hidden px-6 py-32 md:px-16 md:py-40" style={{ background: "#0a0a0a" }}>
