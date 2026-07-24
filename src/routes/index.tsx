@@ -761,7 +761,7 @@ function Index() {
     }
 
     const ctx = gsap.context(() => {
-      // Fade-up on any [data-reveal]
+      // Fade-up on any [data-reveal] — reversible on scroll up
       gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((el) => {
         gsap.fromTo(
           el,
@@ -771,41 +771,46 @@ function Index() {
             opacity: 1,
             duration: reduce ? 0 : 1,
             ease: "power3.out",
-            scrollTrigger: { trigger: el, start: "top 85%" },
+            scrollTrigger: {
+              trigger: el,
+              start: "top 88%",
+              end: "bottom 12%",
+              toggleActions: "play reverse play reverse",
+            },
           },
         );
       });
 
-      // Hero video: autoplay muted loop, fast start with poster fallback
+      // Hero video: scroll-scrubbed cinematic playback
       const heroVideo = document.querySelector<HTMLVideoElement>("[data-hero-img]");
       if (heroVideo) {
         heroVideo.muted = true;
         heroVideo.playsInline = true;
-        heroVideo.loop = true;
-        heroVideo.autoplay = true;
         heroVideo.preload = "auto";
+        heroVideo.removeAttribute("loop");
+        heroVideo.removeAttribute("autoplay");
+        heroVideo.pause();
 
-        const tryPlay = () => {
-          if (heroVideo.paused) {
-            heroVideo.play().catch(() => {});
-          }
+        const setupScrub = () => {
+          const dur = heroVideo.duration;
+          if (!dur || !isFinite(dur)) return;
+          gsap.to(heroVideo, {
+            currentTime: Math.max(0, dur - 0.05),
+            ease: "none",
+            scrollTrigger: {
+              trigger: "[data-hero]",
+              start: "top top",
+              end: "bottom bottom",
+              scrub: 0.6,
+            },
+          });
         };
 
-        // Attempt immediate play and retry until started
-        tryPlay();
-        const playInterval = window.setInterval(tryPlay, 500);
-        const clearPlayInterval = () => window.clearInterval(playInterval);
-        heroVideo.addEventListener("playing", clearPlayInterval, { once: true });
-        heroVideo.addEventListener("loadeddata", tryPlay, { once: true });
-
-        // Fallback: start on first user interaction if autoplay is blocked
-        const interactionStart = () => {
-          tryPlay();
-          window.removeEventListener("pointerdown", interactionStart);
-          window.removeEventListener("keydown", interactionStart);
-        };
-        window.addEventListener("pointerdown", interactionStart, { passive: true });
-        window.addEventListener("keydown", interactionStart, { passive: true });
+        if (heroVideo.readyState >= 1) {
+          setupScrub();
+        } else {
+          heroVideo.addEventListener("loadedmetadata", setupScrub, { once: true });
+        }
       }
 
       // Technical disassembly overlay pieces drift apart as user scrolls
