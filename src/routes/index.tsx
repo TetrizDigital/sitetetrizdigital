@@ -584,7 +584,7 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
   const activeProgressRaw = activeId ? progress[activeId] ?? 0 : 0;
   const activeProgress = easeOut(activeProgressRaw);
   const activePiece = pieces.find((piece) => piece.id === activeId);
-  const openPiece = pieces.find((piece) => piece.id === openId);
+  const selectedPiece = pieces.find((piece) => piece.id === openId);
 
   return (
     <div className="w-full" data-reveal>
