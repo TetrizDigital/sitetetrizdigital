@@ -1501,8 +1501,8 @@ function Index() {
             className="mx-auto max-w-6xl"
             style={{ fontWeight: 700, fontSize: "clamp(2.5rem, 6vw, 5.5rem)", lineHeight: .95, letterSpacing: "-.03em" }}
           >
-            <span style={{ color: "#fff", display: "block" }}>Não chamamos de cases.</span>
-            <span style={{ color: "var(--mustard)", display: "block" }}>Chamamos de troféus.</span>
+            <span data-word-split style={{ color: "#fff", display: "block" }}>Não chamamos de cases.</span>
+            <span data-clip-reveal style={{ color: "var(--mustard)", display: "block" }}>Chamamos de troféus.</span>
           </h2>
           <p
             data-reveal
