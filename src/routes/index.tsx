@@ -791,7 +791,7 @@ function Index() {
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpenTrophyId(null);
+      if (e.key === "Escape") closeTrophy();
     };
     window.addEventListener("keydown", onKey);
     return () => {
