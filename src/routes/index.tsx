@@ -761,7 +761,7 @@ function Index() {
     }
 
     const ctx = gsap.context(() => {
-      // Fade-up on any [data-reveal]
+      // Fade-up on any [data-reveal] — reversible on scroll up
       gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((el) => {
         gsap.fromTo(
           el,
@@ -771,41 +771,46 @@ function Index() {
             opacity: 1,
             duration: reduce ? 0 : 1,
             ease: "power3.out",
-            scrollTrigger: { trigger: el, start: "top 85%" },
+            scrollTrigger: {
+              trigger: el,
+              start: "top 88%",
+              end: "bottom 12%",
+              toggleActions: "play reverse play reverse",
+            },
           },
         );
       });
 
-      // Hero video: autoplay muted loop, fast start with poster fallback
+      // Hero video: scroll-scrubbed cinematic playback
       const heroVideo = document.querySelector<HTMLVideoElement>("[data-hero-img]");
       if (heroVideo) {
         heroVideo.muted = true;
         heroVideo.playsInline = true;
-        heroVideo.loop = true;
-        heroVideo.autoplay = true;
         heroVideo.preload = "auto";
+        heroVideo.removeAttribute("loop");
+        heroVideo.removeAttribute("autoplay");
+        heroVideo.pause();
 
-        const tryPlay = () => {
-          if (heroVideo.paused) {
-            heroVideo.play().catch(() => {});
-          }
+        const setupScrub = () => {
+          const dur = heroVideo.duration;
+          if (!dur || !isFinite(dur)) return;
+          gsap.to(heroVideo, {
+            currentTime: Math.max(0, dur - 0.05),
+            ease: "none",
+            scrollTrigger: {
+              trigger: "[data-hero]",
+              start: "top top",
+              end: "bottom bottom",
+              scrub: 0.6,
+            },
+          });
         };
 
-        // Attempt immediate play and retry until started
-        tryPlay();
-        const playInterval = window.setInterval(tryPlay, 500);
-        const clearPlayInterval = () => window.clearInterval(playInterval);
-        heroVideo.addEventListener("playing", clearPlayInterval, { once: true });
-        heroVideo.addEventListener("loadeddata", tryPlay, { once: true });
-
-        // Fallback: start on first user interaction if autoplay is blocked
-        const interactionStart = () => {
-          tryPlay();
-          window.removeEventListener("pointerdown", interactionStart);
-          window.removeEventListener("keydown", interactionStart);
-        };
-        window.addEventListener("pointerdown", interactionStart, { passive: true });
-        window.addEventListener("keydown", interactionStart, { passive: true });
+        if (heroVideo.readyState >= 1) {
+          setupScrub();
+        } else {
+          heroVideo.addEventListener("loadedmetadata", setupScrub, { once: true });
+        }
       }
 
       // Technical disassembly overlay pieces drift apart as user scrolls
@@ -846,7 +851,7 @@ function Index() {
         },
       );
 
-      // TETRIZ letters falling
+      // TETRIZ letters falling — reversible
       gsap.utils.toArray<HTMLElement>("[data-fall-letter]").forEach((el, i) => {
         gsap.fromTo(
           el,
@@ -858,7 +863,12 @@ function Index() {
             duration: reduce ? 0 : 1.1,
             delay: i * 0.08,
             ease: "bounce.out",
-            scrollTrigger: { trigger: "[data-method]", start: "top 70%" },
+            scrollTrigger: {
+              trigger: "[data-method]",
+              start: "top 75%",
+              end: "bottom 25%",
+              toggleActions: "play reverse play reverse",
+            },
           },
         );
       });
@@ -874,7 +884,7 @@ function Index() {
         });
       });
 
-      // Big yellow band — split highlight
+      // Big yellow band — split highlight — reversible
       gsap.fromTo(
         "[data-band-yellow] .word",
         { y: 80, opacity: 0 },
@@ -884,7 +894,12 @@ function Index() {
           duration: reduce ? 0 : 1,
           ease: "power3.out",
           stagger: 0.08,
-          scrollTrigger: { trigger: "[data-band-yellow]", start: "top 80%" },
+          scrollTrigger: {
+            trigger: "[data-band-yellow]",
+            start: "top 85%",
+            end: "bottom 15%",
+            toggleActions: "play reverse play reverse",
+          },
         },
       );
 
@@ -922,7 +937,7 @@ function Index() {
           );
         });
 
-        // 3) Auto-reveal every section heading + paragraph with stagger
+        // 3) Auto-reveal every section heading + paragraph with stagger — reversible
         gsap.utils.toArray<HTMLElement>("section").forEach((sec) => {
           if (sec.hasAttribute("data-hero")) return;
           const targets = sec.querySelectorAll<HTMLElement>(
@@ -938,12 +953,17 @@ function Index() {
               duration: 0.9,
               ease: "power3.out",
               stagger: 0.08,
-              scrollTrigger: { trigger: sec, start: "top 78%" },
+              scrollTrigger: {
+                trigger: sec,
+                start: "top 82%",
+                end: "bottom 18%",
+                toggleActions: "play reverse play reverse",
+              },
             },
           );
         });
 
-        // 4) Scale-in for cards / images tagged [data-scale-in]
+        // 4) Scale-in for cards / images tagged [data-scale-in] — reversible
         gsap.utils.toArray<HTMLElement>("[data-scale-in]").forEach((el) => {
           gsap.fromTo(
             el,
@@ -954,7 +974,12 @@ function Index() {
               y: 0,
               duration: 1,
               ease: "power3.out",
-              scrollTrigger: { trigger: el, start: "top 85%" },
+              scrollTrigger: {
+                trigger: el,
+                start: "top 88%",
+                end: "bottom 12%",
+                toggleActions: "play reverse play reverse",
+              },
             },
           );
         });
@@ -1007,12 +1032,17 @@ function Index() {
               duration: 1,
               ease: "power3.out",
               stagger: 0.06,
-              scrollTrigger: { trigger: el, start: "top 82%" },
+              scrollTrigger: {
+                trigger: el,
+                start: "top 85%",
+                end: "bottom 15%",
+                toggleActions: "play reverse play reverse",
+              },
             },
           );
         });
 
-        // 7) Clip-reveal wipe for [data-clip-reveal]
+        // 7) Clip-reveal wipe for [data-clip-reveal] — reversible
         gsap.utils.toArray<HTMLElement>("[data-clip-reveal]").forEach((el) => {
           gsap.fromTo(
             el,
@@ -1022,12 +1052,17 @@ function Index() {
               opacity: 1,
               duration: 1.1,
               ease: "power4.out",
-              scrollTrigger: { trigger: el, start: "top 82%" },
+              scrollTrigger: {
+                trigger: el,
+                start: "top 85%",
+                end: "bottom 15%",
+                toggleActions: "play reverse play reverse",
+              },
             },
           );
         });
 
-        // 8) Cascade — grid children reveal in waves
+        // 8) Cascade — grid children reveal in waves — reversible
         const cascadeSelectors = [".trophy-card", ".player-card", ".arena-cell", ".logo-cell"];
         cascadeSelectors.forEach((sel) => {
           const nodes = gsap.utils.toArray<HTMLElement>(sel);
@@ -1044,7 +1079,9 @@ function Index() {
               stagger: { each: 0.07, from: "start" },
               scrollTrigger: {
                 trigger: nodes[0].parentElement || nodes[0],
-                start: "top 82%",
+                start: "top 85%",
+                end: "bottom 15%",
+                toggleActions: "play reverse play reverse",
               },
             },
           );
@@ -1071,24 +1108,45 @@ function Index() {
           el.addEventListener("mouseleave", onLeave);
         });
 
-        // 10) Count-up on [data-count-up]
+        // 10) Count-up on [data-count-up] — replays every time it enters
         gsap.utils.toArray<HTMLElement>("[data-count-up]").forEach((el) => {
           const target = Number(el.dataset.value || "0");
           const suffix = el.dataset.suffix || "";
           const prefix = el.dataset.prefix || "";
           const counter = { v: 0 };
-          gsap.to(counter, {
+          const tween = gsap.to(counter, {
             v: target,
             duration: 2,
             ease: "power2.out",
-            scrollTrigger: { trigger: el, start: "top 85%" },
+            paused: true,
             onUpdate: () => {
               el.textContent = `${prefix}${Math.round(counter.v)}${suffix}`;
             },
           });
+          ScrollTrigger.create({
+            trigger: el,
+            start: "top 88%",
+            end: "bottom 12%",
+            onEnter: () => {
+              counter.v = 0;
+              tween.restart();
+            },
+            onEnterBack: () => {
+              counter.v = 0;
+              tween.restart();
+            },
+            onLeave: () => {
+              counter.v = 0;
+              el.textContent = `${prefix}0${suffix}`;
+            },
+            onLeaveBack: () => {
+              counter.v = 0;
+              el.textContent = `${prefix}0${suffix}`;
+            },
+          });
         });
 
-        // 11) Section divider — thin mustard sweep between sections
+        // 11) Section divider — thin mustard sweep — reversible
         gsap.utils.toArray<HTMLElement>("section").forEach((sec, i) => {
           if (i === 0 || sec.hasAttribute("data-hero")) return;
           const line = document.createElement("div");
@@ -1097,12 +1155,21 @@ function Index() {
             "position:absolute;top:0;left:0;height:1px;width:0;background:var(--mustard);pointer-events:none;opacity:.7;z-index:5;";
           if (getComputedStyle(sec).position === "static") sec.style.position = "relative";
           sec.appendChild(line);
-          gsap.to(line, {
-            width: "100%",
-            duration: 1.2,
-            ease: "power3.out",
-            scrollTrigger: { trigger: sec, start: "top 88%" },
-          });
+          gsap.fromTo(
+            line,
+            { width: "0%" },
+            {
+              width: "100%",
+              duration: 1.2,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: sec,
+                start: "top 90%",
+                end: "bottom 10%",
+                toggleActions: "play reverse play reverse",
+              },
+            },
+          );
         });
       }
     });
@@ -1189,7 +1256,7 @@ function Index() {
       </nav>
 
       {/* HERO — cinematic manifesto */}
-      <section data-hero className="relative overflow-hidden" style={{ background: "#000", height: "100vh" }}>
+      <section data-hero className="relative overflow-hidden" style={{ background: "#000", height: "250vh" }}>
         <div className="sticky top-0 h-screen w-full overflow-hidden">
           {/* Background video — cinematic manifesto */}
           <div className="absolute inset-0 z-0">
@@ -1206,14 +1273,13 @@ function Index() {
               muted
               playsInline
               preload="auto"
-              loop
-              autoPlay
               poster={heroBlocks}
               className="absolute inset-0 h-full w-full object-cover"
               style={{ willChange: "transform" }}
             >
               <source src={heroManifesto.url} type="video/mp4" />
             </video>
+
 
             {/* Subtle vignette only — preserve original video colors */}
             <div
