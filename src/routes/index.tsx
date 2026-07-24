@@ -1108,24 +1108,45 @@ function Index() {
           el.addEventListener("mouseleave", onLeave);
         });
 
-        // 10) Count-up on [data-count-up]
+        // 10) Count-up on [data-count-up] — replays every time it enters
         gsap.utils.toArray<HTMLElement>("[data-count-up]").forEach((el) => {
           const target = Number(el.dataset.value || "0");
           const suffix = el.dataset.suffix || "";
           const prefix = el.dataset.prefix || "";
           const counter = { v: 0 };
-          gsap.to(counter, {
+          const tween = gsap.to(counter, {
             v: target,
             duration: 2,
             ease: "power2.out",
-            scrollTrigger: { trigger: el, start: "top 85%" },
+            paused: true,
             onUpdate: () => {
               el.textContent = `${prefix}${Math.round(counter.v)}${suffix}`;
             },
           });
+          ScrollTrigger.create({
+            trigger: el,
+            start: "top 88%",
+            end: "bottom 12%",
+            onEnter: () => {
+              counter.v = 0;
+              tween.restart();
+            },
+            onEnterBack: () => {
+              counter.v = 0;
+              tween.restart();
+            },
+            onLeave: () => {
+              counter.v = 0;
+              el.textContent = `${prefix}0${suffix}`;
+            },
+            onLeaveBack: () => {
+              counter.v = 0;
+              el.textContent = `${prefix}0${suffix}`;
+            },
+          });
         });
 
-        // 11) Section divider — thin mustard sweep between sections
+        // 11) Section divider — thin mustard sweep — reversible
         gsap.utils.toArray<HTMLElement>("section").forEach((sec, i) => {
           if (i === 0 || sec.hasAttribute("data-hero")) return;
           const line = document.createElement("div");
@@ -1134,12 +1155,21 @@ function Index() {
             "position:absolute;top:0;left:0;height:1px;width:0;background:var(--mustard);pointer-events:none;opacity:.7;z-index:5;";
           if (getComputedStyle(sec).position === "static") sec.style.position = "relative";
           sec.appendChild(line);
-          gsap.to(line, {
-            width: "100%",
-            duration: 1.2,
-            ease: "power3.out",
-            scrollTrigger: { trigger: sec, start: "top 88%" },
-          });
+          gsap.fromTo(
+            line,
+            { width: "0%" },
+            {
+              width: "100%",
+              duration: 1.2,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: sec,
+                start: "top 90%",
+                end: "bottom 10%",
+                toggleActions: "play reverse play reverse",
+              },
+            },
+          );
         });
       }
     });
