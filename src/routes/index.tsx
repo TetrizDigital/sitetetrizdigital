@@ -1249,6 +1249,9 @@ function Index() {
 
   return (
     <div className="tetriz-root">
+      <Preloader />
+      <CinematicShell />
+
       <style>{`
         :root { --mustard: #FFBB00; }
         .tetriz-root { font-family: 'Space Grotesk', system-ui, sans-serif; background: #000; color: #fff; overflow-x: hidden; }
