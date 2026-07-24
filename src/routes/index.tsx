@@ -1453,9 +1453,9 @@ function Index() {
           ))}
         </div>
 
-        {/* Preserve legacy anchors for the nav */}
-        <span id="jogadores" />
+        {/* Preserve legacy anchor for the nav */}
         <span id="times" />
+
 
         <style>{`
           .trophy-card:hover img,
