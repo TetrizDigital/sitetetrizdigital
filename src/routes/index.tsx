@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
@@ -440,12 +440,57 @@ const PIECE_ACCENT: Record<string, string> = {
 // Ease-out cubic for smoother visual response to scroll
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
+type ModalProps = {
+  open: boolean;
+  onClose: () => void;
+  children: ReactNode;
+  className?: string;
+  bodyClassName?: string;
+  zIndex?: number;
+};
+
+function Modal({ open, onClose, children, className = "", bodyClassName = "", zIndex = 100 }: ModalProps) {
+  const [mounted, setMounted] = useState(false);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setMounted(true);
+      const raf = requestAnimationFrame(() => setVisible(true));
+      return () => cancelAnimationFrame(raf);
+    }
+    setVisible(false);
+    const timer = window.setTimeout(() => setMounted(false), 350);
+    return () => window.clearTimeout(timer);
+  }, [open]);
+
+  if (!mounted) return null;
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      className={`fixed inset-0 flex items-center justify-center transition-opacity duration-300 ease-out ${visible ? "opacity-100" : "opacity-0"} ${className}`}
+      style={{ zIndex, background: "rgba(0,0,0,.85)", backdropFilter: "blur(8px)" }}
+      onClick={onClose}
+    >
+      <div
+        className={`relative transition-all duration-300 ease-[cubic-bezier(.2,.9,.25,1)] ${visible ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-5"} ${bodyClassName}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
 function TetrisBoard({ pieces }: { pieces: Piece[] }) {
   const boardRef = useRef<HTMLDivElement | null>(null);
   const hoverIdRef = useRef<string | null>(null);
   const progressRef = useRef<Record<string, number>>({});
   const [progress, setProgress] = useState<Record<string, number>>({});
   const [openId, setOpenId] = useState<string | null>(null);
+  const [pieceModalOpen, setPieceModalOpen] = useState(false);
   const rafRef = useRef<number | null>(null);
   const targetRef = useRef<Record<string, number>>({});
 
@@ -520,11 +565,26 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
     }
   };
 
+  const openPiece = (id: string) => {
+    setOpenId(id);
+    requestAnimationFrame(() => setPieceModalOpen(true));
+  };
+
+  const closePiece = () => {
+    setPieceModalOpen(false);
+    window.setTimeout(() => {
+      setOpenId(null);
+      const t = { ...targetRef.current };
+      for (const k of Object.keys(t)) t[k] = 0;
+      targetRef.current = t;
+    }, 350);
+  };
+
   const activeId = Object.entries(progress).sort((a, b) => b[1] - a[1])[0]?.[0];
   const activeProgressRaw = activeId ? progress[activeId] ?? 0 : 0;
   const activeProgress = easeOut(activeProgressRaw);
   const activePiece = pieces.find((piece) => piece.id === activeId);
-  const openPiece = pieces.find((piece) => piece.id === openId);
+  const selectedPiece = pieces.find((piece) => piece.id === openId);
 
   return (
     <div className="w-full" data-reveal>
@@ -567,11 +627,11 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
                     aria-label={i === 0 ? `Ver peça ${p.title}` : undefined}
                     onMouseEnter={() => setHover(p.id)}
                     onFocus={() => setHover(p.id)}
-                    onClick={() => setOpenId(p.id)}
+                    onClick={() => openPiece(p.id)}
                     onKeyDown={(event) => {
                       if (event.key !== "Enter" && event.key !== " ") return;
                       event.preventDefault();
-                      setOpenId(p.id);
+                      openPiece(p.id);
                     }}
                     className="pointer-events-auto absolute cursor-pointer"
                     style={{
@@ -652,34 +712,22 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
 
 
       {/* Full modal when the user commits to a piece */}
-      {openPiece ? (
-        <div
-          className="fixed inset-0 z-[90] flex items-center justify-center px-6 py-24"
-          style={{ background: "rgba(0,0,0,.55)", backdropFilter: "blur(6px)" }}
-          onClick={() => {
-            setOpenId(null);
-            targetRef.current = Object.fromEntries(Object.keys(targetRef.current).map((k) => [k, 0]));
-          }}
-        >
+      <Modal open={pieceModalOpen} onClose={closePiece} bodyClassName="w-full max-w-2xl overflow-hidden" zIndex={90}>
+        {selectedPiece ? (
           <div
-            className="relative w-full max-w-2xl overflow-hidden"
             style={{
               background: "#050505",
               border: "none",
               boxShadow: "0 36px 100px -25px rgba(0,0,0,.95)",
               color: "#fff",
             }}
-            onClick={(event) => event.stopPropagation()}
           >
             <button
               type="button"
               aria-label="Fechar peça"
-              className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full"
+              className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full"
               style={{ background: "var(--mustard)", color: "#000", fontSize: 20, fontWeight: 700 }}
-              onClick={() => {
-                setOpenId(null);
-                targetRef.current = Object.fromEntries(Object.keys(targetRef.current).map((k) => [k, 0]));
-              }}
+              onClick={closePiece}
             >
               ×
             </button>
@@ -688,18 +736,18 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
                 VER PEÇA
               </div>
               <h3 className="mt-3 pr-12" style={{ fontSize: "clamp(2.25rem, 6vw, 4.75rem)", fontWeight: 700, lineHeight: .9 }}>
-                {openPiece.title}
+                {selectedPiece.title}
               </h3>
               <p className="mt-4" style={{ color: "var(--mustard)", fontSize: "clamp(1rem, 1.5vw, 1.25rem)", fontWeight: 600 }}>
-                {openPiece.sub}
+                {selectedPiece.sub}
               </p>
               <p className="mt-6" style={{ color: "#dedede", fontSize: "clamp(15px, 1.25vw, 18px)", lineHeight: 1.7 }}>
-                {openPiece.popup}
+                {selectedPiece.popup}
               </p>
             </div>
           </div>
-        </div>
-      ) : null}
+        ) : null}
+      </Modal>
 
       <p
         className="mt-6 text-center"
@@ -714,8 +762,28 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
 function Index() {
   
   const [openMethod, setOpenMethod] = useState<(typeof METHOD)[number] | null>(null);
+  const [methodModalOpen, setMethodModalOpen] = useState(false);
   const [heroWordIdx, setHeroWordIdx] = useState(0);
   const [openTrophyId, setOpenTrophyId] = useState<string | null>(null);
+  const [trophyModalOpen, setTrophyModalOpen] = useState(false);
+
+  const openMethodModal = (m: (typeof METHOD)[number]) => {
+    setOpenMethod(m);
+    requestAnimationFrame(() => setMethodModalOpen(true));
+  };
+  const closeMethodModal = () => {
+    setMethodModalOpen(false);
+    window.setTimeout(() => setOpenMethod(null), 350);
+  };
+
+  const openTrophy = (id: string) => {
+    setOpenTrophyId(id);
+    requestAnimationFrame(() => setTrophyModalOpen(true));
+  };
+  const closeTrophy = () => {
+    setTrophyModalOpen(false);
+    window.setTimeout(() => setOpenTrophyId(null), 350);
+  };
 
   // Trophy modal: ESC to close + lock body scroll
   useEffect(() => {
@@ -723,7 +791,7 @@ function Index() {
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpenTrophyId(null);
+      if (e.key === "Escape") closeTrophy();
     };
     window.addEventListener("keydown", onKey);
     return () => {
@@ -1202,10 +1270,6 @@ function Index() {
         .faq-icon { transition: transform .3s ease; }
         .whatsapp-cta { transition: transform .3s ease, background .3s ease; }
         .whatsapp-cta:hover { transform: translateY(-3px); background: var(--mustard); color: #000; }
-        .modal-back { animation: fadeIn .25s ease; }
-        .modal-body { animation: popIn .35s cubic-bezier(.2,.9,.25,1); }
-        @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
-        @keyframes popIn { from { opacity: 0; transform: translateY(20px) scale(.96) } to { opacity: 1; transform: none } }
         .grain::after {
           content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .06; mix-blend-mode: overlay;
           background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
@@ -1476,7 +1540,7 @@ function Index() {
               <button
                 key={i}
                 type="button"
-                onClick={() => setOpenMethod(m)}
+                onClick={() => openMethodModal(m)}
                 className="method-letter group relative flex-1 border p-4 text-left md:p-8"
                 style={{
                   minWidth: 140,
@@ -1584,7 +1648,7 @@ function Index() {
             <button
               key={t.id}
               type="button"
-              onClick={() => setOpenTrophyId(t.id)}
+              onClick={() => openTrophy(t.id)}
               data-tilt
               className="trophy-card group relative block w-full overflow-hidden text-left"
               style={{
@@ -1669,31 +1733,19 @@ function Index() {
       </section>
 
       {/* Trophy modal */}
-      {openTrophyId ? (() => {
-        const trophy = TROPHIES.find((t) => t.id === openTrophyId);
-        if (!trophy) return null;
-        return (
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label={`Troféu ${trophy.name}`}
-            className="fixed inset-0 z-[100] flex items-center justify-center px-4 py-8"
-            style={{
-              background: "rgba(0,0,0,.92)",
-              backdropFilter: "blur(6px)",
-              animation: "trophyFade .25s ease",
-            }}
-            onClick={() => setOpenTrophyId(null)}
-          >
+      <Modal open={trophyModalOpen} onClose={closeTrophy} bodyClassName="w-full max-w-5xl overflow-hidden" zIndex={100}>
+        {(() => {
+          const trophy = openTrophyId ? TROPHIES.find((t) => t.id === openTrophyId) : null;
+          if (!trophy) return null;
+          return (
             <div
+              aria-label={`Troféu ${trophy.name}`}
               className="relative grid w-full max-w-5xl grid-cols-1 overflow-hidden md:grid-cols-2"
               style={{
                 background: "#0a0a0a",
                 boxShadow: "0 40px 100px rgba(0,0,0,.6)",
                 maxHeight: "88vh",
-                animation: "trophyPop .3s cubic-bezier(.22,.9,.28,1)",
               }}
-              onClick={(e) => e.stopPropagation()}
             >
               <div className="relative min-h-[240px] md:min-h-full" style={{ background: "#000" }}>
                 <img
@@ -1760,7 +1812,7 @@ function Index() {
                 <div className="mt-4 flex flex-wrap items-center gap-3">
                   <a
                     href="#agendar"
-                    onClick={() => setOpenTrophyId(null)}
+                    onClick={closeTrophy}
                     className="whatsapp-cta inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold"
                     style={{
                       background: "var(--mustard)",
@@ -1773,7 +1825,7 @@ function Index() {
                   </a>
                   <button
                     type="button"
-                    onClick={() => setOpenTrophyId(null)}
+                    onClick={closeTrophy}
                     className="inline-flex items-center gap-2 rounded-full border px-6 py-3 font-semibold"
                     style={{
                       borderColor: "rgba(255,255,255,.25)",
@@ -1789,9 +1841,9 @@ function Index() {
               </div>
               <button
                 type="button"
-                onClick={() => setOpenTrophyId(null)}
+                onClick={closeTrophy}
                 aria-label="Fechar"
-                className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full"
+                className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full"
                 style={{
                   background: "rgba(0,0,0,.6)",
                   color: "#fff",
@@ -1803,13 +1855,9 @@ function Index() {
                 ×
               </button>
             </div>
-            <style>{`
-              @keyframes trophyFade { from { opacity: 0 } to { opacity: 1 } }
-              @keyframes trophyPop { from { opacity: 0; transform: scale(.98) } to { opacity: 1; transform: scale(1) } }
-            `}</style>
-          </div>
-        );
-      })() : null}
+          );
+        })()}
+      </Modal>
 
       {/* 04 — JOGADORES */}
       <section id="jogadores" className="relative" style={{ background: "#fff", color: "#000" }}>
@@ -2251,10 +2299,10 @@ function Index() {
 
 
       {/* METHOD MODAL */}
-      {openMethod && (
-        <div className="modal-back fixed inset-0 z-[100] flex items-center justify-center p-6" style={{ background: "rgba(0,0,0,.85)", backdropFilter: "blur(8px)" }} onClick={() => setOpenMethod(null)}>
-          <div className="modal-body relative w-full max-w-2xl overflow-hidden" style={{ background: "#0a0a0a", color: "#fff", border: "1px solid var(--mustard)" }} onClick={(e) => e.stopPropagation()}>
-            <button onClick={() => setOpenMethod(null)} className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full" style={{ background: "var(--mustard)", color: "#000", fontSize: 20, fontWeight: 700 }} aria-label="Fechar">×</button>
+      <Modal open={methodModalOpen} onClose={closeMethodModal} bodyClassName="w-full max-w-2xl overflow-hidden" zIndex={100}>
+        {openMethod ? (
+          <div style={{ background: "#0a0a0a", color: "#fff", border: "1px solid var(--mustard)" }}>
+            <button onClick={closeMethodModal} className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full" style={{ background: "var(--mustard)", color: "#000", fontSize: 20, fontWeight: 700 }} aria-label="Fechar">×</button>
             <div className="p-10 md:p-14">
               <div className="flex items-center gap-6">
                 <div style={{ fontWeight: 700, fontSize: "clamp(4rem, 10vw, 8rem)", color: "var(--mustard)", lineHeight: 1, letterSpacing: "-.05em" }}>{openMethod.letter}</div>
@@ -2267,8 +2315,8 @@ function Index() {
               <p className="mt-4" style={{ fontSize: 16, lineHeight: 1.7, fontWeight: 300, color: "#c0c0c0" }}>{openMethod.popup}</p>
             </div>
           </div>
-        </div>
-      )}
+        ) : null}
+      </Modal>
 
       {/* Floating WhatsApp */}
       <a
