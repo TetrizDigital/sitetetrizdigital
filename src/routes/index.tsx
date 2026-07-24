@@ -1032,12 +1032,17 @@ function Index() {
               duration: 1,
               ease: "power3.out",
               stagger: 0.06,
-              scrollTrigger: { trigger: el, start: "top 82%" },
+              scrollTrigger: {
+                trigger: el,
+                start: "top 85%",
+                end: "bottom 15%",
+                toggleActions: "play reverse play reverse",
+              },
             },
           );
         });
 
-        // 7) Clip-reveal wipe for [data-clip-reveal]
+        // 7) Clip-reveal wipe for [data-clip-reveal] — reversible
         gsap.utils.toArray<HTMLElement>("[data-clip-reveal]").forEach((el) => {
           gsap.fromTo(
             el,
@@ -1047,12 +1052,17 @@ function Index() {
               opacity: 1,
               duration: 1.1,
               ease: "power4.out",
-              scrollTrigger: { trigger: el, start: "top 82%" },
+              scrollTrigger: {
+                trigger: el,
+                start: "top 85%",
+                end: "bottom 15%",
+                toggleActions: "play reverse play reverse",
+              },
             },
           );
         });
 
-        // 8) Cascade — grid children reveal in waves
+        // 8) Cascade — grid children reveal in waves — reversible
         const cascadeSelectors = [".trophy-card", ".player-card", ".arena-cell", ".logo-cell"];
         cascadeSelectors.forEach((sel) => {
           const nodes = gsap.utils.toArray<HTMLElement>(sel);
@@ -1069,7 +1079,9 @@ function Index() {
               stagger: { each: 0.07, from: "start" },
               scrollTrigger: {
                 trigger: nodes[0].parentElement || nodes[0],
-                start: "top 82%",
+                start: "top 85%",
+                end: "bottom 15%",
+                toggleActions: "play reverse play reverse",
               },
             },
           );
