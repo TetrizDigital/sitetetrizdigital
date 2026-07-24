@@ -278,6 +278,131 @@ const FAQ = [
   },
 ];
 
+type Trophy = {
+  id: string;
+  name: string;
+  client: string;
+  category: string;
+  image: string;
+  summary: string;
+  results: string[];
+};
+
+const TROPHIES: Trophy[] = [
+  {
+    id: "reposiciona-varejo",
+    name: "Reposiciona Varejo",
+    client: "Marca de moda regional",
+    category: "Rebranding + Performance",
+    image: serviceProject,
+    summary:
+      "Reposicionamento completo de uma rede regional de moda: nova identidade, nova voz e um motor de performance que transformou o digital em vitrine de venda.",
+    results: [
+      "+ 148% em receita orgânica no digital",
+      "Nova identidade aplicada em 24 lojas físicas",
+      "Recall de marca 3x maior em 6 meses",
+    ],
+  },
+  {
+    id: "lancamento-x",
+    name: "Lançamento X",
+    client: "Startup SaaS B2B",
+    category: "Campanha de Lançamento",
+    image: serviceCampaign,
+    summary:
+      "Um lançamento pensado como partida: conceito, key visual, tráfego e narrativa de comunidade em uma janela curta para consolidar a marca no mercado.",
+    results: [
+      "1.200 leads qualificados em 30 dias",
+      "CAC 42% abaixo do benchmark do setor",
+      "Cobertura em 6 veículos de tecnologia",
+    ],
+  },
+  {
+    id: "performance-360",
+    name: "Performance 360",
+    client: "E-commerce nacional",
+    category: "Mídia + CRO",
+    image: heroBlocks,
+    summary:
+      "Uma operação recorrente de performance ancorada em dados: mídia, criativos, landing pages e CRO trabalhando como um único tabuleiro.",
+    results: [
+      "ROAS médio de 6.8x sustentado por 9 meses",
+      "+ 73% em conversão de checkout após CRO",
+      "Redução de 31% no custo por aquisição",
+    ],
+  },
+  {
+    id: "rebrand-norte",
+    name: "Rebrand Norte",
+    client: "Rede alimentícia",
+    category: "Identidade + Naming",
+    image: serviceConsulting,
+    summary:
+      "Naming, identidade visual e reposicionamento estratégico para uma rede em expansão no Norte do país. Da essência à aplicação em 40+ pontos de contato.",
+    results: [
+      "Nova marca aplicada em 12 unidades",
+      "NPS de percepção +38 pontos pós-lançamento",
+      "Sistema visual documentado em brand book completo",
+    ],
+  },
+  {
+    id: "campanha-verao",
+    name: "Campanha Verão",
+    client: "Brand D2C",
+    category: "Sazonal Multiplataforma",
+    image: methodFalling,
+    summary:
+      "Campanha sazonal completa com conceito criativo, produção de conteúdo, mídia e ativação — cada peça encaixada para transformar a estação em vendas.",
+    results: [
+      "+ 210% em vendas na janela da campanha",
+      "18M de impressões em mídia paga",
+      "Engajamento orgânico 4x acima da média",
+    ],
+  },
+  {
+    id: "impacto-social",
+    name: "Impacto Social",
+    client: "ONG parceira",
+    category: "Branding + Ativação",
+    image: ctaFinal,
+    summary:
+      "Uma marca com propósito precisava de uma voz à altura. Construímos posicionamento, identidade e campanha de ativação para engajar doadores e voluntários.",
+    results: [
+      "+ 320% em novos doadores mensais",
+      "Programa de voluntariado com 900 inscritos",
+      "Cobertura espontânea em imprensa nacional",
+    ],
+  },
+  {
+    id: "ecommerce-up",
+    name: "E-commerce Up",
+    client: "Marketplace B2B",
+    category: "Site + Performance",
+    image: serviceOperation,
+    summary:
+      "Novo site, nova jornada, nova operação de mídia. Um projeto que uniu tecnologia, UX e performance para destravar a próxima fase do negócio.",
+    results: [
+      "Tempo de carregamento reduzido em 62%",
+      "Taxa de conversão dobrada em 90 dias",
+      "Ticket médio +27% após novo checkout",
+    ],
+  },
+  {
+    id: "institucional",
+    name: "Institucional",
+    client: "Indústria familiar",
+    category: "Vídeo + Site Institucional",
+    image: tetrisField,
+    summary:
+      "Uma indústria com 40 anos de história ganhou uma nova narrativa institucional: vídeo, site e materiais comerciais alinhados a um posicionamento único.",
+    results: [
+      "Novo site institucional em 3 idiomas",
+      "Vídeo manifesto com 480k visualizações",
+      "Kit comercial usado em 6 feiras internacionais",
+    ],
+  },
+];
+
 // Hit-zones over the Tetriz board image (percentages of the 1600x720 image)
 // Grid is 12 cols x 4 rows. Values below correspond to the piece shapes.
 type Zone = { left: number; top: number; width: number; height: number };
