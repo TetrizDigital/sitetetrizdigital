@@ -627,11 +627,11 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
                     aria-label={i === 0 ? `Ver peça ${p.title}` : undefined}
                     onMouseEnter={() => setHover(p.id)}
                     onFocus={() => setHover(p.id)}
-                    onClick={() => setOpenId(p.id)}
+                    onClick={() => openPiece(p.id)}
                     onKeyDown={(event) => {
                       if (event.key !== "Enter" && event.key !== " ") return;
                       event.preventDefault();
-                      setOpenId(p.id);
+                      openPiece(p.id);
                     }}
                     className="pointer-events-auto absolute cursor-pointer"
                     style={{
