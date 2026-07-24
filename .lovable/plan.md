@@ -1,35 +1,31 @@
 ## Objetivo
-Substituir a grade retangular atual da Fase 01 — O Jogo por um tabuleiro no formato de peças de Tetris de verdade (referência: `image-3.png`) e trocar o modal do "VER PEÇA" por uma expansão in-place: conforme o usuário rola a página, a peça que está sob o cursor cresce e revela o conteúdo interno.
+Gerar uma imagem única PNG do tabuleiro Tetriz — exatamente no layout da referência (image-5.png) — sem bordas, para depois substituir o SVG atual da Fase 01 do site.
 
-## Escopo (somente `src/routes/index.tsx` e um pouco de CSS inline)
+## Especificação da imagem
+- **Arquivo**: `src/assets/tetriz-board.png`
+- **Dimensões**: 1600x720 (proporção ~2.22:1, igual à referência)
+- **Fundo**: transparente (`transparent_background: true`)
+- **Sem bordas / sem contornos / sem sombras externas** — peças se tocando perfeitamente
+- **Modelo**: `premium` (garantir legibilidade dos rótulos)
 
-### 1. Novo tabuleiro Tetris (visual)
-- Substituir a grade `12 x 4` por uma grade mais fina (`14 colunas x 6 linhas`, cada célula ~70–90px) para permitir formas em L / T / S como na referência.
-- Redefinir o `area` (gridArea) de cada peça para reproduzir o encaixe da imagem anexada:
-  - `PRODUTO` — bloco L à esquerda (preto).
-  - `MARCA` — T amarelo no topo-centro.
-  - `PESSOAS` — bloco branco/off-white no topo-direito.
-  - `MARKETING` — bloco longo horizontal no rodapé-esquerdo (branco).
-  - `TECNOLOGIA` — bloco largo preto no rodapé-centro.
-  - `DADOS` — quadrado pequeno amarelo no canto inferior direito.
-- Paleta fiel à referência: preto `#0a0a0a`, mostarda `#FFBB00`, off-white `#f4f1ea`. Bordas sutis para dar a sensação de peça encaixada; sem gaps grandes (`gap: 4px`).
-- Tipografia das peças em caixa-alta, `Space Grotesk 700`, alinhada ao canto superior-esquerdo, como na referência.
+### Layout (idêntico ao anexo image-5.png)
+Linha superior:
+- PRODUTO — bloco preto (quadrado, canto sup. esq.)
+- MARCA — peça amarela em formato T invertido no centro-superior
+- PESSOAS — bloco off-white (bege claro) à direita
 
-### 2. Interação de scroll + hover (expansão da peça)
-Trocar o comportamento atual (clique → modal `setOpenPiece`) por uma expansão in-place controlada por scroll:
+Linha inferior:
+- MARKETING — bloco off-white à esquerda
+- TECNOLOGIA — bloco preto largo ao centro
+- DADOS — bloco amarelo pequeno à direita
 
-- Cada peça vira um "hover target". Estado local `hoveredId` mais um valor animado `expandProgress` (0 → 1) por peça.
-- Enquanto o mouse estiver sobre uma peça, o progresso da peça em foco cresce proporcionalmente ao delta de scroll da página (rolar para baixo = expandir, rolar para cima = contrair). Se o mouse sair, a peça retorna suavemente para 0.
-- Quando `expandProgress > 0.15`, a peça:
-  - ganha `z-index` elevado, `scale` até ~1.35, sombra forte, e revela um painel interno com o texto do `popup` + link "AGENDAR CONVERSA →" (o mesmo conteúdo do modal atual).
-  - as demais peças recebem `opacity: 0.35` e leve `blur` para foco visual.
-- Quando `expandProgress === 1`, a peça ocupa uma área grande sobre o tabuleiro (posição absoluta, `inset` calculado a partir da célula) para caber o texto completo sem quebrar o layout.
-- Implementação: `onWheel` no container do tabuleiro + `onMouseEnter/Leave` por peça, com `requestAnimationFrame` fazendo a interpolação. Fallback: em toque/mobile, mantém o clique abrindo o painel expandido no lugar.
+### Estilo
+- Cores exatas: preto `#0A0A0A`, amarelo mostarda `#FFBB00`, off-white `#F2ECDF`
+- Rótulos em Space Grotesk Bold, brancos sobre preto/amarelo e pretos sobre off-white
+- Peças encaixadas como Tetris real, sem gaps, sem bordas visíveis, sem stroke
+- Aparência flat/vetorial limpa, sem gradientes nem sombras
 
-### 3. Limpeza
-- Remover o `Dialog`/modal `openPiece` desta seção (ou mantê-lo apenas como fallback mobile).
-- Manter demais seções (Manifesto, Fase 02, etc.) intactas.
-
-## Fora de escopo
-- Nenhuma alteração na Hero, Manifesto, Método T-E-T-R-I-Z, Arena, CTA ou rodapé.
-- Sem mudanças em conteúdo textual das peças — mesmo copy do array `PIECES`.
+## Próximos passos (após aprovação)
+1. Gerar a imagem com `imagegen--generate_image` (premium, transparente).
+2. Verificar visualmente (view do arquivo) — se rótulos/formato divergirem, refazer com prompt ajustado ou usar `imagegen--edit_image` sobre a referência.
+3. Entregar a imagem final para revisão antes de qualquer integração no site (a integração será um passo separado).
