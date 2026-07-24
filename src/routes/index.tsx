@@ -5,7 +5,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 
 import heroBlocks from "@/assets/hero-blocks.jpg";
-import heroManifesto from "@/assets/tetriz-hero-manifesto.mp4.asset.json";
+import heroManifesto from "@/assets/hero-video-final.mp4.asset.json";
 import tetrisField from "@/assets/tetris-field.jpg";
 import methodFalling from "@/assets/method-falling.jpg";
 import serviceCampaign from "@/assets/service-campaign.jpg";
@@ -617,7 +617,6 @@ function Index() {
               alt=""
               aria-hidden
               className="absolute inset-0 h-full w-full object-cover"
-              style={{ filter: "grayscale(1) contrast(1.15) brightness(.55)" }}
             />
 
             <video
@@ -629,20 +628,17 @@ function Index() {
               autoPlay
               poster={heroBlocks}
               className="absolute inset-0 h-full w-full object-cover"
-              style={{
-                filter: "grayscale(1) contrast(1.15) brightness(.65)",
-                willChange: "transform",
-              }}
+              style={{ willChange: "transform" }}
             >
               <source src={heroManifesto.url} type="video/mp4" />
             </video>
 
-            {/* Cinematic grey wash + vignette */}
+            {/* Subtle vignette only — preserve original video colors */}
             <div
-              className="absolute inset-0"
+              className="pointer-events-none absolute inset-0"
               style={{
                 background:
-                  "radial-gradient(ellipse at 50% 45%, rgba(0,0,0,.15) 0%, rgba(0,0,0,.45) 60%, rgba(0,0,0,.75) 100%), linear-gradient(180deg, rgba(0,0,0,.4) 0%, rgba(15,15,15,.15) 40%, rgba(0,0,0,.55) 100%)",
+                  "radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 45%, rgba(0,0,0,.35) 100%)",
               }}
             />
 
@@ -701,9 +697,6 @@ function Index() {
             >
               {currentWord}
             </h1>
-            <p className="mt-6 max-w-lg" style={{ color: "#c9c9c9", fontSize: 16, lineHeight: 1.6, fontWeight: 300 }}>
-              Marketing, Branding e Performance. Cada peça no lugar certo, cada movimento a serviço do próximo.
-            </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a
                 href="#agendar"
@@ -724,6 +717,45 @@ function Index() {
         </div>
       </section>
 
+      {/* MANIFESTO — tagline strip */}
+      <section
+        className="relative flex items-center justify-center px-6 py-24 md:py-32 text-center"
+        style={{ background: "#000", color: "#fff" }}
+      >
+        <div className="mx-auto max-w-5xl">
+          <div
+            data-reveal
+            className="mb-6 inline-flex items-center gap-3"
+            style={{ color: "var(--mustard)", fontSize: 12, letterSpacing: ".4em" }}
+          >
+            <span style={{ width: 40, height: 1, background: "var(--mustard)" }} />
+            TETRIZ DIGITAL
+            <span style={{ width: 40, height: 1, background: "var(--mustard)" }} />
+          </div>
+          <h2
+            data-reveal
+            style={{
+              fontWeight: 700,
+              fontSize: "clamp(2.25rem, 6vw, 5.25rem)",
+              lineHeight: 1,
+              letterSpacing: "-.03em",
+            }}
+          >
+            MARKETING
+            <span style={{ color: "var(--mustard)", margin: "0 .35em" }}>·</span>
+            BRANDING
+            <span style={{ color: "var(--mustard)", margin: "0 .35em" }}>·</span>
+            PERFORMANCE
+          </h2>
+          <p
+            data-reveal
+            className="mx-auto mt-6 max-w-2xl"
+            style={{ color: "#bdbdbd", fontSize: 18, lineHeight: 1.6, fontWeight: 300 }}
+          >
+            Cada peça no lugar certo, cada movimento a serviço do próximo.
+          </p>
+        </div>
+      </section>
 
       {/* FASE 01 — O JOGO */}
       <section id="jogo" className="relative px-6 py-32 md:px-16 md:py-40" style={{ background: "#fff", color: "#000" }}>
