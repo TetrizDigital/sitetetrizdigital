@@ -1,26 +1,29 @@
-# Vídeo Hero Manifesto — Tetriz Digital
+## Objetivo
+Trocar o vídeo da Hero pelo novo `Video_Hero_site-2.mp4`, mantendo as cores originais dele (sem grayscale), com as palavras-chave rotativas sobrepostas na frente. Mover a tagline "Marketing · Branding · Performance" para uma dobra logo abaixo, centralizada.
 
-Vou montar um MP4 cinematográfico de ~12 segundos (1920x1080, sem áudio) usando as 16 imagens noir do projeto, no estilo "manifesto" — cortes ritmados, Ken Burns, flashes em amarelo #FFBB00 e palavras-chave sobrepostas.
+## Passos
 
-## Entrega
-- Arquivo único em `/mnt/documents/tetriz-hero-manifesto.mp4` para download (não altera o site).
+**1. Upload do novo vídeo para o CDN**
+- `lovable-assets create --file /mnt/user-uploads/Video_Hero_site-2.mp4 --filename hero-video-final.mp4` → gera `src/assets/hero-video-final.mp4.asset.json`.
 
-## Direção
-- **Duração**: ~12s a 30fps (360 frames).
-- **Paleta**: preto, cinza, amarelo mostarda #FFBB00.
-- **Tipografia**: Space Grotesk Bold, palavras rotativas grandes no canto (ATRAÇÃO, CRIATIVIDADE, ESTRATÉGIA, PERFORMANCE, RESULTADO, TETRIZ).
-- **Ritmo**:
-  - 0–2s: abertura lenta (hero-manifesto) com fade-in + Ken Burns.
-  - 2–9s: 10 cortes rápidos (0.5–0.9s cada) das demais imagens, com zoom sutil e flash amarelo entre alguns cortes.
-  - 9–12s: fechamento em `variation-trophy-moment` / `variation-horizon-line` com palavra final "TETRIZ" segurando na tela.
-- **Efeitos**: Ken Burns (zoom/pan), vinheta preta, grão sutil, flashes de 2 frames em #FFBB00 nos cortes principais, letterbox opcional para reforçar o cinema.
+**2. Editar `src/routes/index.tsx` — Hero limpa**
+- Substituir o import do vídeo atual (`tetriz-hero-manifesto`) pelo novo pointer.
+- Remover os filtros CSS `grayscale/contrast/brightness` do `<video data-hero-img>` → cores originais.
+- Suavizar/remover a vinheta escura para não sujar as cores.
+- Manter `autoplay muted loop playsinline` + fallback poster já existente.
+- Manter a rotação automática das palavras (ATRAÇÃO, CRIATIVIDADE, ESTRATÉGIA, PERFORMANCE, RESULTADO, TETRIZ) em ~1.8s, sobrepostas em Space Grotesk Bold amarelo #FFBB00.
+- Remover da Hero o texto fixo "Marketing · Branding · Performance" e qualquer subtítulo redundante — deixar só logo/nav + palavra rotativa.
 
-## Execução técnica
-- Uso o skill `video-creator` (Remotion) para ter controle total sobre timing, tipografia e overlays — mais confiável que ffmpeg puro para as sobreposições de texto e flashes.
-- Setup do projeto Remotion em `/tmp/remotion-hero/`, carregando as 16 imagens de `src/assets/*.jpg` via `staticFile`.
-- Componentes: `KenBurnsImage` (transform baseado em frame), `WordOverlay` (rotação sincronizada com cortes), `FlashCut` (frame amarelo).
-- Render headless para `/mnt/documents/tetriz-hero-manifesto.mp4` via script programático (`renderMedia`).
-- QA: extrair 6 frames-chave com `bunx remotion still` e inspecionar antes de entregar.
+**3. Nova dobra: "Manifesto" (logo abaixo da Hero)**
+- Inserir uma seção curta full-width, fundo preto, altura ~40–50vh, texto centralizado:
+  - Linha grande: **MARKETING · BRANDING · PERFORMANCE** (Space Grotesk Bold, branco com ponto amarelo entre as palavras).
+  - Uma sublinha curta de assinatura (ex.: "Tetriz Digital — onde cada peça se encaixa.").
+- Animação de entrada suave via GSAP (já existente no projeto, usando `data-scale-in` / auto-reveal).
 
-## Resultado
-Vídeo pronto para download com `<presentation-artifact>`. Não altera nenhum arquivo do site.
+**4. QA**
+- Verificar autoplay no preview.
+- Confirmar que não há mais faixa preta vazia e que a próxima seção aparece na sequência natural.
+
+## Fora de escopo
+- Não altero as demais seções (Fase 01, Fase 02, Arena, CTA).
+- Não mexo em lógica de scroll/GSAP fora da Hero e da nova dobra.
