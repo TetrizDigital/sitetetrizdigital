@@ -264,6 +264,229 @@ const FAQ = [
   },
 ];
 
+function pieceColors(color: Piece["color"]) {
+  if (color === "yellow") return { bg: "#FFBB00", fg: "#0a0a0a", border: "#e6a800", accent: "#0a0a0a" };
+  if (color === "light") return { bg: "#f4f1ea", fg: "#0a0a0a", border: "#e5e0d3", accent: "#0a0a0a" };
+  return { bg: "#0a0a0a", fg: "#ffffff", border: "#1a1a1a", accent: "#FFBB00" };
+}
+
+function TetrisBoard({ pieces }: { pieces: Piece[] }) {
+  const boardRef = useRef<HTMLDivElement | null>(null);
+  const hoverIdRef = useRef<string | null>(null);
+  const progressRef = useRef<Record<string, number>>({});
+  const [progress, setProgress] = useState<Record<string, number>>({});
+  const rafRef = useRef<number | null>(null);
+  const targetRef = useRef<Record<string, number>>({});
+
+  // Ensure keys exist
+  useEffect(() => {
+    const init: Record<string, number> = {};
+    pieces.forEach((p) => (init[p.id] = 0));
+    progressRef.current = { ...init };
+    targetRef.current = { ...init };
+    setProgress(init);
+  }, [pieces]);
+
+  // Smooth interpolation loop
+  useEffect(() => {
+    const tick = () => {
+      let changed = false;
+      const next = { ...progressRef.current };
+      for (const k of Object.keys(next)) {
+        const t = targetRef.current[k] ?? 0;
+        const cur = next[k] ?? 0;
+        const nv = cur + (t - cur) * 0.14;
+        if (Math.abs(nv - cur) > 0.001) {
+          next[k] = Math.max(0, Math.min(1, nv));
+          changed = true;
+        } else if (nv !== cur) {
+          next[k] = t;
+          changed = true;
+        }
+      }
+      if (changed) {
+        progressRef.current = next;
+        setProgress(next);
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
+
+  // Wheel handler: scroll while hovering a piece drives its expansion
+  useEffect(() => {
+    const el = boardRef.current;
+    if (!el) return;
+    const STEP = 1 / 400; // 400px of scroll = fully expanded
+    const onWheel = (e: WheelEvent) => {
+      const id = hoverIdRef.current;
+      if (!id) return;
+      const t = targetRef.current[id] ?? 0;
+      const delta = e.deltaY * STEP;
+      const nt = Math.max(0, Math.min(1, t + delta));
+      // Only intercept scroll while expanding or contracting mid-range
+      if ((delta > 0 && t < 1) || (delta < 0 && t > 0)) {
+        e.preventDefault();
+        targetRef.current = { ...targetRef.current, [id]: nt };
+      }
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
+
+  const setHover = (id: string | null) => {
+    hoverIdRef.current = id;
+    // On leave, ease back to 0
+    const t = { ...targetRef.current };
+    for (const k of Object.keys(t)) {
+      if (k !== id) t[k] = 0;
+    }
+    targetRef.current = t;
+  };
+
+  const activeId = Object.entries(progress).sort((a, b) => b[1] - a[1])[0]?.[0];
+  const activeProgress = activeId ? progress[activeId] ?? 0 : 0;
+
+  return (
+    <div className="mx-auto" style={{ maxWidth: 1200 }} data-reveal>
+      <div
+        ref={boardRef}
+        className="relative grid"
+        style={{
+          gridTemplateColumns: "repeat(12, 1fr)",
+          gridTemplateRows: "repeat(4, minmax(110px, 1fr))",
+          gap: 6,
+        }}
+        onMouseLeave={() => setHover(null)}
+      >
+        {pieces.map((p) => {
+          const c = pieceColors(p.color);
+          const prog = progress[p.id] ?? 0;
+          const isActive = activeId === p.id && activeProgress > 0.02;
+          const dim = activeId && activeId !== p.id && activeProgress > 0.15;
+          const scale = 1 + prog * 0.06;
+          const lift = prog * 14;
+          return (
+            <div
+              key={p.id}
+              className="relative"
+              style={{ gridArea: p.area, zIndex: isActive ? 40 : 1 }}
+            >
+              <button
+                type="button"
+                onMouseEnter={() => setHover(p.id)}
+                onFocus={() => setHover(p.id)}
+                onClick={() => {
+                  // Mobile/click fallback: toggle expansion
+                  const cur = targetRef.current[p.id] ?? 0;
+                  targetRef.current = {
+                    ...Object.fromEntries(Object.keys(targetRef.current).map((k) => [k, 0])),
+                    [p.id]: cur > 0.5 ? 0 : 1,
+                  };
+                  hoverIdRef.current = p.id;
+                }}
+                className="group absolute inset-0 flex flex-col justify-between p-6 text-left transition-shadow"
+                style={{
+                  background: c.bg,
+                  color: c.fg,
+                  border: `1px solid ${c.border}`,
+                  transform: `translateY(-${lift}px) scale(${scale})`,
+                  transformOrigin: "center center",
+                  transition: "opacity .35s ease, filter .35s ease, box-shadow .35s ease",
+                  opacity: dim ? 0.28 : 1,
+                  filter: dim ? "blur(1px)" : "none",
+                  boxShadow: isActive
+                    ? "0 30px 80px -20px rgba(0,0,0,.55), 0 0 0 1px rgba(255,187,0,.35)"
+                    : "none",
+                  cursor: "pointer",
+                  willChange: "transform",
+                }}
+              >
+                <div>
+                  <div
+                    style={{
+                      fontWeight: 700,
+                      fontSize: "clamp(1.4rem, 2.4vw, 2.1rem)",
+                      lineHeight: 1,
+                      letterSpacing: "-.02em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {p.title}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 13,
+                      marginTop: 8,
+                      opacity: 0.75,
+                      fontWeight: 400,
+                    }}
+                  >
+                    {p.sub}
+                  </div>
+                </div>
+
+                {/* Reveal panel — grows in as prog increases */}
+                <div
+                  style={{
+                    marginTop: 12,
+                    maxHeight: `${prog * 320}px`,
+                    opacity: prog,
+                    overflow: "hidden",
+                    transition: "max-height .05s linear",
+                  }}
+                >
+                  <div
+                    style={{
+                      height: 1,
+                      background: c.accent,
+                      opacity: 0.35,
+                      marginBottom: 12,
+                    }}
+                  />
+                  <p
+                    style={{
+                      fontSize: "clamp(13px, 1.05vw, 15px)",
+                      lineHeight: 1.55,
+                      fontWeight: 400,
+                      opacity: 0.92,
+                    }}
+                  >
+                    {p.popup}
+                  </p>
+                </div>
+
+                <div
+                  className="mt-4 inline-flex items-center gap-2"
+                  style={{
+                    fontSize: 11,
+                    letterSpacing: ".22em",
+                    fontWeight: 600,
+                    opacity: prog > 0.5 ? 0 : 0.85,
+                    transition: "opacity .25s ease",
+                    color: c.accent,
+                  }}
+                >
+                  VER PEÇA <span>→</span>
+                </div>
+              </button>
+            </div>
+          );
+        })}
+      </div>
+      <p
+        className="mt-6 text-center"
+        style={{ fontSize: 12, letterSpacing: ".3em", color: "#888", fontWeight: 500 }}
+      >
+        PASSE O MOUSE E ROLE PARA EXPANDIR A PEÇA
+      </p>
+    </div>
+  );
+}
+
 function Index() {
   
   const [openMethod, setOpenMethod] = useState<(typeof METHOD)[number] | null>(null);
