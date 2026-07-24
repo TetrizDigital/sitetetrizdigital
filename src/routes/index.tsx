@@ -1309,6 +1309,7 @@ function Index() {
           </div>
           <h2
             data-reveal
+            data-word-split
             className="mx-auto flex w-full flex-wrap items-center justify-center gap-x-4 gap-y-3 text-center md:gap-x-6"
             style={{
               fontWeight: 700,
