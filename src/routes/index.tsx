@@ -1737,31 +1737,19 @@ function Index() {
       </section>
 
       {/* Trophy modal */}
-      {openTrophyId ? (() => {
-        const trophy = TROPHIES.find((t) => t.id === openTrophyId);
-        if (!trophy) return null;
-        return (
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label={`Troféu ${trophy.name}`}
-            className="fixed inset-0 z-[100] flex items-center justify-center px-4 py-8"
-            style={{
-              background: "rgba(0,0,0,.92)",
-              backdropFilter: "blur(6px)",
-              animation: "trophyFade .25s ease",
-            }}
-            onClick={() => setOpenTrophyId(null)}
-          >
+      <Modal open={trophyModalOpen} onClose={closeTrophy} bodyClassName="w-full max-w-5xl overflow-hidden" zIndex={100}>
+        {(() => {
+          const trophy = openTrophyId ? TROPHIES.find((t) => t.id === openTrophyId) : null;
+          if (!trophy) return null;
+          return (
             <div
+              aria-label={`Troféu ${trophy.name}`}
               className="relative grid w-full max-w-5xl grid-cols-1 overflow-hidden md:grid-cols-2"
               style={{
                 background: "#0a0a0a",
                 boxShadow: "0 40px 100px rgba(0,0,0,.6)",
                 maxHeight: "88vh",
-                animation: "trophyPop .3s cubic-bezier(.22,.9,.28,1)",
               }}
-              onClick={(e) => e.stopPropagation()}
             >
               <div className="relative min-h-[240px] md:min-h-full" style={{ background: "#000" }}>
                 <img
@@ -1828,7 +1816,7 @@ function Index() {
                 <div className="mt-4 flex flex-wrap items-center gap-3">
                   <a
                     href="#agendar"
-                    onClick={() => setOpenTrophyId(null)}
+                    onClick={closeTrophy}
                     className="whatsapp-cta inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold"
                     style={{
                       background: "var(--mustard)",
@@ -1841,7 +1829,7 @@ function Index() {
                   </a>
                   <button
                     type="button"
-                    onClick={() => setOpenTrophyId(null)}
+                    onClick={closeTrophy}
                     className="inline-flex items-center gap-2 rounded-full border px-6 py-3 font-semibold"
                     style={{
                       borderColor: "rgba(255,255,255,.25)",
@@ -1857,9 +1845,9 @@ function Index() {
               </div>
               <button
                 type="button"
-                onClick={() => setOpenTrophyId(null)}
+                onClick={closeTrophy}
                 aria-label="Fechar"
-                className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full"
+                className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full"
                 style={{
                   background: "rgba(0,0,0,.6)",
                   color: "#fff",
@@ -1871,13 +1859,9 @@ function Index() {
                 ×
               </button>
             </div>
-            <style>{`
-              @keyframes trophyFade { from { opacity: 0 } to { opacity: 1 } }
-              @keyframes trophyPop { from { opacity: 0; transform: scale(.98) } to { opacity: 1; transform: scale(1) } }
-            `}</style>
-          </div>
-        );
-      })() : null}
+          );
+        })()}
+      </Modal>
 
       {/* 04 — JOGADORES */}
       <section id="jogadores" className="relative" style={{ background: "#fff", color: "#000" }}>
