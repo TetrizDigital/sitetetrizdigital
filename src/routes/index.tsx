@@ -1081,8 +1081,8 @@ function Index() {
       </section>
 
       {/* FASE 01 — O JOGO */}
-      <section id="jogo" className="relative px-6 py-32 md:px-16 md:py-40" style={{ background: "#fff", color: "#000" }}>
-        <div className="mb-20 max-w-6xl">
+      <section id="jogo" className="relative py-32 md:py-40" style={{ background: "#fff", color: "#000" }}>
+        <div className="mb-20 max-w-6xl px-6 md:px-16">
           <div className="mb-6 flex items-center gap-3" style={{ fontSize: 12, letterSpacing: ".4em", color: "#FFBB00" }} data-reveal>
             <span style={{ width: 40, height: 1, background: "#FFBB00" }} />
             FASE 01 — O JOGO
@@ -1095,10 +1095,11 @@ function Index() {
           </p>
         </div>
 
-        {/* Tetris Board — real piece layout with scroll-driven hover expansion */}
+        {/* Tetris Board — edge-to-edge, real piece layout, fluid scroll popup */}
         <TetrisBoard pieces={PIECES} />
 
       </section>
+
 
       {/* YELLOW BAND */}
       <section data-band-yellow className="relative overflow-hidden px-6 py-32 md:px-16 md:py-40" style={{ background: "var(--mustard)", color: "#000" }}>
