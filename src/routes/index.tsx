@@ -18,6 +18,31 @@ import serviceOperation from "@/assets/service-operation.jpg";
 import ctaFinal from "@/assets/cta-final.jpg";
 import tetrizBoardImg from "@/assets/tetriz-board-clean.webp";
 
+const SITE_URL = "https://sitetetrizdigital.lovable.app";
+
+const FAQ_ENTRIES = [
+  {
+    q: "Vocês são uma agência de marketing?",
+    a: "Não. Somos arquitetos de crescimento. Enquanto agências executam campanhas isoladas, nós projetamos sistemas onde cada ação fortalece a próxima — produto, marca, pessoas, marketing, tecnologia e dados encaixados como peças.",
+  },
+  {
+    q: "Como começa um projeto com a Tetriz?",
+    a: "Sempre pelo entendimento. Antes de propor qualquer movimento, mergulhamos no seu negócio, no público e nos objetivos. Só depois estruturamos o tabuleiro e definimos quais peças precisam entrar em cena.",
+  },
+  {
+    q: "Vocês atendem empresas de qualquer porte?",
+    a: "Atendemos marcas que querem crescer com consistência e estratégia, do primeiro projeto ao acompanhamento mensal recorrente. O ponto de partida é sempre a clareza sobre o produto e o objetivo.",
+  },
+  {
+    q: "Qual a diferença entre Projeto e Operação Recorrente?",
+    a: "Projeto é uma entrega fechada para destravar uma fase (site, identidade, lançamento). Operação Recorrente é a marca em movimento todos os meses — planejamento, conteúdo, campanhas, dados e evolução contínua.",
+  },
+  {
+    q: "Como falo com vocês?",
+    a: "Direto pelo WhatsApp (19) 98704-6803 ou por e-mail em contato@tetrizdigital.com.br. A gente responde rápido e começa entendendo o seu jogo antes de propor qualquer movimento.",
+  },
+];
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -34,6 +59,7 @@ export const Route = createFileRoute("/")({
           "Marketing, Branding e Performance. Peça por peça, movimento por movimento.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: SITE_URL + "/" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Tetriz Digital" },
       {
@@ -42,18 +68,39 @@ export const Route = createFileRoute("/")({
       },
     ],
     links: [
-      {
-        rel: "preconnect",
-        href: "https://fonts.googleapis.com",
-      },
-      {
-        rel: "preconnect",
-        href: "https://fonts.gstatic.com",
-        crossOrigin: "anonymous",
-      },
+      { rel: "canonical", href: SITE_URL + "/" },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap",
+      },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          name: "Tetriz Digital",
+          url: SITE_URL,
+          email: "contato@tetrizdigital.com.br",
+          telephone: "+5519987046803",
+          description:
+            "Arquitetos de crescimento: marketing, branding e performance encaixados peça por peça.",
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: FAQ_ENTRIES.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }),
       },
     ],
   }),
