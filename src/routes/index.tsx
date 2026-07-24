@@ -1270,10 +1270,6 @@ function Index() {
         .faq-icon { transition: transform .3s ease; }
         .whatsapp-cta { transition: transform .3s ease, background .3s ease; }
         .whatsapp-cta:hover { transform: translateY(-3px); background: var(--mustard); color: #000; }
-        .modal-back { animation: fadeIn .25s ease; }
-        .modal-body { animation: popIn .35s cubic-bezier(.2,.9,.25,1); }
-        @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
-        @keyframes popIn { from { opacity: 0; transform: translateY(20px) scale(.96) } to { opacity: 1; transform: none } }
         .grain::after {
           content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .06; mix-blend-mode: overlay;
           background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
