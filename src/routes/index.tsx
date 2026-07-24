@@ -712,34 +712,22 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
 
 
       {/* Full modal when the user commits to a piece */}
-      {openPiece ? (
-        <div
-          className="fixed inset-0 z-[90] flex items-center justify-center px-6 py-24"
-          style={{ background: "rgba(0,0,0,.55)", backdropFilter: "blur(6px)" }}
-          onClick={() => {
-            setOpenId(null);
-            targetRef.current = Object.fromEntries(Object.keys(targetRef.current).map((k) => [k, 0]));
-          }}
-        >
+      <Modal open={pieceModalOpen} onClose={closePiece} bodyClassName="w-full max-w-2xl overflow-hidden" zIndex={90}>
+        {selectedPiece ? (
           <div
-            className="relative w-full max-w-2xl overflow-hidden"
             style={{
               background: "#050505",
               border: "none",
               boxShadow: "0 36px 100px -25px rgba(0,0,0,.95)",
               color: "#fff",
             }}
-            onClick={(event) => event.stopPropagation()}
           >
             <button
               type="button"
               aria-label="Fechar peça"
-              className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full"
+              className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full"
               style={{ background: "var(--mustard)", color: "#000", fontSize: 20, fontWeight: 700 }}
-              onClick={() => {
-                setOpenId(null);
-                targetRef.current = Object.fromEntries(Object.keys(targetRef.current).map((k) => [k, 0]));
-              }}
+              onClick={closePiece}
             >
               ×
             </button>
@@ -748,18 +736,18 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
                 VER PEÇA
               </div>
               <h3 className="mt-3 pr-12" style={{ fontSize: "clamp(2.25rem, 6vw, 4.75rem)", fontWeight: 700, lineHeight: .9 }}>
-                {openPiece.title}
+                {selectedPiece.title}
               </h3>
               <p className="mt-4" style={{ color: "var(--mustard)", fontSize: "clamp(1rem, 1.5vw, 1.25rem)", fontWeight: 600 }}>
-                {openPiece.sub}
+                {selectedPiece.sub}
               </p>
               <p className="mt-6" style={{ color: "#dedede", fontSize: "clamp(15px, 1.25vw, 18px)", lineHeight: 1.7 }}>
-                {openPiece.popup}
+                {selectedPiece.popup}
               </p>
             </div>
           </div>
-        </div>
-      ) : null}
+        ) : null}
+      </Modal>
 
       <p
         className="mt-6 text-center"
