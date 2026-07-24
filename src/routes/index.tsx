@@ -265,7 +265,7 @@ const FAQ = [
 ];
 
 function Index() {
-  const [openPiece, setOpenPiece] = useState<Piece | null>(null);
+  const [openMethod_unused_placeholder] = useState<null>(null); void openMethod_unused_placeholder;
   const [openMethod, setOpenMethod] = useState<(typeof METHOD)[number] | null>(null);
   const [heroWordIdx, setHeroWordIdx] = useState(0);
 
