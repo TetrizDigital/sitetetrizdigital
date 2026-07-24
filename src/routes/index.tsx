@@ -463,7 +463,7 @@ function Modal({ open, onClose, children, className = "", bodyClassName = "", zI
       return () => cancelAnimationFrame(raf);
     }
     setVisible(false);
-    const timer = window.setTimeout(() => setMounted(false), 350);
+    const timer = window.setTimeout(() => setMounted(false), 750);
     return () => window.clearTimeout(timer);
   }, [open]);
 
