@@ -1869,7 +1869,6 @@ function Index() {
             04 — JOGADORES
           </div>
           <h2
-            data-reveal
             className="mx-auto mt-6"
             style={{
               fontWeight: 700,
@@ -1879,8 +1878,11 @@ function Index() {
               maxWidth: "18ch",
             }}
           >
-            Esquece equipe.<br />
-            Todo mundo é <span style={{ color: "var(--mustard)" }}>jogador.</span>
+            <span data-word-split style={{ display: "block" }}>Esquece equipe.</span>
+            <span style={{ display: "block" }}>
+              <span data-word-split style={{ display: "inline-block" }}>Todo mundo é&nbsp;</span>
+              <span data-clip-reveal style={{ color: "var(--mustard)", display: "inline-block" }}>jogador.</span>
+            </span>
           </h2>
           <p
             data-reveal
