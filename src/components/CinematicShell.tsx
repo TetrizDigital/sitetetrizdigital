@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import cursorImg from "@/assets/tetriz-cursor.png.asset.json";
 
 /**
  * CinematicShell — global cinematic overlay layer (Phase 2).
