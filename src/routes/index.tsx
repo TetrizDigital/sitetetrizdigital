@@ -1999,7 +1999,6 @@ function Index() {
             05 — ARENA
           </div>
           <h2
-            data-reveal
             className="mx-auto mt-6"
             style={{
               fontWeight: 700,
@@ -2009,7 +2008,8 @@ function Index() {
               maxWidth: "20ch",
             }}
           >
-            Grandes jogos exigem grandes arenas<span style={{ color: "var(--mustard)" }}>.</span>
+            <span data-word-split style={{ display: "inline" }}>Grandes jogos exigem grandes arenas</span>
+            <span data-clip-reveal style={{ color: "var(--mustard)", display: "inline-block" }}>.</span>
           </h2>
         </div>
 
