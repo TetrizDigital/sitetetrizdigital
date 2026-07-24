@@ -1453,8 +1453,6 @@ function Index() {
           ))}
         </div>
 
-        {/* Preserve legacy anchor for the nav */}
-        <span id="times" />
 
 
         <style>{`
@@ -1845,6 +1843,110 @@ function Index() {
           }
         `}</style>
       </section>
+
+      {/* 06 — TIMES */}
+      <section id="times" className="relative">
+        {/* Header on white */}
+        <div className="px-6 py-24 md:px-16 md:py-32 text-center" style={{ background: "#fff", color: "#000" }}>
+          <div
+            data-reveal
+            style={{ fontSize: 12, letterSpacing: ".4em", color: "#8a8a8a", fontWeight: 500 }}
+          >
+            06 — TIMES
+          </div>
+          <h2
+            data-reveal
+            className="mx-auto mt-6"
+            style={{
+              fontWeight: 700,
+              fontSize: "clamp(2.4rem, 6vw, 5rem)",
+              lineHeight: 1,
+              letterSpacing: "-.035em",
+              maxWidth: "22ch",
+            }}
+          >
+            Eles entram para <span style={{ color: "var(--mustard)" }}>jogar junto<span style={{ color: "var(--mustard)" }}>.</span></span>
+          </h2>
+        </div>
+
+        {/* Logo grid — WHITE background */}
+        <div
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5"
+          style={{ background: "#fff" }}
+        >
+          {Array.from({ length: 10 }).map((_, i) => (
+            <div
+              key={i}
+              className="logo-cell relative flex items-center justify-center"
+              style={{
+                aspectRatio: "16 / 10",
+                background: "#fff",
+                borderRight: "1px solid rgba(0,0,0,.08)",
+                borderBottom: "1px solid rgba(0,0,0,.08)",
+              }}
+            >
+              <div
+                className="flex flex-col items-center gap-2 transition-opacity duration-500"
+                style={{ color: "rgba(0,0,0,.25)" }}
+              >
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
+                  <rect x="3" y="3" width="18" height="18" rx="1" />
+                  <circle cx="8.5" cy="8.5" r="1.5" />
+                  <path d="M21 15l-5-5L5 21" />
+                </svg>
+                <span style={{ fontSize: 10, letterSpacing: ".3em", fontWeight: 600 }}>LOGO</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Stats strip */}
+        <div
+          className="grid grid-cols-2 md:grid-cols-4"
+          style={{ background: "#0a0a0a" }}
+        >
+          {[
+            { value: "+000%", label: "CRESCIMENTO MÉDIO" },
+            { value: "00M", label: "ALCANCE GERADO" },
+            { value: "00+", label: "TIMES NO JOGO" },
+            { value: "0 anos", label: "NO TABULEIRO" },
+          ].map((s, i, arr) => (
+            <div
+              key={s.label}
+              className="flex flex-col items-center justify-center px-6 py-16 md:py-20 text-center"
+              style={{
+                borderRight: i !== arr.length - 1 ? "1px solid rgba(255,255,255,.06)" : "none",
+              }}
+              data-reveal
+            >
+              <div
+                style={{
+                  fontWeight: 800,
+                  fontSize: "clamp(2.6rem, 5vw, 4.2rem)",
+                  color: "var(--mustard)",
+                  lineHeight: 1,
+                  letterSpacing: "-.02em",
+                }}
+              >
+                {s.value}
+              </div>
+              <div
+                className="mt-4"
+                style={{
+                  fontSize: 11,
+                  letterSpacing: ".3em",
+                  color: "#8a8a8a",
+                  fontWeight: 500,
+                }}
+              >
+                {s.label}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+
 
 
       <section className="relative px-6 py-32 md:px-16 md:py-40" style={{ background: "#fff", color: "#000" }}>
