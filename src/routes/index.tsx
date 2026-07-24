@@ -1523,6 +1523,7 @@ function Index() {
               key={t.id}
               type="button"
               onClick={() => setOpenTrophyId(t.id)}
+              data-tilt
               className="trophy-card group relative block w-full overflow-hidden text-left"
               style={{
                 aspectRatio: "4 / 5",
