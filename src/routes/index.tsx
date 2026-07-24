@@ -1869,7 +1869,6 @@ function Index() {
             04 — JOGADORES
           </div>
           <h2
-            data-reveal
             className="mx-auto mt-6"
             style={{
               fontWeight: 700,
@@ -1879,8 +1878,11 @@ function Index() {
               maxWidth: "18ch",
             }}
           >
-            Esquece equipe.<br />
-            Todo mundo é <span style={{ color: "var(--mustard)" }}>jogador.</span>
+            <span data-word-split style={{ display: "block" }}>Esquece equipe.</span>
+            <span style={{ display: "block" }}>
+              <span data-word-split style={{ display: "inline-block" }}>Todo mundo é&nbsp;</span>
+              <span data-clip-reveal style={{ color: "var(--mustard)", display: "inline-block" }}>jogador.</span>
+            </span>
           </h2>
           <p
             data-reveal
@@ -1913,6 +1915,7 @@ function Index() {
           ].map((p, i, arr) => (
             <div
               key={p.name}
+              data-tilt
               className="player-card group relative flex flex-col justify-end overflow-hidden"
               style={{
                 aspectRatio: "3 / 4",
@@ -1996,7 +1999,6 @@ function Index() {
             05 — ARENA
           </div>
           <h2
-            data-reveal
             className="mx-auto mt-6"
             style={{
               fontWeight: 700,
@@ -2006,7 +2008,8 @@ function Index() {
               maxWidth: "20ch",
             }}
           >
-            Grandes jogos exigem grandes arenas<span style={{ color: "var(--mustard)" }}>.</span>
+            <span data-word-split style={{ display: "inline" }}>Grandes jogos exigem grandes arenas</span>
+            <span data-clip-reveal style={{ color: "var(--mustard)", display: "inline-block" }}>.</span>
           </h2>
         </div>
 
@@ -2028,6 +2031,7 @@ function Index() {
           ].map((cell) => (
             <div
               key={cell.name}
+              data-tilt
               className="arena-cell group relative flex flex-col justify-end overflow-hidden"
               style={{
                 gridArea: cell.area,
@@ -2105,7 +2109,6 @@ function Index() {
             06 — TIMES
           </div>
           <h2
-            data-reveal
             className="mx-auto mt-6"
             style={{
               fontWeight: 700,
@@ -2115,7 +2118,8 @@ function Index() {
               maxWidth: "22ch",
             }}
           >
-            Eles entram para <span style={{ color: "var(--mustard)" }}>jogar junto<span style={{ color: "var(--mustard)" }}>.</span></span>
+            <span data-word-split style={{ display: "inline-block" }}>Eles entram para&nbsp;</span>
+            <span data-clip-reveal style={{ color: "var(--mustard)", display: "inline-block" }}>jogar junto.</span>
           </h2>
         </div>
 
@@ -2127,6 +2131,7 @@ function Index() {
           {Array.from({ length: 10 }).map((_, i) => (
             <div
               key={i}
+              data-tilt
               className="logo-cell relative flex items-center justify-center"
               style={{
                 aspectRatio: "16 / 10",
