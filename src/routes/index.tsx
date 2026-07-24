@@ -1412,9 +1412,8 @@ function Index() {
       {/* NAV */}
       <nav className="nav fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-6 py-5 md:px-12"
            style={{ backdropFilter: "blur(10px)", background: "rgba(0,0,0,.55)" }}>
-        <a href="#jogo" className="flex items-center gap-2 font-bold tracking-tight" style={{ fontSize: 20 }}>
-          <span style={{ color: "#fff" }}>TETRIZ</span>
-          <span style={{ color: "var(--mustard)" }}>.</span>
+        <a href="#jogo" className="flex items-center" aria-label="Tetriz Digital">
+          <img src={tetrizLogo.url} alt="Tetriz Digital" style={{ height: 28, width: "auto", display: "block" }} />
         </a>
         <ul className="hidden gap-8 md:flex" style={{ fontSize: 14, fontWeight: 500, letterSpacing: ".05em" }}>
           <li><a href="#jogo">O Jogo</a></li>
