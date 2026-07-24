@@ -1652,7 +1652,7 @@ function Index() {
             <button
               key={t.id}
               type="button"
-              onClick={() => setOpenTrophyId(t.id)}
+              onClick={() => openTrophy(t.id)}
               data-tilt
               className="trophy-card group relative block w-full overflow-hidden text-left"
               style={{
