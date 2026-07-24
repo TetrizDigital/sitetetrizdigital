@@ -297,6 +297,12 @@ const PIECE_ZONES: Record<string, Zone[]> = {
   dados:      [{ left: 83.33, top: 50,   width: 16.67, height: 50 }],
 };
 
+// Overrides for the label centering when the piece is L/T shaped
+const PIECE_LABEL_ZONE: Record<string, Zone> = {
+  tecnologia: { left: 25, top: 50, width: 58.33, height: 50 },
+  marca:      { left: 25, top: 0,  width: 41.67, height: 50 },
+};
+
 const PIECE_ACCENT: Record<string, string> = {
   produto: "#FFBB00",
   marca: "#0a0a0a",
