@@ -1693,8 +1693,8 @@ function Index() {
             <span style={{ width: 40, height: 1, background: "#000" }} />
             ONDE ENTRAMOS NO SEU JOGO
           </div>
-          <h2 data-reveal style={{ fontWeight: 700, fontSize: "clamp(2.5rem, 6vw, 5rem)", lineHeight: 1.05, letterSpacing: "-.03em" }}>
-            Quatro formas de <span style={{ background: "var(--mustard)", padding: ".02em .22em", boxDecorationBreak: "clone", WebkitBoxDecorationBreak: "clone" }}>mover as peças</span>.
+          <h2 data-reveal style={{ fontWeight: 700, fontSize: "clamp(2.5rem, 6vw, 5rem)", lineHeight: 1.12, letterSpacing: "-.03em" }}>
+            <span style={{ background: "var(--mustard)", padding: "0 .18em", boxDecorationBreak: "clone", WebkitBoxDecorationBreak: "clone" }}>Quatro</span> formas de mover as peças.
           </h2>
         </div>
 
@@ -2415,9 +2415,7 @@ function Index() {
       {/* FOOTER */}
       <footer className="relative px-6 py-16 md:px-16" style={{ background: "#000", borderTop: "1px solid #1a1a1a" }}>
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-6">
-          <div style={{ fontWeight: 700, fontSize: 20, letterSpacing: "-.02em" }}>
-            TETRIZ<span style={{ color: "var(--mustard)" }}>.</span>
-          </div>
+          <img src={tetrizLogo.url} alt="Tetriz Digital" style={{ height: 34, width: "auto", display: "block" }} />
           <div style={{ fontSize: 12, color: "#666", letterSpacing: ".05em" }}>
             © {new Date().getFullYear()} Tetriz Digital · Marketing, Branding & Performance
           </div>
