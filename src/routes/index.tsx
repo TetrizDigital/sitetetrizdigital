@@ -762,8 +762,28 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
 function Index() {
   
   const [openMethod, setOpenMethod] = useState<(typeof METHOD)[number] | null>(null);
+  const [methodModalOpen, setMethodModalOpen] = useState(false);
   const [heroWordIdx, setHeroWordIdx] = useState(0);
   const [openTrophyId, setOpenTrophyId] = useState<string | null>(null);
+  const [trophyModalOpen, setTrophyModalOpen] = useState(false);
+
+  const openMethodModal = (m: (typeof METHOD)[number]) => {
+    setOpenMethod(m);
+    requestAnimationFrame(() => setMethodModalOpen(true));
+  };
+  const closeMethodModal = () => {
+    setMethodModalOpen(false);
+    window.setTimeout(() => setOpenMethod(null), 350);
+  };
+
+  const openTrophy = (id: string) => {
+    setOpenTrophyId(id);
+    requestAnimationFrame(() => setTrophyModalOpen(true));
+  };
+  const closeTrophy = () => {
+    setTrophyModalOpen(false);
+    window.setTimeout(() => setOpenTrophyId(null), 350);
+  };
 
   // Trophy modal: ESC to close + lock body scroll
   useEffect(() => {
