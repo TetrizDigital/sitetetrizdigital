@@ -74,7 +74,7 @@ type Piece = {
   title: string;
   sub: string;
   popup: string;
-  color: "black" | "yellow";
+  color: "black" | "yellow" | "light";
   // grid area: colStart / rowStart / colEnd / rowEnd  (12-col x 4-row board)
   area: string;
 };
