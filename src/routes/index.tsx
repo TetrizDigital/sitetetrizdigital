@@ -490,6 +490,7 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
   const progressRef = useRef<Record<string, number>>({});
   const [progress, setProgress] = useState<Record<string, number>>({});
   const [openId, setOpenId] = useState<string | null>(null);
+  const [pieceModalOpen, setPieceModalOpen] = useState(false);
   const rafRef = useRef<number | null>(null);
   const targetRef = useRef<Record<string, number>>({});
 
