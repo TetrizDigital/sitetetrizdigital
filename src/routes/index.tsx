@@ -1519,8 +1519,10 @@ function Index() {
               <span style={{ width: 40, height: 1, background: "var(--mustard)" }} />
               TETRIZ DIGITAL
             </div>
-            <h1
+            <h1 className="sr-only">Tetriz Digital — Arquitetos de Crescimento em Marketing, Branding e Performance</h1>
+            <div
               key={heroWordIdx}
+              aria-hidden="true"
               className="max-w-4xl"
               style={{
                 fontWeight: 700,
@@ -1533,7 +1535,7 @@ function Index() {
               }}
             >
               {currentWord}
-            </h1>
+            </div>
           </div>
         </div>
       </section>
@@ -1701,7 +1703,7 @@ function Index() {
             <article key={s.id} className="service-card grain relative overflow-hidden" style={{ background: "#000", color: "#fff", minHeight: 520 }} data-reveal data-tilt>
               <div data-service-card className="relative h-64 w-full overflow-hidden">
                 {/* Frame stack: primary + 3 tinted duplicates to simulate cinematic sequence */}
-                <img data-svc-frame src={s.image} alt={s.title} width={1600} height={1008} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+                <img data-svc-frame src={s.image} alt={`${s.title} — Tetriz Digital: ${s.sub}`} width={1600} height={1008} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
                 <img data-svc-frame src={s.image} alt="" aria-hidden width={1600} height={1008} loading="lazy" className="absolute inset-0 h-full w-full object-cover" style={{ opacity: 0, filter: "hue-rotate(-15deg) saturate(1.2) brightness(1.05)" }} />
                 <img data-svc-frame src={s.image} alt="" aria-hidden width={1600} height={1008} loading="lazy" className="absolute inset-0 h-full w-full object-cover" style={{ opacity: 0, transform: "scale(1.08)", filter: "contrast(1.1)" }} />
                 <img data-svc-frame src={s.image} alt="" aria-hidden width={1600} height={1008} loading="lazy" className="absolute inset-0 h-full w-full object-cover" style={{ opacity: 0, filter: "sepia(.3) saturate(1.4)" }} />
