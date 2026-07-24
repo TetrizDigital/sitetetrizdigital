@@ -2031,6 +2031,7 @@ function Index() {
           ].map((cell) => (
             <div
               key={cell.name}
+              data-tilt
               className="arena-cell group relative flex flex-col justify-end overflow-hidden"
               style={{
                 gridArea: cell.area,
