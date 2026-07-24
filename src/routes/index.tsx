@@ -2046,10 +2046,10 @@ function Index() {
           style={{ background: "#0a0a0a" }}
         >
           {[
-            { value: "+000%", label: "CRESCIMENTO MÉDIO" },
-            { value: "00M", label: "ALCANCE GERADO" },
-            { value: "00+", label: "TIMES NO JOGO" },
-            { value: "0 anos", label: "NO TABULEIRO" },
+            { value: 300, prefix: "+", suffix: "%", label: "CRESCIMENTO MÉDIO" },
+            { value: 50, prefix: "", suffix: "M", label: "ALCANCE GERADO" },
+            { value: 40, prefix: "", suffix: "+", label: "TIMES NO JOGO" },
+            { value: 8, prefix: "", suffix: " anos", label: "NO TABULEIRO" },
           ].map((s, i, arr) => (
             <div
               key={s.label}
@@ -2060,6 +2060,10 @@ function Index() {
               data-reveal
             >
               <div
+                data-count-up
+                data-value={s.value}
+                data-prefix={s.prefix}
+                data-suffix={s.suffix}
                 style={{
                   fontWeight: 800,
                   fontSize: "clamp(2.6rem, 5vw, 4.2rem)",
@@ -2068,7 +2072,7 @@ function Index() {
                   letterSpacing: "-.02em",
                 }}
               >
-                {s.value}
+                {`${s.prefix}0${s.suffix}`}
               </div>
               <div
                 className="mt-4"
