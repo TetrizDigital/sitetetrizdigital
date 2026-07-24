@@ -436,6 +436,7 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
             const accent = PIECE_ACCENT[p.id] ?? "#FFBB00";
             const isActive = activeId === p.id && prog > 0.01;
             const mainZone = zones[0];
+            const labelZone = PIECE_LABEL_ZONE[p.id] ?? mainZone;
             const labelColor = p.id === "produto" || p.id === "tecnologia" ? "#fff" : "#0a0a0a";
             return (
               <div key={p.id} className="pointer-events-none absolute inset-0">
