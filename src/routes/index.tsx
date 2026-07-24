@@ -13,7 +13,7 @@ import serviceProject from "@/assets/service-project.jpg";
 import serviceConsulting from "@/assets/service-consulting.jpg";
 import serviceOperation from "@/assets/service-operation.jpg";
 import ctaFinal from "@/assets/cta-final.jpg";
-import tetrizBoardImg from "@/assets/tetriz-board.png";
+import tetrizBoardImg from "@/assets/tetriz-board-clean.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -318,7 +318,6 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
   const rafRef = useRef<number | null>(null);
   const targetRef = useRef<Record<string, number>>({});
 
-  // Ensure keys exist
   useEffect(() => {
     const init: Record<string, number> = {};
     pieces.forEach((p) => (init[p.id] = 0));
@@ -327,9 +326,9 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
     setProgress(init);
   }, [pieces]);
 
-  // Smooth interpolation loop (lower lerp = more fluid inertia)
+  // Smooth interpolation loop — very fluid inertia
   useEffect(() => {
-    const LERP = 0.08;
+    const LERP = 0.055;
     const tick = () => {
       let changed = false;
       const next = { ...progressRef.current };
@@ -337,7 +336,7 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
         const t = targetRef.current[k] ?? 0;
         const cur = next[k] ?? 0;
         const nv = cur + (t - cur) * LERP;
-        if (Math.abs(nv - cur) > 0.0005) {
+        if (Math.abs(nv - cur) > 0.0002) {
           next[k] = Math.max(0, Math.min(1, nv));
           changed = true;
         } else if (nv !== cur) {
@@ -357,19 +356,17 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
     };
   }, []);
 
-  // Wheel handler: scroll while hovering a piece drives its expansion
+  // Wheel handler: scroll while hovering a piece fades popup in / out
   useEffect(() => {
     const el = boardRef.current;
     if (!el) return;
-    const STEP = 1 / 700; // more scroll needed = smoother, more controlled
+    const STEP = 1 / 1100; // long, controlled travel for a cinematic feel
     const onWheel = (e: WheelEvent) => {
       const id = hoverIdRef.current;
       if (!id) return;
-      const t = targetRef.current[id] ?? 0;
-      const delta = e.deltaY * STEP;
-      const nt = Math.max(0, Math.min(1, t + delta));
-      // Only intercept vertical wheel intent while hovering a piece
       if (Math.abs(e.deltaY) < 0.5) return;
+      const t = targetRef.current[id] ?? 0;
+      const nt = Math.max(0, Math.min(1, t + e.deltaY * STEP));
       e.preventDefault();
       e.stopPropagation();
       e.stopImmediatePropagation();
@@ -377,7 +374,6 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
         ...Object.fromEntries(Object.keys(targetRef.current).map((k) => [k, 0])),
         [id]: nt,
       };
-      setOpenId(nt > 0.18 ? id : null);
     };
     el.addEventListener("wheel", onWheel, { passive: false, capture: true });
     return () => el.removeEventListener("wheel", onWheel, { capture: true });
@@ -385,22 +381,12 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
 
   const setHover = (id: string | null) => {
     hoverIdRef.current = id;
-    const t = { ...targetRef.current };
-    for (const k of Object.keys(t)) {
-      if (k !== id) t[k] = 0;
+    // On leaving a piece, gently fade all targets back to 0
+    if (id === null) {
+      const t = { ...targetRef.current };
+      for (const k of Object.keys(t)) t[k] = 0;
+      targetRef.current = t;
     }
-    targetRef.current = t;
-  };
-
-  const togglePiece = (id: string) => {
-    const cur = targetRef.current[id] ?? 0;
-    const shouldOpen = cur <= 0.5;
-    targetRef.current = {
-      ...Object.fromEntries(Object.keys(targetRef.current).map((k) => [k, 0])),
-      [id]: shouldOpen ? 1 : 0,
-    };
-    setOpenId(shouldOpen ? id : null);
-    hoverIdRef.current = id;
   };
 
   const activeId = Object.entries(progress).sort((a, b) => b[1] - a[1])[0]?.[0];
@@ -410,43 +396,41 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
   const openPiece = pieces.find((piece) => piece.id === openId);
 
   return (
-    <div className="mx-auto" style={{ maxWidth: 1180 }} data-reveal>
+    <div className="w-full" data-reveal>
       <div
         ref={boardRef}
-        className="relative"
-        style={{ perspective: 1400 }}
+        className="relative w-full"
+        style={{ perspective: 1600 }}
         onMouseLeave={() => setHover(null)}
       >
-        {/* Board image */}
         <div
-          className="relative"
-          style={{
-            aspectRatio: "1600 / 720",
-            width: "100%",
-            transformStyle: "preserve-3d",
-          }}
+          className="relative w-full"
+          style={{ aspectRatio: "1600 / 720", transformStyle: "preserve-3d" }}
         >
           <img
             src={tetrizBoardImg}
-            alt="Tabuleiro Tetriz com peças estratégicas: Produto, Marca, Pessoas, Marketing, Tecnologia e Dados"
+            alt="Tabuleiro Tetriz — Produto, Marca, Pessoas, Marketing, Tecnologia e Dados"
             width={1600}
             height={720}
             loading="lazy"
             draggable={false}
             className="block h-full w-full select-none"
             style={{
-              transform: `scale(${1 + activeProgress * 0.02})`,
-              transition: "transform .5s cubic-bezier(.22,.9,.28,1)",
-              filter: activeProgress > 0.05 ? "brightness(.88)" : "brightness(1)",
+              transform: `scale(${1 + activeProgress * 0.015})`,
+              transition: "transform .6s cubic-bezier(.22,.9,.28,1), filter .5s ease",
+              filter: activeProgress > 0.05 ? `brightness(${1 - activeProgress * 0.22})` : "brightness(1)",
+              willChange: "transform, filter",
             }}
           />
 
-          {/* Hit zones + per-piece glow overlay */}
+          {/* Hit zones + labels + per-piece glow */}
           {pieces.map((p) => {
             const zones = PIECE_ZONES[p.id] ?? [];
             const prog = easeOut(progress[p.id] ?? 0);
             const accent = PIECE_ACCENT[p.id] ?? "#FFBB00";
-            const isActive = activeId === p.id && prog > 0.02;
+            const isActive = activeId === p.id && prog > 0.01;
+            const mainZone = zones[0];
+            const labelColor = p.id === "produto" || p.id === "tecnologia" ? "#fff" : "#0a0a0a";
             return (
               <div key={p.id} className="pointer-events-none absolute inset-0">
                 {zones.map((z, i) => (
@@ -457,11 +441,11 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
                     aria-label={i === 0 ? `Ver peça ${p.title}` : undefined}
                     onMouseEnter={() => setHover(p.id)}
                     onFocus={() => setHover(p.id)}
-                    onClick={() => togglePiece(p.id)}
+                    onClick={() => setOpenId(p.id)}
                     onKeyDown={(event) => {
                       if (event.key !== "Enter" && event.key !== " ") return;
                       event.preventDefault();
-                      togglePiece(p.id);
+                      setOpenId(p.id);
                     }}
                     className="pointer-events-auto absolute cursor-pointer"
                     style={{
@@ -469,27 +453,47 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
                       top: `${z.top}%`,
                       width: `${z.width}%`,
                       height: `${z.height}%`,
-                      // Yellow highlight ring on the active piece
                       boxShadow: isActive
-                        ? `inset 0 0 0 3px ${accent}, 0 0 40px ${accent}55`
+                        ? `inset 0 0 0 3px ${accent}, 0 0 60px ${accent}55`
                         : "inset 0 0 0 0 transparent",
-                      transition: "box-shadow .4s cubic-bezier(.22,.9,.28,1)",
+                      transition: "box-shadow .6s cubic-bezier(.22,.9,.28,1)",
                     }}
                   />
                 ))}
+                {/* Label rendered with site font (Space Grotesk) */}
+                {mainZone ? (
+                  <div
+                    className="pointer-events-none absolute flex items-center justify-center"
+                    style={{
+                      left: `${mainZone.left}%`,
+                      top: `${mainZone.top}%`,
+                      width: `${mainZone.width}%`,
+                      height: `${mainZone.height}%`,
+                      color: labelColor,
+                      fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                      fontWeight: 700,
+                      fontSize: "clamp(14px, 1.5vw, 26px)",
+                      letterSpacing: ".22em",
+                      opacity: activeId && activeId !== p.id ? 0.35 : 1,
+                      transition: "opacity .5s ease",
+                    }}
+                  >
+                    {p.title}
+                  </div>
+                ) : null}
               </div>
             );
           })}
 
-          {/* Active piece popup card, centered over the board */}
-          {activePiece && activeProgress > 0.06 ? (
+          {/* Scroll-driven popup — fades in as you scroll, fades out on reverse */}
+          {activePiece ? (
             <div
-              className="pointer-events-none absolute left-1/2 top-1/2 w-[min(92%,620px)]"
+              className="pointer-events-none absolute left-1/2 top-1/2 w-[min(92%,640px)]"
               style={{
-                transform: `translate(-50%, calc(-50% - ${activeProgress * 40}px)) scale(${0.9 + activeProgress * 0.1})`,
-                opacity: Math.min(1, activeProgress * 1.4),
+                transform: `translate(-50%, calc(-50% + ${(1 - activeProgress) * 24}px)) scale(${0.94 + activeProgress * 0.06})`,
+                opacity: activeProgress,
                 zIndex: 80,
-                transition: "opacity .18s linear",
+                transition: "opacity .35s cubic-bezier(.22,.9,.28,1)",
                 willChange: "transform, opacity",
               }}
             >
@@ -499,7 +503,8 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
                   border: "1px solid rgba(255,187,0,.7)",
                   boxShadow: "0 30px 90px -25px rgba(0,0,0,.9), 0 0 0 1px rgba(255,255,255,.08) inset",
                   color: "#fff",
-                  padding: "clamp(18px, 3vw, 32px)",
+                  padding: "clamp(20px, 3vw, 34px)",
+                  fontFamily: "'Space Grotesk', system-ui, sans-serif",
                 }}
               >
                 <div style={{ color: "var(--mustard)", fontSize: 11, fontWeight: 700, letterSpacing: ".28em" }}>
@@ -519,6 +524,7 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
           ) : null}
         </div>
       </div>
+
 
       {/* Full modal when the user commits to a piece */}
       {openPiece ? (
@@ -1075,8 +1081,8 @@ function Index() {
       </section>
 
       {/* FASE 01 — O JOGO */}
-      <section id="jogo" className="relative px-6 py-32 md:px-16 md:py-40" style={{ background: "#fff", color: "#000" }}>
-        <div className="mb-20 max-w-6xl">
+      <section id="jogo" className="relative py-32 md:py-40" style={{ background: "#fff", color: "#000" }}>
+        <div className="mb-20 max-w-6xl px-6 md:px-16">
           <div className="mb-6 flex items-center gap-3" style={{ fontSize: 12, letterSpacing: ".4em", color: "#FFBB00" }} data-reveal>
             <span style={{ width: 40, height: 1, background: "#FFBB00" }} />
             FASE 01 — O JOGO
@@ -1089,10 +1095,11 @@ function Index() {
           </p>
         </div>
 
-        {/* Tetris Board — real piece layout with scroll-driven hover expansion */}
+        {/* Tetris Board — edge-to-edge, real piece layout, fluid scroll popup */}
         <TetrisBoard pieces={PIECES} />
 
       </section>
+
 
       {/* YELLOW BAND */}
       <section data-band-yellow className="relative overflow-hidden px-6 py-32 md:px-16 md:py-40" style={{ background: "var(--mustard)", color: "#000" }}>
