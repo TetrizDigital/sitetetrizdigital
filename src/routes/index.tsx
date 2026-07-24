@@ -1544,7 +1544,7 @@ function Index() {
               <button
                 key={i}
                 type="button"
-                onClick={() => setOpenMethod(m)}
+                onClick={() => openMethodModal(m)}
                 className="method-letter group relative flex-1 border p-4 text-left md:p-8"
                 style={{
                   minWidth: 140,
