@@ -288,6 +288,7 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
   const hoverIdRef = useRef<string | null>(null);
   const progressRef = useRef<Record<string, number>>({});
   const [progress, setProgress] = useState<Record<string, number>>({});
+  const [openId, setOpenId] = useState<string | null>(null);
   const rafRef = useRef<number | null>(null);
   const targetRef = useRef<Record<string, number>>({});
 
@@ -341,13 +342,16 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
       const delta = e.deltaY * STEP;
       const nt = Math.max(0, Math.min(1, t + delta));
       e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
       targetRef.current = {
         ...Object.fromEntries(Object.keys(targetRef.current).map((k) => [k, 0])),
         [id]: nt,
       };
+      setOpenId(delta > 0 ? id : nt > 0.12 ? id : null);
     };
-    el.addEventListener("wheel", onWheel, { passive: false });
-    return () => el.removeEventListener("wheel", onWheel);
+    el.addEventListener("wheel", onWheel, { passive: false, capture: true });
+    return () => el.removeEventListener("wheel", onWheel, { capture: true });
   }, []);
 
   const setHover = (id: string | null) => {
@@ -363,6 +367,7 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
   const activeId = Object.entries(progress).sort((a, b) => b[1] - a[1])[0]?.[0];
   const activeProgress = activeId ? progress[activeId] ?? 0 : 0;
   const activePiece = pieces.find((piece) => piece.id === activeId);
+  const openPiece = pieces.find((piece) => piece.id === openId);
   const orderedPieces = [...pieces].sort((a, b) => {
     if (a.id === activeId) return 1;
     if (b.id === activeId) return -1;
@@ -405,20 +410,24 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
                 onFocus={() => setHover(p.id)}
                 onClick={() => {
                   const cur = targetRef.current[p.id] ?? 0;
+                  const shouldOpen = cur <= 0.5;
                   targetRef.current = {
                     ...Object.fromEntries(Object.keys(targetRef.current).map((k) => [k, 0])),
-                    [p.id]: cur > 0.5 ? 0 : 1,
+                    [p.id]: shouldOpen ? 1 : 0,
                   };
+                  setOpenId(shouldOpen ? p.id : null);
                   hoverIdRef.current = p.id;
                 }}
                 onKeyDown={(event) => {
                   if (event.key !== "Enter" && event.key !== " ") return;
                   event.preventDefault();
                   const cur = targetRef.current[p.id] ?? 0;
+                  const shouldOpen = cur <= 0.5;
                   targetRef.current = {
                     ...Object.fromEntries(Object.keys(targetRef.current).map((k) => [k, 0])),
-                    [p.id]: cur > 0.5 ? 0 : 1,
+                    [p.id]: shouldOpen ? 1 : 0,
                   };
+                  setOpenId(shouldOpen ? p.id : null);
                   hoverIdRef.current = p.id;
                 }}
                 style={{
@@ -500,6 +509,54 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
           </div>
         ) : null}
       </div>
+      {openPiece ? (
+        <div
+          className="fixed inset-0 z-[90] flex items-center justify-center px-6 py-24"
+          style={{ background: "rgba(0,0,0,.52)", backdropFilter: "blur(6px)" }}
+          onClick={() => {
+            setOpenId(null);
+            targetRef.current = Object.fromEntries(Object.keys(targetRef.current).map((k) => [k, 0]));
+          }}
+        >
+          <div
+            className="relative w-full max-w-2xl overflow-hidden"
+            style={{
+              background: "#050505",
+              border: "1px solid rgba(255,187,0,.72)",
+              boxShadow: "0 36px 100px -25px rgba(0,0,0,.95), 0 0 0 1px rgba(255,255,255,.08) inset",
+              color: "#fff",
+            }}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              aria-label="Fechar peça"
+              className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full"
+              style={{ background: "var(--mustard)", color: "#000", fontSize: 20, fontWeight: 700 }}
+              onClick={() => {
+                setOpenId(null);
+                targetRef.current = Object.fromEntries(Object.keys(targetRef.current).map((k) => [k, 0]));
+              }}
+            >
+              ×
+            </button>
+            <div className="p-7 md:p-10">
+              <div style={{ color: "var(--mustard)", fontSize: 11, fontWeight: 700, letterSpacing: ".28em" }}>
+                VER PEÇA
+              </div>
+              <h3 className="mt-3 pr-12" style={{ fontSize: "clamp(2.25rem, 6vw, 4.75rem)", fontWeight: 700, lineHeight: .9 }}>
+                {openPiece.title}
+              </h3>
+              <p className="mt-4" style={{ color: "var(--mustard)", fontSize: "clamp(1rem, 1.5vw, 1.25rem)", fontWeight: 600 }}>
+                {openPiece.sub}
+              </p>
+              <p className="mt-6" style={{ color: "#dedede", fontSize: "clamp(15px, 1.25vw, 18px)", lineHeight: 1.7 }}>
+                {openPiece.popup}
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : null}
       <p
         className="mt-6 text-center"
         style={{ fontSize: 12, letterSpacing: ".3em", color: "#888", fontWeight: 500 }}
