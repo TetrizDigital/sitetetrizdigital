@@ -13,7 +13,7 @@ import serviceProject from "@/assets/service-project.jpg";
 import serviceConsulting from "@/assets/service-consulting.jpg";
 import serviceOperation from "@/assets/service-operation.jpg";
 import ctaFinal from "@/assets/cta-final.jpg";
-import tetrizBoardImg from "@/assets/tetriz-board-clean.png";
+import tetrizBoardImg from "@/assets/tetriz-board-clean.webp";
 
 export const Route = createFileRoute("/")({
   head: () => ({
