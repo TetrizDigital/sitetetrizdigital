@@ -1015,20 +1015,8 @@ function Index() {
         </div>
       </footer>
 
-      {/* PIECE MODAL */}
-      {openPiece && (
-        <div className="modal-back fixed inset-0 z-[100] flex items-center justify-center p-6" style={{ background: "rgba(0,0,0,.85)", backdropFilter: "blur(8px)" }} onClick={() => setOpenPiece(null)}>
-          <div className="modal-body relative w-full max-w-2xl overflow-hidden" style={{ background: openPiece.color === "yellow" ? "var(--mustard)" : "#0a0a0a", color: openPiece.color === "yellow" ? "#000" : "#fff", border: openPiece.color === "yellow" ? "1px solid #e6a800" : "1px solid #1a1a1a" }} onClick={(e) => e.stopPropagation()}>
-            <button onClick={() => setOpenPiece(null)} className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full" style={{ background: openPiece.color === "yellow" ? "#000" : "var(--mustard)", color: openPiece.color === "yellow" ? "var(--mustard)" : "#000", fontSize: 20, fontWeight: 700 }} aria-label="Fechar">×</button>
-            <div className="p-10 md:p-14">
-              <div style={{ fontSize: 11, letterSpacing: ".3em", opacity: .6, fontWeight: 600 }}>PEÇA</div>
-              <h3 className="mt-2" style={{ fontWeight: 700, fontSize: "clamp(2rem, 5vw, 3.5rem)", lineHeight: 1, letterSpacing: "-.03em" }}>{openPiece.title}</h3>
-              <p className="mt-2" style={{ fontSize: 17, fontWeight: 500, opacity: .8 }}>{openPiece.sub}</p>
-              <p className="mt-6" style={{ fontSize: 16, lineHeight: 1.7, fontWeight: 300, opacity: .9 }}>{openPiece.popup}</p>
-            </div>
-          </div>
-        </div>
-      )}
+
+
 
       {/* METHOD MODAL */}
       {openMethod && (
