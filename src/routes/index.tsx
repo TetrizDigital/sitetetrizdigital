@@ -453,10 +453,7 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
                       top: `${z.top}%`,
                       width: `${z.width}%`,
                       height: `${z.height}%`,
-                      boxShadow: isActive
-                        ? `inset 0 0 0 3px ${accent}, 0 0 60px ${accent}55`
-                        : "inset 0 0 0 0 transparent",
-                      transition: "box-shadow .6s cubic-bezier(.22,.9,.28,1)",
+                      boxShadow: "none",
                     }}
                   />
                 ))}
