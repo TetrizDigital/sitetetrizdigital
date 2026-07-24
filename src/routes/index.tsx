@@ -1930,7 +1930,7 @@ function Index() {
       </Modal>
 
       {/* 04 — JOGADORES */}
-      <section id="jogadores" className="relative" style={{ background: "#fff", color: "#000" }}>
+      <section id="jogadores" data-duotone className="relative" style={{ background: "#fff", color: "#000", filter: "grayscale(1) contrast(1.12) sepia(.22) hue-rotate(-8deg)", willChange: "filter" }}>
         <div className="px-6 py-24 md:px-16 md:py-32 text-center">
           <div
             data-reveal
