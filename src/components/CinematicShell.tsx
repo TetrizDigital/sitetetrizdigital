@@ -74,16 +74,15 @@ export default function CinematicShell() {
         <div
           ref={cursorRef}
           className="absolute left-0 top-0"
-          style={{ width: 32, height: 32, willChange: "transform" }}
+          style={{ width: 28, height: 44, willChange: "transform" }}
         >
-          <svg viewBox="0 0 32 32" width="32" height="32" style={{ overflow: "visible" }}>
-            <circle cx="16" cy="16" r="10" fill="none" stroke="#FFBB00" strokeWidth="1" opacity=".9" />
-            <circle cx="16" cy="16" r="1.5" fill="#FFBB00" />
-            <line x1="16" y1="0" x2="16" y2="6" stroke="#FFBB00" strokeWidth="1" />
-            <line x1="16" y1="26" x2="16" y2="32" stroke="#FFBB00" strokeWidth="1" />
-            <line x1="0" y1="16" x2="6" y2="16" stroke="#FFBB00" strokeWidth="1" />
-            <line x1="26" y1="16" x2="32" y2="16" stroke="#FFBB00" strokeWidth="1" />
-          </svg>
+          <img
+            src={cursorImg.url}
+            alt=""
+            width={28}
+            height={44}
+            style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", filter: "drop-shadow(0 2px 6px rgba(0,0,0,.5))" }}
+          />
         </div>
       ) : null}
     </div>
