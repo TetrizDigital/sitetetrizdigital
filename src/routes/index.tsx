@@ -977,6 +977,15 @@ function Index() {
             <div className="pointer-events-none absolute right-6 top-24 h-12 w-12 border-r border-t border-[rgba(255,187,0,.35)]" />
             <div className="pointer-events-none absolute bottom-6 left-6 h-12 w-12 border-b border-l border-[rgba(255,255,255,.2)]" />
             <div className="pointer-events-none absolute bottom-6 right-6 h-12 w-12 border-b border-r border-[rgba(255,255,255,.2)]" />
+
+            {/* Bottom fade — smooth blend into the next section */}
+            <div
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-64 z-[5]"
+              style={{
+                background:
+                  "linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,.55) 55%, #000 100%)",
+              }}
+            />
           </div>
 
           {/* Foreground content — rotating words in front, driven by scroll */}
