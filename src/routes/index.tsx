@@ -2109,7 +2109,6 @@ function Index() {
             06 — TIMES
           </div>
           <h2
-            data-reveal
             className="mx-auto mt-6"
             style={{
               fontWeight: 700,
@@ -2119,7 +2118,8 @@ function Index() {
               maxWidth: "22ch",
             }}
           >
-            Eles entram para <span style={{ color: "var(--mustard)" }}>jogar junto<span style={{ color: "var(--mustard)" }}>.</span></span>
+            <span data-word-split style={{ display: "inline-block" }}>Eles entram para&nbsp;</span>
+            <span data-clip-reveal style={{ color: "var(--mustard)", display: "inline-block" }}>jogar junto.</span>
           </h2>
         </div>
 
