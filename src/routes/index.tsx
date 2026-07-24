@@ -421,12 +421,6 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
             loading="lazy"
             draggable={false}
             className="block h-full w-full select-none"
-            style={{
-              transform: `scale(${1 + activeProgress * 0.015})`,
-              transition: "transform .6s cubic-bezier(.22,.9,.28,1), filter .5s ease",
-              filter: activeProgress > 0.05 ? `brightness(${1 - activeProgress * 0.22})` : "brightness(1)",
-              willChange: "transform, filter",
-            }}
           />
 
           {/* Hit zones + labels + per-piece glow */}
@@ -496,11 +490,11 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
             <div
               className="pointer-events-none absolute left-1/2 top-1/2 w-[min(92%,640px)]"
               style={{
-                transform: `translate(-50%, calc(-50% + ${(1 - activeProgress) * 24}px)) scale(${0.94 + activeProgress * 0.06})`,
+                transform: "translate(-50%, -50%)",
                 opacity: activeProgress,
                 zIndex: 80,
                 transition: "opacity .35s cubic-bezier(.22,.9,.28,1)",
-                willChange: "transform, opacity",
+                willChange: "opacity",
               }}
             >
               <div
@@ -824,27 +818,7 @@ function Index() {
           );
         });
 
-        // 5) Section pin-fade — each section subtly scales as it leaves viewport
-        gsap.utils.toArray<HTMLElement>("section").forEach((sec) => {
-          if (sec.hasAttribute("data-hero")) return;
-          gsap.fromTo(
-            sec,
-            { scale: 1, filter: "brightness(1)" },
-            {
-              scale: 0.97,
-              filter: "brightness(0.75)",
-              ease: "none",
-              scrollTrigger: {
-                trigger: sec,
-                start: "bottom 90%",
-                end: "bottom top",
-                scrub: true,
-              },
-            },
-          );
-        });
-
-        // 6) Nav shrinks after scrolling past hero
+        // 5) Nav shrinks after scrolling past hero
         ScrollTrigger.create({
           trigger: "[data-hero]",
           start: "bottom top+=80",
