@@ -86,7 +86,7 @@ const PIECES: Piece[] = [
     sub: "O que você entrega ao mundo.",
     popup:
       "Antes de comunicar, entendemos o que a empresa vende, como entrega e quais diferenciais sustentam essa promessa. O produto é a peça de partida: sem clareza sobre ele, nenhuma estratégia se encaixa por completo.",
-    color: "yellow",
+    color: "black",
     area: "1 / 1 / 3 / 4",
   },
   {
@@ -95,8 +95,8 @@ const PIECES: Piece[] = [
     sub: "A percepção que fica.",
     popup:
       "Marca não é só aparência. É a forma como a empresa é lembrada, reconhecida e desejada. Por isso, trabalhamos posicionamento, linguagem e presença para construir uma percepção forte, coerente e memorável.",
-    color: "black",
-    area: "1 / 4 / 3 / 7",
+    color: "yellow",
+    area: "1 / 4 / 3 / 8",
   },
   {
     id: "pessoas",
@@ -104,8 +104,8 @@ const PIECES: Piece[] = [
     sub: "Quem faz o jogo acontecer.",
     popup:
       "Toda marca é feita por pessoas e para pessoas. Entendemos o time, o cliente, o público e a cultura por trás de cada negócio para criar uma comunicação mais humana, verdadeira e conectada.",
-    color: "yellow",
-    area: "1 / 7 / 3 / 10",
+    color: "light",
+    area: "1 / 8 / 3 / 13",
   },
   {
     id: "marketing",
@@ -113,8 +113,8 @@ const PIECES: Piece[] = [
     sub: "O movimento que conecta tudo.",
     popup:
       "Marketing é a peça que coloca a estratégia em movimento. Conectamos canais, campanhas, conteúdos e ações para transformar presença em relacionamento, relacionamento em confiança e confiança em resultado.",
-    color: "black",
-    area: "1 / 10 / 3 / 13",
+    color: "light",
+    area: "3 / 1 / 5 / 5",
   },
   {
     id: "tecnologia",
@@ -123,7 +123,7 @@ const PIECES: Piece[] = [
     popup:
       "A tecnologia amplia possibilidades, acelera processos e abre novos caminhos para marcas que querem evoluir. Na Tetriz, usamos ferramentas, dados e inovação para criar soluções mais inteligentes e eficientes.",
     color: "black",
-    area: "3 / 1 / 5 / 7",
+    area: "3 / 5 / 5 / 11",
   },
   {
     id: "dados",
@@ -132,9 +132,10 @@ const PIECES: Piece[] = [
     popup:
       "Dados mostram o que está funcionando, o que precisa mudar e qual deve ser o próximo movimento. Eles nos ajudam a tomar decisões com mais clareza, menos achismo e mais estratégia.",
     color: "yellow",
-    area: "3 / 7 / 5 / 13",
+    area: "3 / 11 / 5 / 13",
   },
 ];
+
 
 const METHOD = [
   {
