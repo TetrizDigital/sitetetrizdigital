@@ -1250,7 +1250,7 @@ function Index() {
       </nav>
 
       {/* HERO — cinematic manifesto */}
-      <section data-hero className="relative overflow-hidden" style={{ background: "#000", height: "250vh" }}>
+      <section data-hero className="relative overflow-hidden" style={{ background: "#000", height: "100vh" }}>
         <div className="sticky top-0 h-screen w-full overflow-hidden">
           {/* Background video — cinematic manifesto */}
           <div className="absolute inset-0 z-0">
@@ -1267,6 +1267,8 @@ function Index() {
               muted
               playsInline
               preload="auto"
+              loop
+              autoPlay
               poster={heroBlocks}
               className="absolute inset-0 h-full w-full object-cover"
               style={{ willChange: "transform" }}
