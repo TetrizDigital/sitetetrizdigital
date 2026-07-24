@@ -1264,16 +1264,16 @@ function Index() {
         gsap.utils.toArray<HTMLElement>("[data-dolly]").forEach((el) => {
           gsap.fromTo(
             el,
-            { scale: 0.86, filter: "blur(6px) brightness(.75)" },
+            { scale: 0.94, filter: "blur(2px) brightness(.9)" },
             {
-              scale: 1.04,
+              scale: 1,
               filter: "blur(0px) brightness(1)",
               ease: "none",
               scrollTrigger: {
                 trigger: el,
-                start: "top 85%",
-                end: "bottom 15%",
-                scrub: 1.2,
+                start: "top 95%",
+                end: "top 55%",
+                scrub: 0.6,
               },
             },
           );
