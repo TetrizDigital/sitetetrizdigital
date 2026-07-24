@@ -677,7 +677,7 @@ function Index() {
           </div>
 
           {/* Foreground content — rotating words in front, driven by scroll */}
-          <div className="relative z-10 mx-auto flex h-screen max-w-7xl flex-col justify-center px-6 md:px-16">
+          <div className="relative z-10 mx-auto flex h-screen max-w-7xl flex-col justify-end px-6 pb-16 md:px-16 md:pb-24">
             <div className="mb-6 flex items-center gap-3" style={{ color: "var(--mustard)", fontSize: 12, letterSpacing: ".3em" }}>
               <span style={{ width: 40, height: 1, background: "var(--mustard)" }} />
               TETRIZ DIGITAL
@@ -697,22 +697,6 @@ function Index() {
             >
               {currentWord}
             </h1>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <a
-                href="#agendar"
-                className="whatsapp-cta inline-flex items-center gap-2 rounded-full px-7 py-3.5 font-semibold"
-                style={{ background: "var(--mustard)", color: "#000", fontSize: 13, letterSpacing: ".1em" }}
-              >
-                AGENDAR CONVERSA →
-              </a>
-              <a
-                href="#jogo"
-                className="whatsapp-cta inline-flex items-center gap-2 rounded-full border px-7 py-3.5 font-semibold"
-                style={{ borderColor: "rgba(255,255,255,.35)", color: "#fff", fontSize: 13, letterSpacing: ".1em", backdropFilter: "blur(4px)" }}
-              >
-                CONHECER O JOGO
-              </a>
-            </div>
           </div>
         </div>
       </section>
@@ -754,6 +738,22 @@ function Index() {
           >
             Cada peça no lugar certo, cada movimento a serviço do próximo.
           </p>
+          <div data-reveal className="mt-10 flex flex-wrap justify-center gap-3">
+            <a
+              href="#agendar"
+              className="whatsapp-cta inline-flex items-center gap-2 rounded-full px-7 py-3.5 font-semibold"
+              style={{ background: "var(--mustard)", color: "#000", fontSize: 13, letterSpacing: ".1em" }}
+            >
+              AGENDAR CONVERSA →
+            </a>
+            <a
+              href="#jogo"
+              className="whatsapp-cta inline-flex items-center gap-2 rounded-full border px-7 py-3.5 font-semibold"
+              style={{ borderColor: "rgba(255,255,255,.35)", color: "#fff", fontSize: 13, letterSpacing: ".1em" }}
+            >
+              CONHECER O JOGO
+            </a>
+          </div>
         </div>
       </section>
 
