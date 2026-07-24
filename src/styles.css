@@ -142,34 +142,46 @@
     color: var(--color-foreground);
   }
 
-  /* Modern black scrollbar */
+  /* Modern black scrollbar — Firefox */
   html {
     scrollbar-width: thin;
     scrollbar-color: #1a1a1a #000000;
   }
-
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+  html:hover {
+    scrollbar-color: #FFBB00 #000000;
   }
 
-  ::-webkit-scrollbar-track {
+  /* Modern black scrollbar — WebKit (Safari, Chrome) */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    background: #000000;
+  }
+
+  ::-webkit-scrollbar-track,
+  ::-webkit-scrollbar-track-piece {
     background: #000000;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #1a1a1a;
-    border-radius: 4px;
+    background-color: #1a1a1a;
+    border-radius: 8px;
     border: 2px solid #000000;
+    background-clip: padding-box;
+    transition: background-color 0.2s ease;
   }
 
-  ::-webkit-scrollbar-thumb:hover {
-    background: #FFBB00;
+  ::-webkit-scrollbar-thumb:hover,
+  ::-webkit-scrollbar-thumb:active {
+    background-color: #FFBB00;
+    border: 2px solid #000000;
+    background-clip: padding-box;
   }
 
   ::-webkit-scrollbar-corner {
     background: #000000;
   }
+
 }
 
 /* ---------- Cinematic layer ---------- */
