@@ -851,7 +851,7 @@ function Index() {
         },
       );
 
-      // TETRIZ letters falling
+      // TETRIZ letters falling — reversible
       gsap.utils.toArray<HTMLElement>("[data-fall-letter]").forEach((el, i) => {
         gsap.fromTo(
           el,
@@ -863,7 +863,12 @@ function Index() {
             duration: reduce ? 0 : 1.1,
             delay: i * 0.08,
             ease: "bounce.out",
-            scrollTrigger: { trigger: "[data-method]", start: "top 70%" },
+            scrollTrigger: {
+              trigger: "[data-method]",
+              start: "top 75%",
+              end: "bottom 25%",
+              toggleActions: "play reverse play reverse",
+            },
           },
         );
       });
@@ -879,7 +884,7 @@ function Index() {
         });
       });
 
-      // Big yellow band — split highlight
+      // Big yellow band — split highlight — reversible
       gsap.fromTo(
         "[data-band-yellow] .word",
         { y: 80, opacity: 0 },
@@ -889,7 +894,12 @@ function Index() {
           duration: reduce ? 0 : 1,
           ease: "power3.out",
           stagger: 0.08,
-          scrollTrigger: { trigger: "[data-band-yellow]", start: "top 80%" },
+          scrollTrigger: {
+            trigger: "[data-band-yellow]",
+            start: "top 85%",
+            end: "bottom 15%",
+            toggleActions: "play reverse play reverse",
+          },
         },
       );
 
