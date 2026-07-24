@@ -568,6 +568,9 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
       if (!id) return;
       if (Math.abs(e.deltaY) < 0.5) return;
       const t = targetRef.current[id] ?? 0;
+      // Release the scroll back to the page once the popup is fully in (down) or fully out (up)
+      if (e.deltaY > 0 && t >= 0.999) return;
+      if (e.deltaY < 0 && t <= 0.001) return;
       const nt = Math.max(0, Math.min(1, t + e.deltaY * STEP));
       e.preventDefault();
       e.stopPropagation();
