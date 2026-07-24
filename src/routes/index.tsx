@@ -297,6 +297,12 @@ const PIECE_ZONES: Record<string, Zone[]> = {
   dados:      [{ left: 83.33, top: 50,   width: 16.67, height: 50 }],
 };
 
+// Overrides for the label centering when the piece is L/T shaped
+const PIECE_LABEL_ZONE: Record<string, Zone> = {
+  tecnologia: { left: 25, top: 50, width: 58.33, height: 50 },
+  marca:      { left: 25, top: 0,  width: 41.67, height: 50 },
+};
+
 const PIECE_ACCENT: Record<string, string> = {
   produto: "#FFBB00",
   marca: "#0a0a0a",
@@ -430,6 +436,7 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
             const accent = PIECE_ACCENT[p.id] ?? "#FFBB00";
             const isActive = activeId === p.id && prog > 0.01;
             const mainZone = zones[0];
+            const labelZone = PIECE_LABEL_ZONE[p.id] ?? mainZone;
             const labelColor = p.id === "produto" || p.id === "tecnologia" ? "#fff" : "#0a0a0a";
             return (
               <div key={p.id} className="pointer-events-none absolute inset-0">
@@ -458,14 +465,14 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
                   />
                 ))}
                 {/* Label rendered with site font (Space Grotesk) */}
-                {mainZone ? (
+                {labelZone ? (
                   <div
                     className="pointer-events-none absolute flex items-center justify-center"
                     style={{
-                      left: `${mainZone.left}%`,
-                      top: `${mainZone.top}%`,
-                      width: `${mainZone.width}%`,
-                      height: `${mainZone.height}%`,
+                      left: `${labelZone.left}%`,
+                      top: `${labelZone.top}%`,
+                      width: `${labelZone.width}%`,
+                      height: `${labelZone.height}%`,
                       color: labelColor,
                       fontFamily: "'Space Grotesk', system-ui, sans-serif",
                       fontWeight: 700,
