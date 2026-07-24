@@ -1295,8 +1295,10 @@ function Index() {
               scrub: 1.4,
               onUpdate: (self) => {
                 const g = 1 - self.progress;
-                el.style.filter = `grayscale(${g}) contrast(${1 + 0.12 * g}) sepia(${0.22 * g}) hue-rotate(${-8 * g}deg)`;
-                el.style.setProperty("--rgb-split", `${self.progress * 3}px`);
+                // Efeito bem sutil: só um leve grayscale que some no scroll,
+                // sem sepia/hue-rotate que sujam o amarelo mostarda.
+                el.style.filter = `grayscale(${g * 0.35}) contrast(${1 + 0.04 * g})`;
+                el.style.setProperty("--rgb-split", `${self.progress * 1}px`);
               },
             },
           });
