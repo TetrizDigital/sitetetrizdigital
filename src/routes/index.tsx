@@ -2303,10 +2303,10 @@ function Index() {
 
 
       {/* METHOD MODAL */}
-      {openMethod && (
-        <div className="modal-back fixed inset-0 z-[100] flex items-center justify-center p-6" style={{ background: "rgba(0,0,0,.85)", backdropFilter: "blur(8px)" }} onClick={() => setOpenMethod(null)}>
-          <div className="modal-body relative w-full max-w-2xl overflow-hidden" style={{ background: "#0a0a0a", color: "#fff", border: "1px solid var(--mustard)" }} onClick={(e) => e.stopPropagation()}>
-            <button onClick={() => setOpenMethod(null)} className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full" style={{ background: "var(--mustard)", color: "#000", fontSize: 20, fontWeight: 700 }} aria-label="Fechar">×</button>
+      <Modal open={methodModalOpen} onClose={closeMethodModal} bodyClassName="w-full max-w-2xl overflow-hidden" zIndex={100}>
+        {openMethod ? (
+          <div style={{ background: "#0a0a0a", color: "#fff", border: "1px solid var(--mustard)" }}>
+            <button onClick={closeMethodModal} className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full" style={{ background: "var(--mustard)", color: "#000", fontSize: 20, fontWeight: 700 }} aria-label="Fechar">×</button>
             <div className="p-10 md:p-14">
               <div className="flex items-center gap-6">
                 <div style={{ fontWeight: 700, fontSize: "clamp(4rem, 10vw, 8rem)", color: "var(--mustard)", lineHeight: 1, letterSpacing: "-.05em" }}>{openMethod.letter}</div>
@@ -2319,8 +2319,8 @@ function Index() {
               <p className="mt-4" style={{ fontSize: 16, lineHeight: 1.7, fontWeight: 300, color: "#c0c0c0" }}>{openMethod.popup}</p>
             </div>
           </div>
-        </div>
-      )}
+        ) : null}
+      </Modal>
 
       {/* Floating WhatsApp */}
       <a
