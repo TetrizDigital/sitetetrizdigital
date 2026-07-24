@@ -717,6 +717,45 @@ function Index() {
         </div>
       </section>
 
+      {/* MANIFESTO — tagline strip */}
+      <section
+        className="relative flex items-center justify-center px-6 py-24 md:py-32 text-center"
+        style={{ background: "#000", color: "#fff" }}
+      >
+        <div className="mx-auto max-w-5xl">
+          <div
+            data-reveal
+            className="mb-6 inline-flex items-center gap-3"
+            style={{ color: "var(--mustard)", fontSize: 12, letterSpacing: ".4em" }}
+          >
+            <span style={{ width: 40, height: 1, background: "var(--mustard)" }} />
+            TETRIZ DIGITAL
+            <span style={{ width: 40, height: 1, background: "var(--mustard)" }} />
+          </div>
+          <h2
+            data-reveal
+            style={{
+              fontWeight: 700,
+              fontSize: "clamp(2.25rem, 6vw, 5.25rem)",
+              lineHeight: 1,
+              letterSpacing: "-.03em",
+            }}
+          >
+            MARKETING
+            <span style={{ color: "var(--mustard)", margin: "0 .35em" }}>·</span>
+            BRANDING
+            <span style={{ color: "var(--mustard)", margin: "0 .35em" }}>·</span>
+            PERFORMANCE
+          </h2>
+          <p
+            data-reveal
+            className="mx-auto mt-6 max-w-2xl"
+            style={{ color: "#bdbdbd", fontSize: 18, lineHeight: 1.6, fontWeight: 300 }}
+          >
+            Cada peça no lugar certo, cada movimento a serviço do próximo.
+          </p>
+        </div>
+      </section>
 
       {/* FASE 01 — O JOGO */}
       <section id="jogo" className="relative px-6 py-32 md:px-16 md:py-40" style={{ background: "#fff", color: "#000" }}>
