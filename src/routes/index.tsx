@@ -13,6 +13,7 @@ import serviceProject from "@/assets/service-project.jpg";
 import serviceConsulting from "@/assets/service-consulting.jpg";
 import serviceOperation from "@/assets/service-operation.jpg";
 import ctaFinal from "@/assets/cta-final.jpg";
+import tetrizBoardImg from "@/assets/tetriz-board.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -277,11 +278,36 @@ const FAQ = [
   },
 ];
 
-function pieceColors(color: Piece["color"]) {
-  if (color === "yellow") return { bg: "#FFBB00", fg: "#0a0a0a", border: "#e6a800", accent: "#0a0a0a" };
-  if (color === "light") return { bg: "#f4f1ea", fg: "#0a0a0a", border: "#e5e0d3", accent: "#0a0a0a" };
-  return { bg: "#0a0a0a", fg: "#ffffff", border: "#1a1a1a", accent: "#FFBB00" };
-}
+// Hit-zones over the Tetriz board image (percentages of the 1600x720 image)
+// Grid is 12 cols x 4 rows. Values below correspond to the piece shapes.
+type Zone = { left: number; top: number; width: number; height: number };
+const PIECE_ZONES: Record<string, Zone[]> = {
+  produto:    [{ left: 0,     top: 0,   width: 25,    height: 50 }],
+  marca:      [
+    { left: 25,    top: 0,    width: 41.67, height: 50 },
+    { left: 41.67, top: 50,   width: 16.66, height: 25 },
+  ],
+  pessoas:    [{ left: 66.67, top: 0,    width: 33.33, height: 50 }],
+  marketing:  [{ left: 0,     top: 50,   width: 25,    height: 50 }],
+  tecnologia: [
+    { left: 25,    top: 50,   width: 16.67, height: 50 },
+    { left: 41.67, top: 75,   width: 16.66, height: 25 },
+    { left: 58.33, top: 50,   width: 25,    height: 50 },
+  ],
+  dados:      [{ left: 83.33, top: 50,   width: 16.67, height: 50 }],
+};
+
+const PIECE_ACCENT: Record<string, string> = {
+  produto: "#FFBB00",
+  marca: "#0a0a0a",
+  pessoas: "#FFBB00",
+  marketing: "#FFBB00",
+  tecnologia: "#FFBB00",
+  dados: "#0a0a0a",
+};
+
+// Ease-out cubic for smoother visual response to scroll
+const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
 function TetrisBoard({ pieces }: { pieces: Piece[] }) {
   const boardRef = useRef<HTMLDivElement | null>(null);
@@ -301,16 +327,17 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
     setProgress(init);
   }, [pieces]);
 
-  // Smooth interpolation loop
+  // Smooth interpolation loop (lower lerp = more fluid inertia)
   useEffect(() => {
+    const LERP = 0.08;
     const tick = () => {
       let changed = false;
       const next = { ...progressRef.current };
       for (const k of Object.keys(next)) {
         const t = targetRef.current[k] ?? 0;
         const cur = next[k] ?? 0;
-        const nv = cur + (t - cur) * 0.14;
-        if (Math.abs(nv - cur) > 0.001) {
+        const nv = cur + (t - cur) * LERP;
+        if (Math.abs(nv - cur) > 0.0005) {
           next[k] = Math.max(0, Math.min(1, nv));
           changed = true;
         } else if (nv !== cur) {
@@ -334,13 +361,15 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
   useEffect(() => {
     const el = boardRef.current;
     if (!el) return;
-    const STEP = 1 / 400; // 400px of scroll = fully expanded
+    const STEP = 1 / 700; // more scroll needed = smoother, more controlled
     const onWheel = (e: WheelEvent) => {
       const id = hoverIdRef.current;
       if (!id) return;
       const t = targetRef.current[id] ?? 0;
       const delta = e.deltaY * STEP;
       const nt = Math.max(0, Math.min(1, t + delta));
+      // Only intercept vertical wheel intent while hovering a piece
+      if (Math.abs(e.deltaY) < 0.5) return;
       e.preventDefault();
       e.stopPropagation();
       e.stopImmediatePropagation();
@@ -348,7 +377,7 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
         ...Object.fromEntries(Object.keys(targetRef.current).map((k) => [k, 0])),
         [id]: nt,
       };
-      setOpenId(delta > 0 ? id : nt > 0.12 ? id : null);
+      setOpenId(nt > 0.18 ? id : null);
     };
     el.addEventListener("wheel", onWheel, { passive: false, capture: true });
     return () => el.removeEventListener("wheel", onWheel, { capture: true });
@@ -356,7 +385,6 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
 
   const setHover = (id: string | null) => {
     hoverIdRef.current = id;
-    // On leave, ease back to 0
     const t = { ...targetRef.current };
     for (const k of Object.keys(t)) {
       if (k !== id) t[k] = 0;
@@ -364,155 +392,139 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
     targetRef.current = t;
   };
 
+  const togglePiece = (id: string) => {
+    const cur = targetRef.current[id] ?? 0;
+    const shouldOpen = cur <= 0.5;
+    targetRef.current = {
+      ...Object.fromEntries(Object.keys(targetRef.current).map((k) => [k, 0])),
+      [id]: shouldOpen ? 1 : 0,
+    };
+    setOpenId(shouldOpen ? id : null);
+    hoverIdRef.current = id;
+  };
+
   const activeId = Object.entries(progress).sort((a, b) => b[1] - a[1])[0]?.[0];
-  const activeProgress = activeId ? progress[activeId] ?? 0 : 0;
+  const activeProgressRaw = activeId ? progress[activeId] ?? 0 : 0;
+  const activeProgress = easeOut(activeProgressRaw);
   const activePiece = pieces.find((piece) => piece.id === activeId);
   const openPiece = pieces.find((piece) => piece.id === openId);
-  const orderedPieces = [...pieces].sort((a, b) => {
-    if (a.id === activeId) return 1;
-    if (b.id === activeId) return -1;
-    return 0;
-  });
 
   return (
     <div className="mx-auto" style={{ maxWidth: 1180 }} data-reveal>
       <div
         ref={boardRef}
         className="relative"
-        style={{
-          perspective: 1200,
-        }}
+        style={{ perspective: 1400 }}
         onMouseLeave={() => setHover(null)}
       >
-        <svg
-          viewBox="0 0 492 196"
-          role="img"
-          aria-label="Peças estratégicas da Tetriz em formato de jogo Tetris"
-          className="block w-full"
-          style={{ aspectRatio: "492 / 196", overflow: "visible" }}
+        {/* Board image */}
+        <div
+          className="relative"
+          style={{
+            aspectRatio: "1600 / 720",
+            width: "100%",
+            transformStyle: "preserve-3d",
+          }}
         >
-          <rect x="0" y="0" width="492" height="196" rx="5" fill="#050505" />
-          {orderedPieces.map((p) => {
-            const c = pieceColors(p.color);
-            const prog = progress[p.id] ?? 0;
-            const isActive = activeId === p.id && activeProgress > 0.02;
-            const dim = activeId && activeId !== p.id && activeProgress > 0.15;
-            const scale = 1 + prog * 0.18;
-            const lift = prog * 18;
-            const labelColor = p.color === "yellow" || p.color === "light" ? "#0a0a0a" : "#ffffff";
+          <img
+            src={tetrizBoardImg}
+            alt="Tabuleiro Tetriz com peças estratégicas: Produto, Marca, Pessoas, Marketing, Tecnologia e Dados"
+            width={1600}
+            height={720}
+            loading="lazy"
+            draggable={false}
+            className="block h-full w-full select-none"
+            style={{
+              transform: `scale(${1 + activeProgress * 0.02})`,
+              transition: "transform .5s cubic-bezier(.22,.9,.28,1)",
+              filter: activeProgress > 0.05 ? "brightness(.88)" : "brightness(1)",
+            }}
+          />
+
+          {/* Hit zones + per-piece glow overlay */}
+          {pieces.map((p) => {
+            const zones = PIECE_ZONES[p.id] ?? [];
+            const prog = easeOut(progress[p.id] ?? 0);
+            const accent = PIECE_ACCENT[p.id] ?? "#FFBB00";
+            const isActive = activeId === p.id && prog > 0.02;
             return (
-              <g
-                key={p.id}
-                role="button"
-                tabIndex={0}
-                aria-label={`Ver peça ${p.title}`}
-                onMouseEnter={() => setHover(p.id)}
-                onFocus={() => setHover(p.id)}
-                onClick={() => {
-                  const cur = targetRef.current[p.id] ?? 0;
-                  const shouldOpen = cur <= 0.5;
-                  targetRef.current = {
-                    ...Object.fromEntries(Object.keys(targetRef.current).map((k) => [k, 0])),
-                    [p.id]: shouldOpen ? 1 : 0,
-                  };
-                  setOpenId(shouldOpen ? p.id : null);
-                  hoverIdRef.current = p.id;
-                }}
-                onKeyDown={(event) => {
-                  if (event.key !== "Enter" && event.key !== " ") return;
-                  event.preventDefault();
-                  const cur = targetRef.current[p.id] ?? 0;
-                  const shouldOpen = cur <= 0.5;
-                  targetRef.current = {
-                    ...Object.fromEntries(Object.keys(targetRef.current).map((k) => [k, 0])),
-                    [p.id]: shouldOpen ? 1 : 0,
-                  };
-                  setOpenId(shouldOpen ? p.id : null);
-                  hoverIdRef.current = p.id;
-                }}
-                style={{
-                  cursor: "pointer",
-                  opacity: dim ? 0.34 : 1,
-                  filter: isActive
-                    ? "drop-shadow(0 26px 22px rgba(0,0,0,.42)) drop-shadow(0 0 14px rgba(255,187,0,.45))"
-                    : dim
-                      ? "blur(.6px)"
-                      : "none",
-                  transform: `translateY(-${lift}px) scale(${scale})`,
-                  transformOrigin: "center",
-                  transition: "opacity .35s ease, filter .35s ease",
-                  willChange: "transform",
-                }}
-              >
-                <path
-                  d={p.path}
-                  fill={c.bg}
-                  stroke="#050505"
-                  strokeWidth="4"
-                  strokeLinejoin="round"
-                  vectorEffect="non-scaling-stroke"
-                />
-                <text
-                  x={p.labelX}
-                  y={p.labelY}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  fill={labelColor}
-                  pointerEvents="none"
-                  style={{
-                    fontFamily: "Space Grotesk, sans-serif",
-                    fontSize: 16,
-                    fontWeight: 700,
-                    textTransform: "uppercase",
-                    letterSpacing: 0,
-                  }}
-                >
-                  {p.title.toUpperCase()}
-                </text>
-              </g>
+              <div key={p.id} className="pointer-events-none absolute inset-0">
+                {zones.map((z, i) => (
+                  <div
+                    key={i}
+                    role={i === 0 ? "button" : undefined}
+                    tabIndex={i === 0 ? 0 : -1}
+                    aria-label={i === 0 ? `Ver peça ${p.title}` : undefined}
+                    onMouseEnter={() => setHover(p.id)}
+                    onFocus={() => setHover(p.id)}
+                    onClick={() => togglePiece(p.id)}
+                    onKeyDown={(event) => {
+                      if (event.key !== "Enter" && event.key !== " ") return;
+                      event.preventDefault();
+                      togglePiece(p.id);
+                    }}
+                    className="pointer-events-auto absolute cursor-pointer"
+                    style={{
+                      left: `${z.left}%`,
+                      top: `${z.top}%`,
+                      width: `${z.width}%`,
+                      height: `${z.height}%`,
+                      // Yellow highlight ring on the active piece
+                      boxShadow: isActive
+                        ? `inset 0 0 0 3px ${accent}, 0 0 40px ${accent}55`
+                        : "inset 0 0 0 0 transparent",
+                      transition: "box-shadow .4s cubic-bezier(.22,.9,.28,1)",
+                    }}
+                  />
+                ))}
+              </div>
             );
           })}
-        </svg>
 
-        {activePiece && activeProgress > 0.08 ? (
-          <div
-            className="pointer-events-none absolute left-1/2 top-1/2 w-[min(92%,560px)]"
-            style={{
-              transform: `translate(-50%, calc(-50% - ${activeProgress * 44}px)) scale(${0.94 + activeProgress * 0.06})`,
-              opacity: Math.min(1, activeProgress * 1.35),
-              zIndex: 80,
-              transition: "opacity .12s linear",
-            }}
-          >
+          {/* Active piece popup card, centered over the board */}
+          {activePiece && activeProgress > 0.06 ? (
             <div
+              className="pointer-events-none absolute left-1/2 top-1/2 w-[min(92%,620px)]"
               style={{
-                background: "rgba(5,5,5,.94)",
-                border: "1px solid rgba(255,187,0,.7)",
-                boxShadow: "0 30px 90px -25px rgba(0,0,0,.9), 0 0 0 1px rgba(255,255,255,.08) inset",
-                color: "#fff",
-                padding: "clamp(18px, 3vw, 32px)",
+                transform: `translate(-50%, calc(-50% - ${activeProgress * 40}px)) scale(${0.9 + activeProgress * 0.1})`,
+                opacity: Math.min(1, activeProgress * 1.4),
+                zIndex: 80,
+                transition: "opacity .18s linear",
+                willChange: "transform, opacity",
               }}
             >
-              <div style={{ color: "var(--mustard)", fontSize: 11, fontWeight: 700, letterSpacing: ".28em" }}>
-                VER PEÇA
+              <div
+                style={{
+                  background: "rgba(5,5,5,.94)",
+                  border: "1px solid rgba(255,187,0,.7)",
+                  boxShadow: "0 30px 90px -25px rgba(0,0,0,.9), 0 0 0 1px rgba(255,255,255,.08) inset",
+                  color: "#fff",
+                  padding: "clamp(18px, 3vw, 32px)",
+                }}
+              >
+                <div style={{ color: "var(--mustard)", fontSize: 11, fontWeight: 700, letterSpacing: ".28em" }}>
+                  VER PEÇA
+                </div>
+                <h3 className="mt-3" style={{ fontSize: "clamp(1.8rem, 4vw, 3.2rem)", fontWeight: 700, lineHeight: .95 }}>
+                  {activePiece.title}
+                </h3>
+                <p className="mt-3" style={{ color: "var(--mustard)", fontSize: "clamp(1rem, 1.5vw, 1.2rem)", fontWeight: 500 }}>
+                  {activePiece.sub}
+                </p>
+                <p className="mt-5" style={{ color: "#d7d7d7", fontSize: "clamp(14px, 1.25vw, 17px)", lineHeight: 1.65 }}>
+                  {activePiece.popup}
+                </p>
               </div>
-              <h3 className="mt-3" style={{ fontSize: "clamp(1.8rem, 4vw, 3.2rem)", fontWeight: 700, lineHeight: .95 }}>
-                {activePiece.title}
-              </h3>
-              <p className="mt-3" style={{ color: "var(--mustard)", fontSize: "clamp(1rem, 1.5vw, 1.2rem)", fontWeight: 500 }}>
-                {activePiece.sub}
-              </p>
-              <p className="mt-5" style={{ color: "#d7d7d7", fontSize: "clamp(14px, 1.25vw, 17px)", lineHeight: 1.65 }}>
-                {activePiece.popup}
-              </p>
             </div>
-          </div>
-        ) : null}
+          ) : null}
+        </div>
       </div>
+
+      {/* Full modal when the user commits to a piece */}
       {openPiece ? (
         <div
           className="fixed inset-0 z-[90] flex items-center justify-center px-6 py-24"
-          style={{ background: "rgba(0,0,0,.52)", backdropFilter: "blur(6px)" }}
+          style={{ background: "rgba(0,0,0,.55)", backdropFilter: "blur(6px)" }}
           onClick={() => {
             setOpenId(null);
             targetRef.current = Object.fromEntries(Object.keys(targetRef.current).map((k) => [k, 0]));
@@ -557,6 +569,7 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
           </div>
         </div>
       ) : null}
+
       <p
         className="mt-6 text-center"
         style={{ fontSize: 12, letterSpacing: ".3em", color: "#888", fontWeight: 500 }}
