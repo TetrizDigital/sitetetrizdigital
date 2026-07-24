@@ -1434,9 +1434,14 @@ function Index() {
   const wordColor = heroWordIdx % 2 === 0 ? "#FFFFFF" : "#FFBB00";
 
   return (
-    <div className="tetriz-root">
+    <div className="tetriz-root cam-stage">
       <Preloader />
       <CinematicShell />
+
+      {/* Camera-rail velocity layers */}
+      <div data-cam-blur className="cam-velocity-blur" aria-hidden />
+      <div data-cam-vignette className="cam-velocity-vignette" aria-hidden />
+
 
       <style>{`
         :root { --mustard: #FFBB00; }
