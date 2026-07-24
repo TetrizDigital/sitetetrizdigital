@@ -1015,7 +1015,7 @@ function Index() {
 
       {/* MANIFESTO — tagline strip */}
       <section
-        className="relative flex items-center justify-center px-6 py-24 md:py-32 text-center"
+        className="relative flex min-h-screen items-center justify-center px-6 py-24 text-center"
         style={{ background: "#000", color: "#fff" }}
       >
         <div className="mx-auto max-w-5xl">
