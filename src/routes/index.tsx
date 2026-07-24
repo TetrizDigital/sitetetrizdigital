@@ -1298,7 +1298,7 @@ function Index() {
       </section>
 
       {/* SERVICES — ONDE ENTRAMOS */}
-      <section id="arena" className="relative px-6 py-32 md:px-16 md:py-40" style={{ background: "#fff", color: "#000" }}>
+      <section id="onde-entramos" className="relative px-6 py-32 md:px-16 md:py-40" style={{ background: "#fff", color: "#000" }}>
         <div className="mb-16 max-w-6xl">
           <div className="mb-6 flex items-center gap-3" style={{ fontSize: 12, letterSpacing: ".4em", color: "#000" }} data-reveal>
             <span style={{ width: 40, height: 1, background: "#000" }} />
