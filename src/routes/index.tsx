@@ -1453,8 +1453,6 @@ function Index() {
           ))}
         </div>
 
-        {/* Preserve legacy anchor for the nav */}
-        <span id="times" />
 
 
         <style>{`
