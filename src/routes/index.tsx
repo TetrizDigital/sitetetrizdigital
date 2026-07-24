@@ -440,6 +440,50 @@ const PIECE_ACCENT: Record<string, string> = {
 // Ease-out cubic for smoother visual response to scroll
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
+type ModalProps = {
+  open: boolean;
+  onClose: () => void;
+  children: ReactNode;
+  className?: string;
+  bodyClassName?: string;
+  zIndex?: number;
+};
+
+function Modal({ open, onClose, children, className = "", bodyClassName = "", zIndex = 100 }: ModalProps) {
+  const [mounted, setMounted] = useState(false);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setMounted(true);
+      const raf = requestAnimationFrame(() => setVisible(true));
+      return () => cancelAnimationFrame(raf);
+    }
+    setVisible(false);
+    const timer = window.setTimeout(() => setMounted(false), 350);
+    return () => window.clearTimeout(timer);
+  }, [open]);
+
+  if (!mounted) return null;
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      className={`fixed inset-0 flex items-center justify-center transition-opacity duration-300 ease-out ${visible ? "opacity-100" : "opacity-0"} ${className}`}
+      style={{ zIndex, background: "rgba(0,0,0,.85)", backdropFilter: "blur(8px)" }}
+      onClick={onClose}
+    >
+      <div
+        className={`relative transition-all duration-300 ease-[cubic-bezier(.2,.9,.25,1)] ${visible ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-5"} ${bodyClassName}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
 function TetrisBoard({ pieces }: { pieces: Piece[] }) {
   const boardRef = useRef<HTMLDivElement | null>(null);
   const hoverIdRef = useRef<string | null>(null);
