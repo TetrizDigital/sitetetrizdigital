@@ -74,7 +74,7 @@ type Piece = {
   title: string;
   sub: string;
   popup: string;
-  color: "black" | "yellow";
+  color: "black" | "yellow" | "light";
   // grid area: colStart / rowStart / colEnd / rowEnd  (12-col x 4-row board)
   area: string;
 };
@@ -86,7 +86,7 @@ const PIECES: Piece[] = [
     sub: "O que você entrega ao mundo.",
     popup:
       "Antes de comunicar, entendemos o que a empresa vende, como entrega e quais diferenciais sustentam essa promessa. O produto é a peça de partida: sem clareza sobre ele, nenhuma estratégia se encaixa por completo.",
-    color: "yellow",
+    color: "black",
     area: "1 / 1 / 3 / 4",
   },
   {
@@ -95,8 +95,8 @@ const PIECES: Piece[] = [
     sub: "A percepção que fica.",
     popup:
       "Marca não é só aparência. É a forma como a empresa é lembrada, reconhecida e desejada. Por isso, trabalhamos posicionamento, linguagem e presença para construir uma percepção forte, coerente e memorável.",
-    color: "black",
-    area: "1 / 4 / 3 / 7",
+    color: "yellow",
+    area: "1 / 4 / 3 / 8",
   },
   {
     id: "pessoas",
@@ -104,8 +104,8 @@ const PIECES: Piece[] = [
     sub: "Quem faz o jogo acontecer.",
     popup:
       "Toda marca é feita por pessoas e para pessoas. Entendemos o time, o cliente, o público e a cultura por trás de cada negócio para criar uma comunicação mais humana, verdadeira e conectada.",
-    color: "yellow",
-    area: "1 / 7 / 3 / 10",
+    color: "light",
+    area: "1 / 8 / 3 / 13",
   },
   {
     id: "marketing",
@@ -113,8 +113,8 @@ const PIECES: Piece[] = [
     sub: "O movimento que conecta tudo.",
     popup:
       "Marketing é a peça que coloca a estratégia em movimento. Conectamos canais, campanhas, conteúdos e ações para transformar presença em relacionamento, relacionamento em confiança e confiança em resultado.",
-    color: "black",
-    area: "1 / 10 / 3 / 13",
+    color: "light",
+    area: "3 / 1 / 5 / 5",
   },
   {
     id: "tecnologia",
@@ -123,7 +123,7 @@ const PIECES: Piece[] = [
     popup:
       "A tecnologia amplia possibilidades, acelera processos e abre novos caminhos para marcas que querem evoluir. Na Tetriz, usamos ferramentas, dados e inovação para criar soluções mais inteligentes e eficientes.",
     color: "black",
-    area: "3 / 1 / 5 / 7",
+    area: "3 / 5 / 5 / 11",
   },
   {
     id: "dados",
@@ -132,9 +132,10 @@ const PIECES: Piece[] = [
     popup:
       "Dados mostram o que está funcionando, o que precisa mudar e qual deve ser o próximo movimento. Eles nos ajudam a tomar decisões com mais clareza, menos achismo e mais estratégia.",
     color: "yellow",
-    area: "3 / 7 / 5 / 13",
+    area: "3 / 11 / 5 / 13",
   },
 ];
+
 
 const METHOD = [
   {
@@ -263,8 +264,231 @@ const FAQ = [
   },
 ];
 
+function pieceColors(color: Piece["color"]) {
+  if (color === "yellow") return { bg: "#FFBB00", fg: "#0a0a0a", border: "#e6a800", accent: "#0a0a0a" };
+  if (color === "light") return { bg: "#f4f1ea", fg: "#0a0a0a", border: "#e5e0d3", accent: "#0a0a0a" };
+  return { bg: "#0a0a0a", fg: "#ffffff", border: "#1a1a1a", accent: "#FFBB00" };
+}
+
+function TetrisBoard({ pieces }: { pieces: Piece[] }) {
+  const boardRef = useRef<HTMLDivElement | null>(null);
+  const hoverIdRef = useRef<string | null>(null);
+  const progressRef = useRef<Record<string, number>>({});
+  const [progress, setProgress] = useState<Record<string, number>>({});
+  const rafRef = useRef<number | null>(null);
+  const targetRef = useRef<Record<string, number>>({});
+
+  // Ensure keys exist
+  useEffect(() => {
+    const init: Record<string, number> = {};
+    pieces.forEach((p) => (init[p.id] = 0));
+    progressRef.current = { ...init };
+    targetRef.current = { ...init };
+    setProgress(init);
+  }, [pieces]);
+
+  // Smooth interpolation loop
+  useEffect(() => {
+    const tick = () => {
+      let changed = false;
+      const next = { ...progressRef.current };
+      for (const k of Object.keys(next)) {
+        const t = targetRef.current[k] ?? 0;
+        const cur = next[k] ?? 0;
+        const nv = cur + (t - cur) * 0.14;
+        if (Math.abs(nv - cur) > 0.001) {
+          next[k] = Math.max(0, Math.min(1, nv));
+          changed = true;
+        } else if (nv !== cur) {
+          next[k] = t;
+          changed = true;
+        }
+      }
+      if (changed) {
+        progressRef.current = next;
+        setProgress(next);
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
+
+  // Wheel handler: scroll while hovering a piece drives its expansion
+  useEffect(() => {
+    const el = boardRef.current;
+    if (!el) return;
+    const STEP = 1 / 400; // 400px of scroll = fully expanded
+    const onWheel = (e: WheelEvent) => {
+      const id = hoverIdRef.current;
+      if (!id) return;
+      const t = targetRef.current[id] ?? 0;
+      const delta = e.deltaY * STEP;
+      const nt = Math.max(0, Math.min(1, t + delta));
+      // Only intercept scroll while expanding or contracting mid-range
+      if ((delta > 0 && t < 1) || (delta < 0 && t > 0)) {
+        e.preventDefault();
+        targetRef.current = { ...targetRef.current, [id]: nt };
+      }
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
+
+  const setHover = (id: string | null) => {
+    hoverIdRef.current = id;
+    // On leave, ease back to 0
+    const t = { ...targetRef.current };
+    for (const k of Object.keys(t)) {
+      if (k !== id) t[k] = 0;
+    }
+    targetRef.current = t;
+  };
+
+  const activeId = Object.entries(progress).sort((a, b) => b[1] - a[1])[0]?.[0];
+  const activeProgress = activeId ? progress[activeId] ?? 0 : 0;
+
+  return (
+    <div className="mx-auto" style={{ maxWidth: 1200 }} data-reveal>
+      <div
+        ref={boardRef}
+        className="relative grid"
+        style={{
+          gridTemplateColumns: "repeat(12, 1fr)",
+          gridTemplateRows: "repeat(4, minmax(110px, 1fr))",
+          gap: 6,
+        }}
+        onMouseLeave={() => setHover(null)}
+      >
+        {pieces.map((p) => {
+          const c = pieceColors(p.color);
+          const prog = progress[p.id] ?? 0;
+          const isActive = activeId === p.id && activeProgress > 0.02;
+          const dim = activeId && activeId !== p.id && activeProgress > 0.15;
+          const scale = 1 + prog * 0.06;
+          const lift = prog * 14;
+          return (
+            <div
+              key={p.id}
+              className="relative"
+              style={{ gridArea: p.area, zIndex: isActive ? 40 : 1 }}
+            >
+              <button
+                type="button"
+                onMouseEnter={() => setHover(p.id)}
+                onFocus={() => setHover(p.id)}
+                onClick={() => {
+                  // Mobile/click fallback: toggle expansion
+                  const cur = targetRef.current[p.id] ?? 0;
+                  targetRef.current = {
+                    ...Object.fromEntries(Object.keys(targetRef.current).map((k) => [k, 0])),
+                    [p.id]: cur > 0.5 ? 0 : 1,
+                  };
+                  hoverIdRef.current = p.id;
+                }}
+                className="group absolute inset-0 flex flex-col justify-between p-6 text-left transition-shadow"
+                style={{
+                  background: c.bg,
+                  color: c.fg,
+                  border: `1px solid ${c.border}`,
+                  transform: `translateY(-${lift}px) scale(${scale})`,
+                  transformOrigin: "center center",
+                  transition: "opacity .35s ease, filter .35s ease, box-shadow .35s ease",
+                  opacity: dim ? 0.28 : 1,
+                  filter: dim ? "blur(1px)" : "none",
+                  boxShadow: isActive
+                    ? "0 30px 80px -20px rgba(0,0,0,.55), 0 0 0 1px rgba(255,187,0,.35)"
+                    : "none",
+                  cursor: "pointer",
+                  willChange: "transform",
+                }}
+              >
+                <div>
+                  <div
+                    style={{
+                      fontWeight: 700,
+                      fontSize: "clamp(1.4rem, 2.4vw, 2.1rem)",
+                      lineHeight: 1,
+                      letterSpacing: "-.02em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {p.title}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 13,
+                      marginTop: 8,
+                      opacity: 0.75,
+                      fontWeight: 400,
+                    }}
+                  >
+                    {p.sub}
+                  </div>
+                </div>
+
+                {/* Reveal panel — grows in as prog increases */}
+                <div
+                  style={{
+                    marginTop: 12,
+                    maxHeight: `${prog * 320}px`,
+                    opacity: prog,
+                    overflow: "hidden",
+                    transition: "max-height .05s linear",
+                  }}
+                >
+                  <div
+                    style={{
+                      height: 1,
+                      background: c.accent,
+                      opacity: 0.35,
+                      marginBottom: 12,
+                    }}
+                  />
+                  <p
+                    style={{
+                      fontSize: "clamp(13px, 1.05vw, 15px)",
+                      lineHeight: 1.55,
+                      fontWeight: 400,
+                      opacity: 0.92,
+                    }}
+                  >
+                    {p.popup}
+                  </p>
+                </div>
+
+                <div
+                  className="mt-4 inline-flex items-center gap-2"
+                  style={{
+                    fontSize: 11,
+                    letterSpacing: ".22em",
+                    fontWeight: 600,
+                    opacity: prog > 0.5 ? 0 : 0.85,
+                    transition: "opacity .25s ease",
+                    color: c.accent,
+                  }}
+                >
+                  VER PEÇA <span>→</span>
+                </div>
+              </button>
+            </div>
+          );
+        })}
+      </div>
+      <p
+        className="mt-6 text-center"
+        style={{ fontSize: 12, letterSpacing: ".3em", color: "#888", fontWeight: 500 }}
+      >
+        PASSE O MOUSE E ROLE PARA EXPANDIR A PEÇA
+      </p>
+    </div>
+  );
+}
+
 function Index() {
-  const [openPiece, setOpenPiece] = useState<Piece | null>(null);
+  
   const [openMethod, setOpenMethod] = useState<(typeof METHOD)[number] | null>(null);
   const [heroWordIdx, setHeroWordIdx] = useState(0);
 
@@ -772,42 +996,9 @@ function Index() {
           </p>
         </div>
 
-        {/* Tetris Board */}
-        <div className="mx-auto" style={{ perspective: 1400, maxWidth: 1200 }} data-reveal>
-          <div
-            data-tetris-board
-            className="grid gap-2"
-            style={{
-              gridTemplateColumns: "repeat(12, 1fr)",
-              gridTemplateRows: "repeat(4, minmax(120px, 1fr))",
-              transformStyle: "preserve-3d",
-            }}
-          >
-            {PIECES.map((p) => (
-              <button
-                key={p.id}
-                type="button"
-                onClick={() => setOpenPiece(p)}
-                className="piece-tile relative flex flex-col justify-between p-6 text-left"
-                style={{
-                  gridArea: p.area,
-                  background: p.color === "yellow" ? "var(--mustard)" : "#0a0a0a",
-                  color: p.color === "yellow" ? "#000" : "#fff",
-                  border: p.color === "yellow" ? "1px solid #e6a800" : "1px solid #1a1a1a",
-                }}
-              >
-                <div className="piece-glow absolute inset-0" style={{ background: "radial-gradient(circle at 30% 30%, rgba(255,187,0,.25), transparent 60%)", pointerEvents: "none" }} />
-                <div className="relative">
-                  <div style={{ fontWeight: 700, fontSize: "clamp(1.5rem, 2.5vw, 2.2rem)", lineHeight: 1, letterSpacing: "-.02em" }}>{p.title}</div>
-                  <div style={{ fontSize: 14, marginTop: 8, opacity: .75, fontWeight: 400 }}>{p.sub}</div>
-                </div>
-                <div className="relative mt-4 inline-flex items-center gap-2" style={{ fontSize: 11, letterSpacing: ".2em", fontWeight: 600, opacity: .8 }}>
-                  VER PEÇA <span>→</span>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
+        {/* Tetris Board — real piece layout with scroll-driven hover expansion */}
+        <TetrisBoard pieces={PIECES} />
+
       </section>
 
       {/* YELLOW BAND */}
@@ -1047,20 +1238,8 @@ function Index() {
         </div>
       </footer>
 
-      {/* PIECE MODAL */}
-      {openPiece && (
-        <div className="modal-back fixed inset-0 z-[100] flex items-center justify-center p-6" style={{ background: "rgba(0,0,0,.85)", backdropFilter: "blur(8px)" }} onClick={() => setOpenPiece(null)}>
-          <div className="modal-body relative w-full max-w-2xl overflow-hidden" style={{ background: openPiece.color === "yellow" ? "var(--mustard)" : "#0a0a0a", color: openPiece.color === "yellow" ? "#000" : "#fff", border: openPiece.color === "yellow" ? "1px solid #e6a800" : "1px solid #1a1a1a" }} onClick={(e) => e.stopPropagation()}>
-            <button onClick={() => setOpenPiece(null)} className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full" style={{ background: openPiece.color === "yellow" ? "#000" : "var(--mustard)", color: openPiece.color === "yellow" ? "var(--mustard)" : "#000", fontSize: 20, fontWeight: 700 }} aria-label="Fechar">×</button>
-            <div className="p-10 md:p-14">
-              <div style={{ fontSize: 11, letterSpacing: ".3em", opacity: .6, fontWeight: 600 }}>PEÇA</div>
-              <h3 className="mt-2" style={{ fontWeight: 700, fontSize: "clamp(2rem, 5vw, 3.5rem)", lineHeight: 1, letterSpacing: "-.03em" }}>{openPiece.title}</h3>
-              <p className="mt-2" style={{ fontSize: 17, fontWeight: 500, opacity: .8 }}>{openPiece.sub}</p>
-              <p className="mt-6" style={{ fontSize: 16, lineHeight: 1.7, fontWeight: 300, opacity: .9 }}>{openPiece.popup}</p>
-            </div>
-          </div>
-        </div>
-      )}
+
+
 
       {/* METHOD MODAL */}
       {openMethod && (
