@@ -1,62 +1,89 @@
 ## Objetivo
-Trocar a seção atual `#trofeus` (bloco simples "Marcas em movimento, times em jogo.") pela nova seção **03 — TROFÉUS** com título grande, subtítulo e grade 2×4 de cards de projetos, exatamente no espírito das imagens anexadas.
+Transformar o site em uma experiência de scroll cinematográfica, com suspense e revelações progressivas em TODAS as dobras — sem quebrar layouts, tipografia, cores (preto/branco/mostarda) nem funcionalidades já aprovadas (vídeo scrubbing, peças de Tetris, modais de troféus, etc.).
 
-## Onde mexer
-- Arquivo único: `src/routes/index.tsx`
-- Substituir o bloco entre as linhas ~1220–1238 (o `<section id="trofeus">` atual). Nada mais é alterado.
+## Escopo (somente `src/routes/index.tsx` + adição opcional de utilitários em `src/styles.css`)
+Nenhuma nova dependência. Uso do GSAP + ScrollTrigger + Lenis já instalados.
 
-## Estrutura da nova seção
+## Princípios de motion
+- Ease padrão: `power3.out` para entradas, `power2.inOut` para pins.
+- Duração base 0.9s, stagger 0.08s.
+- Sempre com `will-change: transform, opacity` só durante a animação.
+- Respeitar `prefers-reduced-motion`: registrar `gsap.matchMedia()` e desabilitar transforms grandes.
+- Nada de bordas amarelas em cards/modais (constraint já estabelecida).
 
-### Cabeçalho (bloco preto, centralizado)
-- Eyebrow amarelo `03 — TROFÉUS`.
-- Título em duas linhas:
-  - Linha 1 branca: **Não chamamos de cases.**
-  - Linha 2 amarela mostarda: **Chamamos de troféus.**
-- Subtítulo cinza: *Porque ganhamos o jogo. Passe o mouse e clique para ver a vitória.*
-- Tipografia Space Grotesk 700, `clamp(2.5rem, 6vw, 5.5rem)`, letter-spacing negativo, igual ao restante do site.
+## Efeitos por dobra
 
-### Grade de troféus (2 linhas × 4 colunas em desktop, 2 col em tablet, 1 col em mobile)
-- 8 cards em grid, gap fino de 1px com linhas divisórias tracejadas cinza-escuro (efeito do anexo).
-- Cada card: `aspect-[4/5]`, fundo preto profundo, imagem coberta com filtro escuro (opacity ~0.35), nome do troféu no rodapé em Space Grotesk 600 branco.
-- **Hover**: imagem clareia (opacity 0.75), o card ganha destaque com o nome em branco 100% e aparece um botão amarelo **VER TROFÉU →** (Space Grotesk bold, preto sobre mostarda, cantos retos), tudo com transição suave 400ms — o efeito imita o anexo (image-18).
-- Cursor pointer no card inteiro. Clique abre o modal (item abaixo).
+### 1. Global (chrome)
+- Barra de progresso amarela no topo, já existente, refinada com glow suave.
+- Cursor "spotlight" opcional (radial gradient mostarda 6% seguindo o mouse em `<body>::before`) — desligado em mobile.
+- Ao trocar de seção, um flash horizontal fino (linha 1px mostarda) percorre a viewport (Stripe-like divider).
 
-### Placeholders (8 cards) — reutilizam imagens já existentes em `src/assets/`
-| # | Nome | Cliente fictício | Categoria | Imagem base |
-|---|---|---|---|---|
-| 1 | Reposiciona Varejo | Marca de moda regional | Rebranding + Performance | `service-project.jpg` |
-| 2 | Lançamento X | Startup SaaS | Campanha de Lançamento | `service-campaign.jpg` |
-| 3 | Performance 360 | E-commerce nacional | Mídia + CRO | `hero-blocks.jpg` |
-| 4 | Rebrand Norte | Rede alimentícia | Identidade + Naming | `service-consulting.jpg` |
-| 5 | Campanha Verão | Brand D2C | Sazonal Multiplataforma | `method-falling.jpg` |
-| 6 | Impacto Social | ONG | Branding + Ativação | `cta-final.jpg` |
-| 7 | E-commerce Up | Marketplace B2B | Site + Performance | `service-operation.jpg` |
-| 8 | Institucional | Indústria familiar | Vídeo + Site | `tetris-field.jpg` |
+### 2. HERO (vídeo scrubbing) — manter como está
+- Adicionar apenas fade-out do texto rotativo e CTAs quando o scroll passa de 85% da hero (opacity/translateY 20px).
 
-Todas essas imagens já estão importadas no topo do arquivo — nenhuma nova asset será criada.
+### 3. MANIFESTO ("MARKETING · BRANDING · PERFORMANCE")
+- Split das 3 palavras: cada uma entra de baixo com blur 12px → 0, stagger 0.15s, pinada por 60% da altura da seção.
+- Bullets mostarda escalam de 0 → 1 no meio da timeline.
+- Parágrafo de apoio e CTAs revelam por último com fade + translateY.
 
-### Modal de detalhes (clique em qualquer card)
-- Overlay preto 92%, `position: fixed inset-0`, `z-[100]`, fecha ao clicar fora, tecla ESC ou no botão ✕.
-- Painel centralizado, `max-w-5xl`, fundo `#0a0a0a`, sem borda amarela (respeitando a preferência já estabelecida — apenas sombra suave).
-- Layout do modal: imagem grande à esquerda (aspect 4/3), coluna direita com:
-  - Categoria em eyebrow mostarda.
-  - Nome do troféu como H3 grande (Space Grotesk 700).
-  - Cliente fictício em cinza.
-  - Parágrafo curto (placeholder: "Case em construção. Em breve, os detalhes desta vitória.")
-  - Lista de 3 resultados mock ("+ X% de conversão", etc.) em bullets amarelos.
-  - Botão CTA `FALAR SOBRE ESTE JOGO →` linkando para `#agendar`.
-- Animação de entrada: fade + subtle scale (0.98 → 1) em 250ms via CSS transition (sem GSAP novo).
+### 4. FASE 01 — O JOGO (tabuleiro Tetris)
+- Manter scrub existente do popup.
+- Adicionar: título "FASE 01" com máscara de clip-path revelando letra por letra no enter.
+- Tabuleiro entra com scale 0.9 → 1 + leve rotação 3D (rotateX 8deg → 0) enquanto a seção é pinada nos primeiros 30%.
 
-### Estado React
-- Um único `useState<string | null>` para `openTrophyId`.
-- Array `TROPHIES` declarado no topo do arquivo (junto de `SERVICES`, `FAQ`, etc.) para manter o padrão.
-- Handler ESC dentro de `useEffect` quando o modal está aberto; `document.body.style.overflow = "hidden"` enquanto aberto.
+### 5. Faixa amarela
+- Texto com efeito "marquee reveal": cada palavra sobe atrás de uma máscara preta ao entrar no viewport.
+
+### 6. FASE 02 — MÉTODO (T-E-T-R-I-Z)
+- Manter falling letters.
+- Adicionar linha vertical mostarda que "desenha" (scaleY 0→1) do topo ao fundo conforme scroll da seção (ScrollTrigger scrub).
+- Cada linha de descrição faz fade + slide-in lateral alternado (esquerda/direita).
+
+### 7. ONDE ENTRAMOS (Campanha, Projeto, Consultoria, Operação)
+- Cards entram em cascata diagonal (stagger 0.12s, translate x/y opostos).
+- No hover mantém o brilho atual; adicionar tilt 3D sutil (perspective 1000, rotateY até 4deg) via mousemove.
+
+### 8. TROFÉUS (grid 2×4)
+- Cabeçalho: título "Não chamamos de cases / Chamamos de troféus" — segunda linha entra com clip-path wipe da esquerda p/ direita 700ms.
+- Cards do grid revelam com stagger em ondas (4+4), scale 0.96 → 1 + fade.
+- Ao passar por cima, imagem faz parallax interno de 8px (mousemove).
+- Modal: entrada já existe; refinar para blur backdrop animado (backdrop-filter 0 → 12px).
+
+### 9. JOGADORES
+- Título com destaque mostarda entra por word-split.
+- Cards de jogadores em cascata vertical (stagger 0.08s), placeholder faz scale-in.
+- Ao chegar no fim, aparece linha "TODO MUNDO JOGA" varrendo horizontalmente.
+
+### 10. ARENA (bento grid)
+- Cada célula do bento entra individualmente com escala/opacidade dependendo do seu tamanho (célula maior demora mais).
+- Ícones fazem "draw" (stroke-dashoffset) se forem SVG; se forem emoji/placeholder, pulsam 1x.
+
+### 11. TIMES
+- Cabeçalho branco: título entra com word-split.
+- Grid de logos: cada slot revela em stagger 0.05s com filtro `grayscale(1) → grayscale(0.2)`.
+- Faixa de estatísticas: números fazem count-up (0 → valor final) via ScrollTrigger + `gsap.to({val})` quando entram no viewport.
+
+### 12. CTA FINAL ("Quer jogar o nosso jogo?")
+- Palavras destacadas em mostarda pulsam 1x na entrada.
+- Botão CTA com glow ambar pulsante contínuo (loop suave 2s).
+
+## Implementação técnica
+- Consolidar TUDO dentro do `gsap.context()` existente (linha ~763) para cleanup automático.
+- Adicionar `data-*` hooks nos elementos: `data-word-split`, `data-cascade`, `data-tilt`, `data-count-up`, `data-clip-reveal`, `data-draw-line`.
+- Helpers no topo do arquivo:
+  - `splitWords(el)` — divide innerText em `<span>` por palavra.
+  - `initTilt(el)` — mousemove listener com cleanup.
+  - `initCountUp(el)` — lê `data-value` e anima.
+- `gsap.matchMedia()` com breakpoint `(min-width: 768px)` para efeitos pesados; mobile mantém apenas fades simples.
+- Todos os ScrollTriggers usam `start: "top 80%"`, `end: "bottom 20%"`, `toggleActions: "play none none reverse"` — exceto os com `scrub: true` explicitamente.
 
 ## O que NÃO muda
-- Âncoras `#jogadores` e `#times` continuam existindo dentro da nova seção (spans invisíveis), para o menu não quebrar.
-- Nenhum outro bloco (Manifesto, Fase 01, Método, FAQ, CTA final) é alterado.
-- Sem novas dependências, sem novas assets, sem alterar `styles.css`.
+- Estrutura HTML das seções, textos, imagens, cores, fontes.
+- Vídeo scrubbing da hero, tabuleiro de Tetris, modais de troféus.
+- Nenhuma nova dependência npm; sem alterar `router.tsx`, `__root.tsx`, ou `styles.css` além de eventual bloco de utilitários (`.will-animate`, keyframe de glow do CTA).
 
 ## Verificação
-1. `bun run build` para garantir que a substituição compila.
-2. Playwright rápido navegando para `/#trofeus` e capturando screenshot desktop e mobile para conferir a grade, hover state (via `page.hover`) e abertura do modal.
+1. `bun run build` para garantir 0 erros.
+2. Playwright: scroll programático `window.scrollTo` em passos, screenshot em cada seção (hero, manifesto, fase01, troféus, jogadores, arena, times, cta) desktop 1440 e mobile 390.
+3. Conferir ausência de bordas amarelas em modais e cards de troféus.
+4. Testar `prefers-reduced-motion` via Playwright emulate para garantir fallback.
