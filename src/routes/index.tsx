@@ -1915,6 +1915,7 @@ function Index() {
           ].map((p, i, arr) => (
             <div
               key={p.name}
+              data-tilt
               className="player-card group relative flex flex-col justify-end overflow-hidden"
               style={{
                 aspectRatio: "3 / 4",
