@@ -565,6 +565,21 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
     }
   };
 
+  const openPiece = (id: string) => {
+    setOpenId(id);
+    requestAnimationFrame(() => setPieceModalOpen(true));
+  };
+
+  const closePiece = () => {
+    setPieceModalOpen(false);
+    window.setTimeout(() => {
+      setOpenId(null);
+      const t = { ...targetRef.current };
+      for (const k of Object.keys(t)) t[k] = 0;
+      targetRef.current = t;
+    }, 350);
+  };
+
   const activeId = Object.entries(progress).sort((a, b) => b[1] - a[1])[0]?.[0];
   const activeProgressRaw = activeId ? progress[activeId] ?? 0 : 0;
   const activeProgress = easeOut(activeProgressRaw);
