@@ -1,59 +1,89 @@
-# Experiência "Entrando no Site" — Trilho de Câmera Cinematográfico
+# Tetriz — Versão Cinematográfica "Director's Cut"
 
-Objetivo: o usuário sente que está **atravessando cenários** do topo ao rodapé, como uma câmera avançando por dentro do site. Cada seção deixa de ser "uma dobra" e vira "um ambiente" com entrada, permanência e saída.
+Objetivo: transformar a landing atual num **filme interativo de 7 atos**, onde cada seção é uma cena com câmera, luz, som e transição contínuas — mantendo toda a estrutura, textos e assets que já existem.
 
-Intensidade alvo: **cinematográfico marcante** (entre sutil e experimental) — profundidade e transições claras, mas leitura preservada e nenhum pin longo que "trave" o scroll.
+---
 
-## O que muda na prática
+## Ato 0 — Preloader Cinematográfico (novo)
+- Cortina preta com contador `00 → 100` em Space Grotesk mono, linha mostarda varrendo a tela.
+- "TETRIZ PICTURES PRESENTS" fade-in/out (2s) antes de liberar a Hero.
+- Bloqueia scroll até o vídeo da Hero estar `readyState >= 3`.
 
-### 1. Camada global de câmera (novo)
-Um wrapper 3D no topo da árvore (`perspective` real) aplica leve deslocamento em Z + rotação conforme o scroll global, dando a sensação de estar dentro de um corredor.
-- `perspective: 1400px` no shell, `transform-style: preserve-3d` nas seções.
-- Vinheta e letterbox já existentes ganham intensidade dinâmica (respiram com a velocidade do scroll).
-- Grão sutil animado por cima para reforçar o filme.
+## Ato 1 — Hero (existente, potencializada)
+- Mantém vídeo em cores originais + palavras rotativas no canto inferior esquerdo.
+- Adiciona: **grain film** sutil (SVG turbulence), **letterbox 2.39:1** que abre em 21:9 no scroll, **chromatic aberration** leve nas bordas.
+- Cursor custom: mira mostarda com coordenadas tipo câmera (X/Y).
+- HUD discreto no canto: `REC ● 00:00` incrementando.
 
-### 2. Transições entre seções = "portais"
-Cada troca de seção vira uma passagem de câmera, não um corte:
-- **Hero → Manifesto**: dolly-in que atravessa o gradiente inferior; o texto do Manifesto surge "de dentro" da tela vindo do fundo (Z negativo → 0).
-- **Manifesto → Fase 01 (O Jogo)**: câmera recua, o tabuleiro entra rotacionado e se endireita.
-- **Fase 01 → Fase 02 (Método TETRIZ)**: transição por letras — as letras do acróstico caem "por cima" da câmera antes de se assentarem.
-- **Fase 02 → Troféus**: iris-wipe (já existe nos modais) reaproveitado como transição de sala.
-- **Troféus → Jogadores**: já tem duotone→RGB; reforçar com leve push-in.
-- **Jogadores → Arena → Times → Agendar**: cada uma entra por um eixo diferente (Z, Y, escala) para o passeio não ficar repetitivo.
+## Ato 2 — Manifesto
+- "MARKETING · BRANDING · PERFORMANCE" entra letra a letra com **mask-reveal vertical** (como legenda de filme).
+- Fundo ganha **spotlight** que segue o mouse (radial-gradient mostarda 4% opacity).
 
-### 3. Entrada de cada seção
-Padrão único aplicado a todas via ScrollTrigger:
-- Fundo entra primeiro (parallax lento, Z distante).
-- Camada de mídia/visual entra em seguida (parallax médio).
-- Texto/UI entra por último, mais próximo da câmera (Z=0), com stagger.
-- Saída espelhada: ao sair, o conteúdo recua em Z antes de sumir — reforça "a câmera passou por aqui".
+## Ato 3 — Fase 01 · O Jogo
+- Tabuleiro entra com **câmera dolly-in** (scale 1.4→1 + perspective tilt) via ScrollTrigger scrub.
+- Peça em hover projeta **luz volumétrica** (conic-gradient) atrás dela.
+- Modal abre com **iris-wipe** (clip-path circle expandindo do ponto do clique).
 
-### 4. Scroll e ritmo
-- Lenis continua cuidando da suavidade; ajustar `lerp` levemente para dar peso.
-- Velocidade do scroll alimenta a intensidade da vinheta e do leve motion blur (filtro CSS).
-- Sem novos pins longos: as animações são scrubbed no range natural de cada seção para não travar a navegação (respeitando o ajuste recente do tabuleiro).
+## Ato 4 — Fase 02 · Método T-E-T-R-I-Z
+- Letras caem com **física** (stagger + ease bounce) e projetam sombra longa.
+- Linha de tempo horizontal mostarda conecta as 6 letras conforme scroll.
 
-### 5. Abertura reforçada (portal inicial)
-Preloader existente ganha um "abrir de cortina" 3D: quando termina, a Hero entra vinda de Z distante em ~800ms, dando o gatilho de "entrei no site". Sem alongar o preload.
+## Ato 5 — Troféus
+- Grid entra em **split-flap** (cada card vira como painel de aeroporto).
+- Modal do troféu: **push-3D** (card cresce e o resto do grid recua em z).
 
-### 6. Acessibilidade e performance
-- `prefers-reduced-motion`: desliga transformações 3D, mantém fades simples.
-- Transformações apenas em `transform`/`opacity`/`filter` (GPU).
-- `will-change` aplicado só nos elementos animados no viewport.
-- Mobile: reduz profundidade (perspective maior, deslocamentos menores) para não enjoar.
+## Ato 6 — Jogadores / Arena / Times
+- Jogadores: cards com **duotone preto+mostarda**, viram para cor real no hover com **RGB split** de 200ms.
+- Arena: células com **parallax interno** (imagem se move contra o card no mousemove).
+- Times: logos entram em **cascade wave** diagonal; faixa de stats com **count-up** já existente ganha ticker sonoro opcional.
 
-## Escopo do que NÃO muda
-- Conteúdo, textos, cores, tipografia, vídeos e imagens permanecem.
-- Estrutura de rotas, SEO e componentes de negócio intactos.
-- Botão WhatsApp, CTAs e modais funcionam igual.
+## Ato 7 — CTA Final + Créditos
+- CTA atual mantido, centralizado.
+- Abaixo: **rolo de créditos** estilo cinema (Direção, Estratégia, Design, Performance…) subindo lento em loop.
+- Corte final: tela preta + logo Tetriz + "FIM · 2026".
 
-## Arquivos afetados
-- `src/routes/index.tsx` — novo wrapper de câmera, timelines de entrada/saída por seção, ajustes de transições.
-- `src/styles.css` — utilitários 3D (`.cam-stage`, `.cam-layer-*`), grão animado, refino da vinheta reativa.
-- (Possível) pequeno hook `useCameraScroll` inline no index para orquestrar a câmera global.
+---
 
-## Como você vai perceber o resultado
-- Ao carregar: cortina 3D abre e a Hero "chega" até você.
-- Ao rolar: sensação constante de avançar por dentro de ambientes, com profundidade real entre fundo, mídia e texto.
-- Entre seções: nenhuma "quebra seca" — sempre uma passagem de câmera.
-- Ao rolar rápido: leve blur/vinheta reforça a velocidade; ao parar, tudo assenta limpo e legível.
+## Camadas globais (aplicadas ao site todo)
+
+**Câmera de scroll**
+- Lenis já instalado; adicionar `wrapper` com `perspective: 1200px`.
+- Cada `<section>` recebe leve `rotateX` conforme entra/sai do viewport (±3°) — sensação de "trilho de câmera".
+
+**Grão + Vignette + Letterbox**
+- Overlay fixo `pointer-events:none` com SVG grain animado (8% opacity) e vignette radial.
+- Barras letterbox top/bottom que respiram (12px → 40px) em seções-chave.
+
+**Progress HUD**
+- Substitui a barra atual por: timecode `SCENE 03/07 · 00:42` + mini-scrubber lateral com marcadores de cena clicáveis.
+
+**Áudio (opcional, toggle no canto)**
+- Trilha ambiente low-drone + SFX curtos em transições (whoosh nos pins, click nos modais). Muted por padrão com botão `SOUND ON`.
+
+**Cursor**
+- Mira custom global; vira "▶" sobre elementos clicáveis, "+" sobre peças do tabuleiro.
+
+**Performance**
+- Grain e spotlight só em `(min-width: 1024px)` e `prefers-reduced-motion: no-preference`.
+- Vídeo Hero mantém autoplay/loop — sem scrubbing (já validado que ficou ruim).
+- Todos os efeitos GSAP com `will-change` e cleanup nos `ScrollTrigger.getAll()`.
+
+---
+
+## Detalhes técnicos
+
+- **GSAP**: já instalado. Adicionar plugin `SplitText` alternativa manual (split por span) — sem paid plugin.
+- **Novo componente**: `<CinematicShell>` em `src/components/` (grain + vignette + letterbox + HUD + cursor).
+- **Novo componente**: `<Preloader>` com `useEffect` liberando scroll.
+- **Trilha**: 1 arquivo `ambient.mp3` (~200KB, 30s loop) + 3 SFX curtos em `src/assets/audio/`.
+- **Sem mudanças** em: conteúdo, cores, fontes, rotas, backend.
+
+---
+
+## Entrega em 3 fases (posso fazer tudo ou parar em qualquer uma)
+
+1. **Shell cinematográfico**: preloader + grain + letterbox + cursor + HUD timecode. (impacto visual imediato, ~1 iteração)
+2. **Cenas turbinadas**: dolly-in Fase 01, mask-reveal Manifesto, split-flap Troféus, duotone Jogadores, parallax Arena.
+3. **Créditos + áudio + câmera 3D global** (rotateX por seção).
+
+Me diga se quer as 3 fases, só a 1, ou uma combinação — e se quer áudio incluído.

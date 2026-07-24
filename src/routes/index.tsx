@@ -1350,72 +1350,6 @@ function Index() {
             },
           });
         });
-
-        // 14) ── CAMERA RAIL — sensação de "atravessar cenários" ────────────
-        // Cada section vira uma cena 3D: entra vindo do fundo (Z negativo),
-        // atinge o plano da câmera no centro do viewport e recua ao sair.
-        const scenes = gsap.utils.toArray<HTMLElement>("section");
-        scenes.forEach((sec, i) => {
-          if (sec.hasAttribute("data-hero")) return; // hero tem entrada própria
-          sec.classList.add("cam-scene");
-          // Entrada: do fundo em direção à câmera
-          gsap.fromTo(
-            sec,
-            { z: -520, rotateX: 6, opacity: 0.35, filter: "blur(6px) brightness(.75)" },
-            {
-              z: 0,
-              rotateX: 0,
-              opacity: 1,
-              filter: "blur(0px) brightness(1)",
-              ease: "none",
-              scrollTrigger: {
-                trigger: sec,
-                start: "top bottom",
-                end: "top 35%",
-                scrub: 0.8,
-              },
-            },
-          );
-          // Saída: recua e escurece conforme sobe
-          gsap.to(sec, {
-            z: -260,
-            rotateX: -4,
-            opacity: 0.5,
-            filter: "blur(3px) brightness(.7)",
-            ease: "none",
-            scrollTrigger: {
-              trigger: sec,
-              start: "bottom 65%",
-              end: "bottom top",
-              scrub: 0.8,
-            },
-          });
-        });
-
-        // 15) Vinheta e leve blur reativos à velocidade do scroll (Lenis)
-        const vignette = document.querySelector<HTMLElement>("[data-cam-vignette]");
-        const blurLayer = document.querySelector<HTMLElement>("[data-cam-blur]");
-        let lastY = window.scrollY;
-        let lastT = performance.now();
-        const velTick = () => {
-          const now = performance.now();
-          const dy = Math.abs(window.scrollY - lastY);
-          const dt = Math.max(now - lastT, 16);
-          const v = dy / dt; // px/ms
-          lastY = window.scrollY;
-          lastT = now;
-          if (vignette) {
-            const opacity = Math.min(v * 0.45, 0.55);
-            vignette.style.opacity = String(opacity);
-          }
-          if (blurLayer) {
-            const b = Math.min(v * 1.2, 2.5);
-            blurLayer.style.backdropFilter = `blur(${b}px)`;
-          }
-          rafVelId = requestAnimationFrame(velTick);
-        };
-        let rafVelId = requestAnimationFrame(velTick);
-        (window as unknown as { __camVelCleanup?: () => void }).__camVelCleanup = () => cancelAnimationFrame(rafVelId);
       }
     });
 
@@ -1423,25 +1357,17 @@ function Index() {
       ctx.revert();
       if (rafId) cancelAnimationFrame(rafId);
       if (rafVideoId) cancelAnimationFrame(rafVideoId);
-      const cleanup = (window as unknown as { __camVelCleanup?: () => void }).__camVelCleanup;
-      if (cleanup) cleanup();
       lenis?.destroy();
     };
   }, []);
-
 
   const currentWord = HERO_WORDS[heroWordIdx];
   const wordColor = heroWordIdx % 2 === 0 ? "#FFFFFF" : "#FFBB00";
 
   return (
-    <div className="tetriz-root cam-stage">
+    <div className="tetriz-root">
       <Preloader />
       <CinematicShell />
-
-      {/* Camera-rail velocity layers */}
-      <div data-cam-blur className="cam-velocity-blur" aria-hidden />
-      <div data-cam-vignette className="cam-velocity-vignette" aria-hidden />
-
 
       <style>{`
         :root { --mustard: #FFBB00; }
@@ -1508,7 +1434,7 @@ function Index() {
       </nav>
 
       {/* HERO — cinematic manifesto */}
-      <section data-hero className="cam-hero-enter relative overflow-hidden" style={{ background: "#000", height: "100vh" }}>
+      <section data-hero className="relative overflow-hidden" style={{ background: "#000", height: "100vh" }}>
         <div className="sticky top-0 h-screen w-full overflow-hidden">
           {/* Background video — cinematic manifesto */}
           <div className="absolute inset-0 z-0">
