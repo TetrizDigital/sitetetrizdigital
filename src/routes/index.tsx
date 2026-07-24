@@ -937,7 +937,7 @@ function Index() {
           );
         });
 
-        // 3) Auto-reveal every section heading + paragraph with stagger
+        // 3) Auto-reveal every section heading + paragraph with stagger — reversible
         gsap.utils.toArray<HTMLElement>("section").forEach((sec) => {
           if (sec.hasAttribute("data-hero")) return;
           const targets = sec.querySelectorAll<HTMLElement>(
@@ -953,12 +953,17 @@ function Index() {
               duration: 0.9,
               ease: "power3.out",
               stagger: 0.08,
-              scrollTrigger: { trigger: sec, start: "top 78%" },
+              scrollTrigger: {
+                trigger: sec,
+                start: "top 82%",
+                end: "bottom 18%",
+                toggleActions: "play reverse play reverse",
+              },
             },
           );
         });
 
-        // 4) Scale-in for cards / images tagged [data-scale-in]
+        // 4) Scale-in for cards / images tagged [data-scale-in] — reversible
         gsap.utils.toArray<HTMLElement>("[data-scale-in]").forEach((el) => {
           gsap.fromTo(
             el,
@@ -969,7 +974,12 @@ function Index() {
               y: 0,
               duration: 1,
               ease: "power3.out",
-              scrollTrigger: { trigger: el, start: "top 85%" },
+              scrollTrigger: {
+                trigger: el,
+                start: "top 88%",
+                end: "bottom 12%",
+                toggleActions: "play reverse play reverse",
+              },
             },
           );
         });
