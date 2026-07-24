@@ -966,6 +966,144 @@ function Index() {
           onEnter: () => document.querySelector(".nav")?.classList.add("nav-scrolled"),
           onLeaveBack: () => document.querySelector(".nav")?.classList.remove("nav-scrolled"),
         });
+
+        // 6) Word-split reveal — h2 with [data-word-split]
+        gsap.utils.toArray<HTMLElement>("[data-word-split]").forEach((el) => {
+          if (el.dataset.split === "1") return;
+          el.dataset.split = "1";
+          const walk = (node: Node) => {
+            const children = Array.from(node.childNodes);
+            children.forEach((child) => {
+              if (child.nodeType === Node.TEXT_NODE && child.textContent) {
+                const frag = document.createDocumentFragment();
+                const parts = child.textContent.split(/(\s+)/);
+                parts.forEach((part) => {
+                  if (/^\s+$/.test(part)) {
+                    frag.appendChild(document.createTextNode(part));
+                  } else if (part.length) {
+                    const span = document.createElement("span");
+                    span.className = "ws-word";
+                    span.style.display = "inline-block";
+                    span.style.willChange = "transform, opacity, filter";
+                    span.textContent = part;
+                    frag.appendChild(span);
+                  }
+                });
+                child.parentNode?.replaceChild(frag, child);
+              } else if (child.nodeType === Node.ELEMENT_NODE) {
+                walk(child);
+              }
+            });
+          };
+          walk(el);
+          const words = el.querySelectorAll<HTMLElement>(".ws-word");
+          gsap.fromTo(
+            words,
+            { yPercent: 110, opacity: 0, filter: "blur(10px)" },
+            {
+              yPercent: 0,
+              opacity: 1,
+              filter: "blur(0px)",
+              duration: 1,
+              ease: "power3.out",
+              stagger: 0.06,
+              scrollTrigger: { trigger: el, start: "top 82%" },
+            },
+          );
+        });
+
+        // 7) Clip-reveal wipe for [data-clip-reveal]
+        gsap.utils.toArray<HTMLElement>("[data-clip-reveal]").forEach((el) => {
+          gsap.fromTo(
+            el,
+            { clipPath: "inset(0 100% 0 0)", opacity: 0 },
+            {
+              clipPath: "inset(0 0% 0 0)",
+              opacity: 1,
+              duration: 1.1,
+              ease: "power4.out",
+              scrollTrigger: { trigger: el, start: "top 82%" },
+            },
+          );
+        });
+
+        // 8) Cascade — grid children reveal in waves
+        const cascadeSelectors = [".trophy-card", ".player-card", ".arena-cell", ".logo-cell"];
+        cascadeSelectors.forEach((sel) => {
+          const nodes = gsap.utils.toArray<HTMLElement>(sel);
+          if (!nodes.length) return;
+          gsap.fromTo(
+            nodes,
+            { y: 60, opacity: 0, scale: 0.96 },
+            {
+              y: 0,
+              opacity: 1,
+              scale: 1,
+              duration: 0.9,
+              ease: "power3.out",
+              stagger: { each: 0.07, from: "start" },
+              scrollTrigger: {
+                trigger: nodes[0].parentElement || nodes[0],
+                start: "top 82%",
+              },
+            },
+          );
+        });
+
+        // 9) 3D tilt on cards with [data-tilt]
+        gsap.utils.toArray<HTMLElement>("[data-tilt]").forEach((el) => {
+          el.style.transformStyle = "preserve-3d";
+          el.style.transformPerspective = "1000px";
+          const qX = gsap.quickTo(el, "rotationX", { duration: 0.5, ease: "power3.out" });
+          const qY = gsap.quickTo(el, "rotationY", { duration: 0.5, ease: "power3.out" });
+          const onMove = (e: MouseEvent) => {
+            const r = el.getBoundingClientRect();
+            const px = (e.clientX - r.left) / r.width - 0.5;
+            const py = (e.clientY - r.top) / r.height - 0.5;
+            qY(px * 6);
+            qX(-py * 6);
+          };
+          const onLeave = () => {
+            qX(0);
+            qY(0);
+          };
+          el.addEventListener("mousemove", onMove);
+          el.addEventListener("mouseleave", onLeave);
+        });
+
+        // 10) Count-up on [data-count-up]
+        gsap.utils.toArray<HTMLElement>("[data-count-up]").forEach((el) => {
+          const target = Number(el.dataset.value || "0");
+          const suffix = el.dataset.suffix || "";
+          const prefix = el.dataset.prefix || "";
+          const counter = { v: 0 };
+          gsap.to(counter, {
+            v: target,
+            duration: 2,
+            ease: "power2.out",
+            scrollTrigger: { trigger: el, start: "top 85%" },
+            onUpdate: () => {
+              el.textContent = `${prefix}${Math.round(counter.v)}${suffix}`;
+            },
+          });
+        });
+
+        // 11) Section divider — thin mustard sweep between sections
+        gsap.utils.toArray<HTMLElement>("section").forEach((sec, i) => {
+          if (i === 0 || sec.hasAttribute("data-hero")) return;
+          const line = document.createElement("div");
+          line.setAttribute("aria-hidden", "true");
+          line.style.cssText =
+            "position:absolute;top:0;left:0;height:1px;width:0;background:var(--mustard);pointer-events:none;opacity:.7;z-index:5;";
+          if (getComputedStyle(sec).position === "static") sec.style.position = "relative";
+          sec.appendChild(line);
+          gsap.to(line, {
+            width: "100%",
+            duration: 1.2,
+            ease: "power3.out",
+            scrollTrigger: { trigger: sec, start: "top 88%" },
+          });
+        });
       }
     });
 
