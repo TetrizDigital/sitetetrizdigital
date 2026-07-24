@@ -141,6 +141,35 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
   }
+
+  /* Modern black scrollbar */
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: #1a1a1a #000000;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #000000;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #1a1a1a;
+    border-radius: 4px;
+    border: 2px solid #000000;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #FFBB00;
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: #000000;
+  }
 }
 
 /* ---------- Cinematic layer ---------- */
