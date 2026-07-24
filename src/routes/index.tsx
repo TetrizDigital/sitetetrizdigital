@@ -781,36 +781,30 @@ function Index() {
         );
       });
 
-      // Hero video: scroll-scrubbed cinematic playback
+      // Hero video: autoplay muted loop
       const heroVideo = document.querySelector<HTMLVideoElement>("[data-hero-img]");
       if (heroVideo) {
         heroVideo.muted = true;
         heroVideo.playsInline = true;
+        heroVideo.loop = true;
+        heroVideo.autoplay = true;
         heroVideo.preload = "auto";
-        heroVideo.removeAttribute("loop");
-        heroVideo.removeAttribute("autoplay");
-        heroVideo.pause();
 
-        const setupScrub = () => {
-          const dur = heroVideo.duration;
-          if (!dur || !isFinite(dur)) return;
-          gsap.to(heroVideo, {
-            currentTime: Math.max(0, dur - 0.05),
-            ease: "none",
-            scrollTrigger: {
-              trigger: "[data-hero]",
-              start: "top top",
-              end: "bottom bottom",
-              scrub: 0.6,
-            },
-          });
+        const tryPlay = () => {
+          if (heroVideo.paused) heroVideo.play().catch(() => {});
         };
+        tryPlay();
+        const playInterval = window.setInterval(tryPlay, 500);
+        heroVideo.addEventListener("playing", () => window.clearInterval(playInterval), { once: true });
+        heroVideo.addEventListener("loadeddata", tryPlay, { once: true });
 
-        if (heroVideo.readyState >= 1) {
-          setupScrub();
-        } else {
-          heroVideo.addEventListener("loadedmetadata", setupScrub, { once: true });
-        }
+        const interactionStart = () => {
+          tryPlay();
+          window.removeEventListener("pointerdown", interactionStart);
+          window.removeEventListener("keydown", interactionStart);
+        };
+        window.addEventListener("pointerdown", interactionStart, { passive: true });
+        window.addEventListener("keydown", interactionStart, { passive: true });
       }
 
       // Technical disassembly overlay pieces drift apart as user scrolls
