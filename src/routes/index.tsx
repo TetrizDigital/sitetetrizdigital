@@ -546,8 +546,8 @@ function TetrisBoard({ pieces }: { pieces: Piece[] }) {
             className="relative w-full max-w-2xl overflow-hidden"
             style={{
               background: "#050505",
-              border: "1px solid rgba(255,187,0,.72)",
-              boxShadow: "0 36px 100px -25px rgba(0,0,0,.95), 0 0 0 1px rgba(255,255,255,.08) inset",
+              border: "none",
+              boxShadow: "0 36px 100px -25px rgba(0,0,0,.95)",
               color: "#fff",
             }}
             onClick={(event) => event.stopPropagation()}
