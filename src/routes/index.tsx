@@ -1742,15 +1742,15 @@ function Index() {
 
       {/* WHITE BAND — Quer jogar */}
       <section className="relative px-6 py-32 md:px-16 md:py-40" style={{ background: "#fff", color: "#000" }}>
-        <div className="mx-auto max-w-5xl">
+        <div className="mx-auto max-w-5xl text-center">
           <h2 data-reveal style={{ fontWeight: 700, fontSize: "clamp(3rem, 8vw, 7rem)", lineHeight: .9, letterSpacing: "-.04em" }}>
-            Quer jogar o nosso jogo?
+            Quer <span style={{ color: "var(--mustard)" }}>jogar</span> o nosso <span style={{ color: "var(--mustard)" }}>jogo</span>?
           </h2>
           <p data-reveal className="mt-8" style={{ fontSize: "clamp(1.2rem, 2vw, 1.8rem)", fontWeight: 500, color: "#000", lineHeight: 1.2, letterSpacing: "-.02em" }}>
-            Toda grande vitória começa com o primeiro movimento.
+            Toda grande vitória começa com o <span style={{ color: "var(--mustard)" }}>primeiro movimento</span>.
           </p>
           <p data-reveal className="mt-4" style={{ fontSize: 16, color: "#666", fontWeight: 300 }}>
-            Você não precisa de mais uma agência. Precisa de um plano.
+            Você não precisa de mais uma agência. Precisa de um <span style={{ color: "var(--mustard)", fontWeight: 500 }}>plano</span>.
           </p>
         </div>
       </section>
