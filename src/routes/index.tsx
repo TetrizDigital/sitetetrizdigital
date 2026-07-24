@@ -1298,7 +1298,7 @@ function Index() {
       </section>
 
       {/* SERVICES — ONDE ENTRAMOS */}
-      <section id="arena" className="relative px-6 py-32 md:px-16 md:py-40" style={{ background: "#fff", color: "#000" }}>
+      <section id="onde-entramos" className="relative px-6 py-32 md:px-16 md:py-40" style={{ background: "#fff", color: "#000" }}>
         <div className="mb-16 max-w-6xl">
           <div className="mb-6 flex items-center gap-3" style={{ fontSize: 12, letterSpacing: ".4em", color: "#000" }} data-reveal>
             <span style={{ width: 40, height: 1, background: "#000" }} />
@@ -1738,9 +1738,115 @@ function Index() {
         `}</style>
       </section>
 
+      {/* 05 — ARENA */}
+      <section id="arena" className="relative" style={{ background: "#000", color: "#fff" }}>
+        <div className="px-6 py-24 md:px-16 md:py-32 text-center">
+          <div
+            data-reveal
+            style={{ fontSize: 12, letterSpacing: ".4em", color: "var(--mustard)", fontWeight: 500 }}
+          >
+            05 — ARENA
+          </div>
+          <h2
+            data-reveal
+            className="mx-auto mt-6"
+            style={{
+              fontWeight: 700,
+              fontSize: "clamp(2.4rem, 6vw, 5rem)",
+              lineHeight: 1,
+              letterSpacing: "-.035em",
+              maxWidth: "20ch",
+            }}
+          >
+            Grandes jogos exigem grandes arenas<span style={{ color: "var(--mustard)" }}>.</span>
+          </h2>
+        </div>
+
+        <div
+          className="arena-bento grid gap-[1px] px-0"
+          style={{
+            background: "rgba(255,255,255,.06)",
+            gridTemplateColumns: "repeat(6, 1fr)",
+            gridAutoRows: "minmax(220px, 26vh)",
+          }}
+        >
+          {[
+            { name: "TETRIZ LAB", sub: "onde o método vira jogo", area: "1 / 1 / 3 / 4" },
+            { name: "AUDITÓRIO", sub: "grandes jogadas", area: "1 / 4 / 2 / 7" },
+            { name: "O REEL", sub: "▶ play", area: "2 / 4 / 3 / 7" },
+            { name: "DRONE", sub: "visão de cima", area: "3 / 1 / 4 / 3" },
+            { name: "MAKING OF", sub: "bastidores", area: "3 / 3 / 4 / 5" },
+            { name: "DAILY", sub: "jogada a jogada", area: "3 / 5 / 4 / 7" },
+          ].map((cell) => (
+            <div
+              key={cell.name}
+              className="arena-cell group relative flex flex-col justify-end overflow-hidden"
+              style={{
+                gridArea: cell.area,
+                background: "#0d0d0d",
+              }}
+            >
+              {/* Placeholder icon centered */}
+              <div className="absolute inset-0 flex items-center justify-center" style={{ color: "rgba(255,255,255,.1)" }}>
+                <div className="flex flex-col items-center gap-2">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
+                    <rect x="3" y="3" width="18" height="18" rx="1" />
+                    <circle cx="8.5" cy="8.5" r="1.5" />
+                    <path d="M21 15l-5-5L5 21" />
+                  </svg>
+                  <span style={{ fontSize: 10, letterSpacing: ".2em" }}>
+                    {cell.name.charAt(0) + cell.name.slice(1).toLowerCase()}
+                  </span>
+                </div>
+              </div>
+
+              {/* Hover amber sheen */}
+              <div
+                className="arena-hover pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500"
+                style={{ background: "linear-gradient(180deg, transparent 40%, rgba(255,187,0,.12) 100%)" }}
+              />
+
+              {/* Label */}
+              <div className="relative z-10 p-6 md:p-8">
+                <div
+                  style={{
+                    fontWeight: 800,
+                    fontSize: "clamp(18px, 1.6vw, 28px)",
+                    letterSpacing: ".01em",
+                    color: "#fff",
+                  }}
+                >
+                  {cell.name}
+                </div>
+                <div
+                  className="mt-1"
+                  style={{
+                    color: "#8a8a8a",
+                    fontSize: 13,
+                    letterSpacing: ".04em",
+                    fontWeight: 400,
+                  }}
+                >
+                  {cell.sub}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <style>{`
+          .arena-cell:hover .arena-hover { opacity: 1; }
+          @media (max-width: 768px) {
+            .arena-bento {
+              grid-template-columns: repeat(2, 1fr) !important;
+              grid-auto-rows: minmax(180px, 22vh) !important;
+            }
+            .arena-cell { grid-area: auto !important; }
+          }
+        `}</style>
+      </section>
 
 
-      {/* WHITE BAND — Quer jogar */}
       <section className="relative px-6 py-32 md:px-16 md:py-40" style={{ background: "#fff", color: "#000" }}>
         <div className="mx-auto max-w-5xl text-center">
           <h2 data-reveal style={{ fontWeight: 700, fontSize: "clamp(3rem, 8vw, 7rem)", lineHeight: .9, letterSpacing: "-.04em" }}>
