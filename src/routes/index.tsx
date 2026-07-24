@@ -1450,7 +1450,7 @@ function Index() {
 
         <div className="grid gap-6 md:grid-cols-2">
           {SERVICES.map((s, idx) => (
-            <article key={s.id} className="service-card grain relative overflow-hidden" style={{ background: "#000", color: "#fff", minHeight: 520 }} data-reveal>
+            <article key={s.id} className="service-card grain relative overflow-hidden" style={{ background: "#000", color: "#fff", minHeight: 520 }} data-reveal data-tilt>
               <div data-service-card className="relative h-64 w-full overflow-hidden">
                 {/* Frame stack: primary + 3 tinted duplicates to simulate cinematic sequence */}
                 <img data-svc-frame src={s.image} alt={s.title} width={1600} height={1008} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
