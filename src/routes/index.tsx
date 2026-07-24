@@ -773,42 +773,9 @@ function Index() {
           </p>
         </div>
 
-        {/* Tetris Board */}
-        <div className="mx-auto" style={{ perspective: 1400, maxWidth: 1200 }} data-reveal>
-          <div
-            data-tetris-board
-            className="grid gap-2"
-            style={{
-              gridTemplateColumns: "repeat(12, 1fr)",
-              gridTemplateRows: "repeat(4, minmax(120px, 1fr))",
-              transformStyle: "preserve-3d",
-            }}
-          >
-            {PIECES.map((p) => (
-              <button
-                key={p.id}
-                type="button"
-                onClick={() => setOpenPiece(p)}
-                className="piece-tile relative flex flex-col justify-between p-6 text-left"
-                style={{
-                  gridArea: p.area,
-                  background: p.color === "yellow" ? "var(--mustard)" : "#0a0a0a",
-                  color: p.color === "yellow" ? "#000" : "#fff",
-                  border: p.color === "yellow" ? "1px solid #e6a800" : "1px solid #1a1a1a",
-                }}
-              >
-                <div className="piece-glow absolute inset-0" style={{ background: "radial-gradient(circle at 30% 30%, rgba(255,187,0,.25), transparent 60%)", pointerEvents: "none" }} />
-                <div className="relative">
-                  <div style={{ fontWeight: 700, fontSize: "clamp(1.5rem, 2.5vw, 2.2rem)", lineHeight: 1, letterSpacing: "-.02em" }}>{p.title}</div>
-                  <div style={{ fontSize: 14, marginTop: 8, opacity: .75, fontWeight: 400 }}>{p.sub}</div>
-                </div>
-                <div className="relative mt-4 inline-flex items-center gap-2" style={{ fontSize: 11, letterSpacing: ".2em", fontWeight: 600, opacity: .8 }}>
-                  VER PEÇA <span>→</span>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
+        {/* Tetris Board — real piece layout with scroll-driven hover expansion */}
+        <TetrisBoard pieces={PIECES} />
+
       </section>
 
       {/* YELLOW BAND */}
